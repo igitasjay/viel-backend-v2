@@ -1,7 +1,89 @@
 import Router from 'express';
-import { register } from '@/controllers/auth/register';
+import register from '@/controllers/auth/register';
+import login from '@/controllers/auth/login';
+import { body } from 'express-validator';
+import validationError from '@/middlewares/validation-error';
+import User from '@/models/user';
+import bcrypt from 'bcrypt';
 const router = Router();
 
-router.post('/register', register);
+router.post(
+  '/register',
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required.')
+    .isEmail()
+    .withMessage('Invalid email address.')
+    .custom(async (value) => {
+      const userExists = await User.exists({ email: value });
+      if (userExists) {
+        throw new Error('User with this email already exists.');
+      }
+      return true;
+    }),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required.')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long.'),
+  body('firstname').trim().notEmpty().withMessage('First name is required.'),
+  body('lastname').trim().notEmpty().withMessage('Last name is required.'),
+  body('phone')
+    .trim()
+    .notEmpty()
+    .withMessage('Phone is required.')
+    .isLength({ max: 13 })
+    .withMessage('Phone number cannot exceed 13 characters.'),
+  body('role')
+    .optional()
+    .isString()
+    .withMessage('Invalid role:  must be a string.')
+    .isIn(['user', 'admin'])
+    .withMessage('Invalid role: must be either user or admin.'),
+  validationError,
+  register,
+);
+
+router.post(
+  '/login',
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required.')
+    .isEmail()
+    .withMessage('Invalid email address.')
+    .custom(async (value) => {
+      const userExists = await User.exists({ email: value });
+      if (!userExists) {
+        throw new Error('Incorrect email or password.');
+      }
+      return true;
+    }),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required.')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long.')
+    .custom(async (value, { req }) => {
+      const { email } = req.body as { email: string };
+      const user = await User.findOne({ email })
+        .select('password')
+        .lean()
+        .exec();
+      if (!user) {
+        throw new Error('Email or password is incorrect.');
+      }
+
+      const passwordMatch = await bcrypt.compare(value, user.password);
+      if (!passwordMatch) {
+        throw new Error('Incorrect email or password.');
+      }
+    }),
+  validationError,
+  login,
+);
+
+router.post('/refresh-token');
 
 export default router;

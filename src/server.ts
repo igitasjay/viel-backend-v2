@@ -77,5 +77,6 @@ const handleServerShutdown = async () => {
     logger.error('Error shutting down server', error);
   }
 };
+
 process.on('SIGINT', handleServerShutdown);
 process.on('SIGTERM', handleServerShutdown);

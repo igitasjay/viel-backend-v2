@@ -16,6 +16,22 @@ const register = async (req: Request, res: Response): Promise<void> => {
   const { firstname, lastname, email, phone, password, role } =
     req.body as UserData;
 
+  if (role === 'admin' && !config.WHITELIST_ADMINS_EMAIL.includes(email)) {
+    res.status(403).json({
+      code: 'AuthorizationError',
+      message: 'Forbidden: You are not allowed to register as admin',
+    });
+    logger.warn(
+      `User with email ${email} tried to register as admin but is not on the whitelist.`,
+      {
+        ip: req.ip,
+        userAgent: req.get('User-Agent'),
+        email,
+      },
+    );
+    return;
+  }
+
   try {
     const newUser = await User.create({
       firstname,
@@ -75,4 +91,4 @@ const register = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export { register };
+export default register;
