@@ -5,7 +5,6 @@ import { logger } from '@/lib/winston';
 import { Request, Response } from 'express';
 import { generateAccessToken, generateRefreshToken } from '@/lib/jwt';
 import Token from '@/models/token';
-import token from '@/models/token';
 
 type UserData = Pick<
   IUser,
