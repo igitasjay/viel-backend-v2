@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import bcryt from 'bcrypt';
 
 export interface IUser {
   firstname: string;
@@ -50,5 +51,16 @@ const UserSchema = new Schema<IUser>(
     timestamps: true,
   },
 );
+
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    this.password = await bcryt.hash(this.password, 10);
+    next();
+    return;
+  }
+
+  this.password = await bcryt.hash(this.password, 10);
+  next();
+});
 
 export default model<IUser>('User', UserSchema);
