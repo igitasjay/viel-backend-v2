@@ -1,14 +1,14 @@
-import winson from 'winston';
+import winston from 'winston';
 import config from '@/config';
 
 const { combine, timestamp, json, errors, align, printf, colorize } =
-  winson.format;
+  winston.format;
 
-const transports: winson.transport[] = [];
+const transports: winston.transport[] = [];
 
 if (config.NODE_ENV !== 'production') {
   transports.push(
-    new winson.transports.Console({
+    new winston.transports.Console({
       format: combine(
         colorize({ all: true }),
         timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -24,7 +24,7 @@ if (config.NODE_ENV !== 'production') {
   );
 }
 
-const logger = winson.createLogger({
+const logger = winston.createLogger({
   level: config.LOG_LEVEL || 'info',
   format: combine(timestamp(), errors({ stack: true }), json()),
   transports,

@@ -6,9 +6,11 @@ import { IUser } from '@/models/user';
 import Token from '@/models/token';
 import { logger } from '@/lib/winston';
 
+type UserData = Pick<IUser, 'email' | 'password'>;
+
 const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email } = req.body as Pick<IUser, 'email' | 'password'>;
+    const { email } = req.body as UserData;
     const user = await User.findOne({ email })
       .select('firstname lastname email phone password role')
       .lean()
@@ -56,7 +58,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
       status: 'error',
       timestamp: new Date().toISOString(),
     });
-    logger.error('Error registering user', {
+    logger.error('Error during login.', {
       ip: req.ip,
       userAgent: req.get('User-Agent'),
       error,

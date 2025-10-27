@@ -6,6 +6,8 @@ import validationError from '@/middlewares/validation-error';
 import User from '@/models/user';
 import bcrypt from 'bcrypt';
 import refreshToken from '@/controllers/auth/refresh-token';
+import logout from '@/controllers/auth/logout';
+import authenticate from '@/middlewares/authenticate';
 const router = Router();
 
 router.post(
@@ -95,5 +97,7 @@ router.post(
   validationError,
   refreshToken,
 );
+
+router.post('/logout', authenticate, logout);
 
 export default router;
