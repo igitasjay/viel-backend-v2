@@ -2,11 +2,11 @@ import config from '@/config';
 import { logger } from '@/lib/winston';
 import type { Request, Response } from 'express';
 import Token from '@/models/token';
-import User from '@/models/user';
 
 const logout = async (req: Request, res: Response): Promise<void> => {
   try {
     const refreshToken = req.cookies['refreshToken'] as string;
+
     if (refreshToken) {
       await Token.deleteOne({ token: refreshToken });
       logger.info('Refresh token deleted during logout.', {
