@@ -15,6 +15,9 @@ const config = {
   ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES as ms.StringValue,
   REFRESH_TOKEN_EXPIRES: process.env.REFRESH_TOKEN_EXPIRES as ms.StringValue,
   WHITELIST_ADMINS_EMAIL: ['imailasjay@gmail.com', 'iamjaypegg@gmail.com'],
+  EMAIL_USER: process.env.EMAIL_USER!,
+  EMAIL_PASS: process.env.EMAIL_PASS!,
+  EMAIL_FROM: process.env.EMAIL_FROM!,
 };
 
 export default config;

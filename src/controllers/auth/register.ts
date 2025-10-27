@@ -3,13 +3,17 @@ import User from '@/models/user';
 import { IUser } from '@/models/user';
 import { logger } from '@/lib/winston';
 import { Request, Response } from 'express';
-import { generateAccessToken, generateRefreshToken } from '@/lib/jwt';
-import Token from '@/models/token';
+import OTP from '@/models/otp'; // New import
+import { sendEmail } from '@/lib/email'; // New import
 
 type UserData = Pick<
   IUser,
   'firstname' | 'lastname' | 'email' | 'phone' | 'password' | 'role'
 >;
+
+const generateOTP = (): string => {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // Six-digit OTP
+};
 
 const register = async (req: Request, res: Response): Promise<void> => {
   const { firstname, lastname, email, phone, password, role } =
@@ -39,37 +43,32 @@ const register = async (req: Request, res: Response): Promise<void> => {
       phone,
       password,
       role,
+      isEmailVerified: false, // Explicitly set
     });
 
-    const accessToken = generateAccessToken(newUser._id);
-    const refreshToken = generateRefreshToken(newUser._id);
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-    await Token.create({
+    await OTP.create({
       userId: newUser._id,
-      token: refreshToken,
-    });
-    logger.info('Refresh token stored in database', {
-      userId: newUser._id,
-      token: refreshToken,
+      email: newUser.email,
+      otp,
+      expiresAt,
     });
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: config.NODE_ENV === 'production',
-      sameSite: 'strict',
-    });
+    await sendEmail(
+      newUser.email,
+      'Email Verification OTP',
+      `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`,
+    );
 
     res.status(201).json({
+      message: 'User registered. Please verify your email with the OTP sent.',
       user: {
-        firstname: newUser.firstname,
-        lastname: newUser.lastname,
         email: newUser.email,
-        phone: newUser.phone,
-        role: newUser.role,
       },
-      accessToken,
     });
-    logger.info('New user registered', {
+    logger.info('New user registered, OTP sent', {
       firstname: newUser.firstname,
       lastname: newUser.lastname,
       email: newUser.email,

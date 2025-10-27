@@ -4,10 +4,10 @@ import login from '@/controllers/auth/login';
 import { body, cookie } from 'express-validator';
 import validationError from '@/middlewares/validation-error';
 import User from '@/models/user';
-import bcrypt from 'bcrypt';
 import refreshToken from '@/controllers/auth/refresh-token';
 import logout from '@/controllers/auth/logout';
 import authenticate from '@/middlewares/authenticate';
+import verifyOTP from '@/controllers/auth/verify-otp';
 const router = Router();
 
 router.post(
@@ -41,7 +41,7 @@ router.post(
   body('role')
     .optional()
     .isString()
-    .withMessage('Invalid role:  must be a string.')
+    .withMessage('Invalid role: must be a string.')
     .isIn(['user', 'admin'])
     .withMessage('Invalid role: must be either user or admin.'),
   validationError,
@@ -55,36 +55,32 @@ router.post(
     .notEmpty()
     .withMessage('Email is required.')
     .isEmail()
-    .withMessage('Invalid email address.')
-    .custom(async (value) => {
-      const userExists = await User.exists({ email: value });
-      if (!userExists) {
-        throw new Error('Incorrect email or password.');
-      }
-      return true;
-    }),
+    .withMessage('Invalid email address.'),
   body('password')
     .notEmpty()
     .withMessage('Password is required.')
     .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long.')
-    .custom(async (value, { req }) => {
-      const { email } = req.body as { email: string };
-      const user = await User.findOne({ email })
-        .select('password')
-        .lean()
-        .exec();
-      if (!user) {
-        throw new Error('Email or password is incorrect.');
-      }
-
-      const passwordMatch = await bcrypt.compare(value, user.password);
-      if (!passwordMatch) {
-        throw new Error('Incorrect email or password.');
-      }
-    }),
+    .withMessage('Password must be at least 6 characters long.'),
   validationError,
   login,
+);
+
+router.post(
+  '/verify-otp',
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required.')
+    .isEmail()
+    .withMessage('Invalid email address.'),
+  body('otp')
+    .trim()
+    .notEmpty()
+    .withMessage('OTP is required.')
+    .isLength({ min: 6, max: 6 })
+    .withMessage('OTP must be 6 digits.'),
+  validationError,
+  verifyOTP,
 );
 
 router.post(

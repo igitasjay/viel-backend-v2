@@ -1,24 +1,16 @@
-import config from '@/config';
 import { Request, Response } from 'express';
 import { generateAccessToken, generateRefreshToken } from '@/lib/jwt';
 import User from '@/models/user';
-import { IUser } from '@/models/user';
 import Token from '@/models/token';
 import { logger } from '@/lib/winston';
-import OTP from '@/models/otp';
-import { sendEmail } from '@/lib/email';
+import OTP from '@/models/otp'; // New import
+import config from '@/config';
 
-type UserData = Pick<IUser, 'email' | 'password'>;
-
-const generateOTP = (): string => {
-  return Math.floor(100000 + Math.random() * 900000).toString(); // Six-digit OTP
-};
-
-const login = async (req: Request, res: Response): Promise<void> => {
+const verifyOTP = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body as UserData;
+    const { email, otp } = req.body;
     const user = await User.findOne({ email })
-      .select('firstname lastname email phone password role isEmailVerified')
+      .select('firstname lastname email phone role isEmailVerified')
       .lean()
       .exec();
     if (!user) {
@@ -29,33 +21,28 @@ const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    if (!user.isEmailVerified) {
-      const otp = generateOTP();
-      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const otpRecord = await OTP.findOne({
+      userId: user._id,
+      email,
+      otp,
+      expiresAt: { $gt: new Date() },
+    });
 
-      await OTP.create({
-        userId: user._id,
-        email: user.email,
-        otp,
-        expiresAt,
+    if (!otpRecord) {
+      res.status(400).json({
+        code: 'InvalidOTP',
+        message: 'Invalid or expired OTP',
       });
-
-      await sendEmail(
-        user.email,
-        'Email Verification OTP',
-        `Your OTP for login is: ${otp}. It expires in 10 minutes.`,
-      );
-
-      res.status(200).json({
-        message: 'Please verify your email with the OTP sent.',
-        user: {
-          email: user.email,
-        },
-      });
-      logger.info('OTP sent for login verification', { email: user.email });
       return;
     }
 
+    // Mark email as verified
+    await User.updateOne({ _id: user._id }, { isEmailVerified: true });
+
+    // Delete the used OTP
+    await OTP.deleteOne({ _id: otpRecord._id });
+
+    // Generate tokens
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
@@ -84,14 +71,14 @@ const login = async (req: Request, res: Response): Promise<void> => {
       },
       accessToken,
     });
-    logger.info('User logged in', { email: user.email });
+    logger.info('Email verified and user logged in', { email: user.email });
   } catch (error) {
     res.status(500).json({
       message: 'Internal server error',
       status: 'error',
       timestamp: new Date().toISOString(),
     });
-    logger.error('Error during login', {
+    logger.error('Error verifying OTP', {
       ip: req.ip,
       userAgent: req.get('User-Agent'),
       error,
@@ -99,4 +86,4 @@ const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default login;
+export default verifyOTP;

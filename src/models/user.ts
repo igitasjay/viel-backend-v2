@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import bcryt from 'bcrypt';
+import bcrypt from 'bcrypt';
 
 export interface IUser {
   firstname: string;
@@ -8,6 +8,7 @@ export interface IUser {
   phone: string;
   password: string;
   role: 'user' | 'admin';
+  isEmailVerified: boolean;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -46,6 +47,10 @@ const UserSchema = new Schema<IUser>(
       },
       default: 'user',
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false, // New users start unverified
+    },
   },
   {
     timestamps: true,
@@ -53,13 +58,10 @@ const UserSchema = new Schema<IUser>(
 );
 
 UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    this.password = await bcryt.hash(this.password, 10);
-    next();
-    return;
+  if (this.isModified('password')) {
+    // Fixed logic to only hash if password is modified
+    this.password = await bcrypt.hash(this.password, 10);
   }
-
-  this.password = await bcryt.hash(this.password, 10);
   next();
 });
 
