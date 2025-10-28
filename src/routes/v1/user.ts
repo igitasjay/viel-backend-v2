@@ -1,8 +1,5 @@
 import Router from 'express';
-import { param, body, query } from 'express-validator';
-import validationError from '@/middlewares/validation-error';
 import authenticate from '@/middlewares/authenticate';
-import User from '@/models/user';
 import authorize from '@/middlewares/authorize';
 import getCurrentUser from '@/controllers/user/get-current-user';
 import updateCurrentUser from '@/controllers/user/update-current-user';

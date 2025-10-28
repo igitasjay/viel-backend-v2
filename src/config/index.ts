@@ -18,6 +18,7 @@ const config = {
   EMAIL_USER: process.env.EMAIL_USER!,
   EMAIL_PASS: process.env.EMAIL_PASS!,
   EMAIL_FROM: process.env.EMAIL_FROM!,
+  PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY!,
 };
 
 export default config;
