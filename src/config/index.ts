@@ -19,6 +19,9 @@ const config = {
   EMAIL_PASS: process.env.EMAIL_PASS!,
   EMAIL_FROM: process.env.EMAIL_FROM!,
   PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY!,
+  TWELVE_DATA_API_KEY: process.env.TWELVE_DATA_API_KEY!,
+  ALCHEMY_API_KEY: process.env.ALCHEMY_API_KEY!,
+  TENDERLY_RPC_URL: process.env.TENDERLY_RPC_URL!,
 };
 
 export default config;
