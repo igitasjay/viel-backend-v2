@@ -22,6 +22,7 @@ const config = {
   TWELVE_DATA_API_KEY: process.env.TWELVE_DATA_API_KEY!,
   ALCHEMY_API_KEY: process.env.ALCHEMY_API_KEY!,
   TENDERLY_RPC_URL: process.env.TENDERLY_RPC_URL!,
+  FRONTEND_URL: 'https://myviel.ng',
 };
 
 export default config;
