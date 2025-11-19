@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon",
     "seed:crypto": "ts-node -r tsconfig-paths/register src/seed/crypto-seeds.ts",
-    "seed:transaction": "ts-node src/seed/transaction-seeds.ts"
+    "seed:transaction": "ts-node src/seed/transaction-seeds.ts",
+    "start": "ts-node src/server.ts"
   },
   "keywords": [],
   "author": "",

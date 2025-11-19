@@ -1,156 +1,148 @@
-// src/services/paystack.ts
-import axios from 'axios';
-import config from '@/config';
-import { logger } from '@/lib/winston';
+import https from 'https';
+import {
+  ChargeBankRequest,
+  PaystackResponse,
+  SubmitOtpRequest,
+} from '../types/paystack';
 
-// Paystack API base URL
-const PAYSTACK_API_URL = 'https://api.paystack.co';
+const PAYSTACK_API_URL = 'api.paystack.co';
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
-// Types for Paystack Transfer API
-interface TransferRequest {
-  source: 'balance';
-  amount: number; // Amount in kobo (NGN) or cents (GHS/ZAR)
-  recipient: string; // Recipient code from /transferrecipient
-  reference: string; // Unique transaction reference
-  currency?: 'NGN'; // Optional, defaults to NGN
-}
-
-interface TransferResponse {
-  status: boolean;
-  message: string;
-  data: {
-    id: number;
-    amount: number;
-    currency: string;
-    status: string;
-    reference: string;
-    recipient: string;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
-
-/**
- * Initiates a bank transfer using Paystack Transfers API.
- * @param secretKey Paystack secret key
- * @param transferData Transfer details (source, amount, recipient, reference, currency)
- * @returns Paystack API response
- */
-export async function initiatePaystackTransfer(
-  secretKey: string,
-  transferData: TransferRequest,
-): Promise<TransferResponse> {
-  const response = await axios.post<TransferResponse>(
-    `${PAYSTACK_API_URL}/transfer`,
-    transferData,
-    {
-      headers: {
-        Authorization: `Bearer ${secretKey}`,
-        'Content-Type': 'application/json',
-      },
-    },
-  );
-  return response.data;
-}
-
-// ADD THIS BELOW initiatePaystackTransfer
-
-interface CreateRecipientRequest {
-  type: 'nuban' | 'mobile_money';
-  name: string;
-  account_number: string;
-  bank_code: string;
-  currency: 'NGN' | 'GHS' | 'ZAR';
-}
-
-interface CreateRecipientResponse {
-  status: boolean;
-  data: { recipient_code: string };
-}
-
-export async function createPaystackRecipient(
-  secretKey: string,
-  data: CreateRecipientRequest,
-): Promise<string> {
-  const response = await axios.post<CreateRecipientResponse>(
-    `${PAYSTACK_API_URL}/transferrecipient`,
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${secretKey}`,
-        'Content-Type': 'application/json',
-      },
-    },
-  );
-  return response.data.data.recipient_code;
-}
-
-// src/services/paystack.ts (add after createPaystackRecipient)
-
-interface Bank {
-  id: number;
-  name: string;
-  code: string;
-  country: string;
-  currency: string;
-  type: string;
-  is_deleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface BankListResponse {
-  status: boolean;
-  message: string;
-  data: Bank[];
-}
-
-/**
- * Fetches list of banks from Paystack (NGN: Nigeria, GHS: Ghana, ZAR: South Africa).
- * @param secretKey Paystack secret key
- * @param country Optional: 'nigeria' | 'ghana' | 'south_africa'
- * @returns Array of { code, name }
- */
-export async function getPaystackBanks(
-  secretKey: string,
-  country: 'nigeria' | 'ghana' | 'south_africa' = 'nigeria',
-): Promise<{ code: string; name: string }[]> {
-  const response = await axios.get<BankListResponse>(
-    `${PAYSTACK_API_URL}/bank`,
-    {
-      params: { country },
-      headers: { Authorization: `Bearer ${secretKey}` },
-    },
-  );
-  return response.data.data.map((bank) => ({
-    code: bank.code,
-    name: bank.name,
-  }));
-}
-
-const paystack = axios.create({
-  baseURL: 'https://api.paystack.co',
-  headers: {
-    Authorization: `Bearer ${config.PAYSTACK_SECRET_KEY}`,
-    'Content-Type': 'application/json',
-  },
-});
-
-export const verifyBankAccount = async (
-  accountNumber: string,
-  bankCode: string,
-) => {
-  try {
-    const { data } = await paystack.get('/bank/resolve', {
-      params: { account_number: accountNumber, bank_code: bankCode },
-    });
-    return data; // { status: true, message: "...", data: { account_number, account_name, ... } }
-  } catch (err: any) {
-    logger.error('Paystack verification failed', {
-      accountNumber,
-      bankCode,
-      error: err.response?.data || err.message,
-    });
-    throw err;
+export async function chargeBankAccount(
+  payload: ChargeBankRequest,
+): Promise<PaystackResponse> {
+  if (!PAYSTACK_SECRET_KEY) {
+    throw new Error('PAYSTACK_SECRET_KEY not set in environment');
   }
-};
+
+  // Log input payload
+  console.log('Paystack request payload:', JSON.stringify(payload, null, 2));
+
+  // Stringify payload
+  const requestBody = JSON.stringify(payload);
+  const contentLength = Buffer.byteLength(requestBody);
+
+  // Request options
+  const options = {
+    hostname: PAYSTACK_API_URL,
+    port: 443,
+    path: '/charge',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+      'Content-Type': 'application/json',
+      'Content-Length': contentLength,
+    },
+  };
+
+  // Log request details
+  console.log('Paystack https request:', {
+    body: requestBody,
+    headers: options.headers,
+  });
+
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        try {
+          const response = JSON.parse(data) as PaystackResponse;
+          if (res.statusCode && res.statusCode >= 400) {
+            const error = new Error('Paystack charge failed') as any;
+            error.paystackResponse = response;
+            error.status = res.statusCode;
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        } catch (error) {
+          reject(new Error('Failed to parse Paystack response'));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      console.error('Paystack API error:', error.message);
+      reject(error);
+    });
+
+    req.write(requestBody);
+    req.end();
+  });
+}
+
+export async function submitOtp(
+  payload: SubmitOtpRequest,
+): Promise<PaystackResponse> {
+  if (!PAYSTACK_SECRET_KEY) {
+    throw new Error('PAYSTACK_SECRET_KEY not set in environment');
+  }
+
+  // Log input payload
+  console.log(
+    'Paystack OTP request payload:',
+    JSON.stringify(payload, null, 2),
+  );
+
+  // Stringify payload
+  const requestBody = JSON.stringify(payload);
+  const contentLength = Buffer.byteLength(requestBody);
+
+  // Request options
+  const options = {
+    hostname: PAYSTACK_API_URL,
+    port: 443,
+    path: '/charge/submit_otp',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+      'Content-Type': 'application/json',
+      'Content-Length': contentLength,
+    },
+  };
+
+  // Log request details
+  console.log('Paystack OTP https request:', {
+    body: requestBody,
+    headers: options.headers,
+  });
+
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        try {
+          const response = JSON.parse(data) as PaystackResponse;
+          if (res.statusCode && res.statusCode >= 400) {
+            const error = new Error('Paystack OTP submission failed') as any;
+            error.paystackResponse = response;
+            error.status = res.statusCode;
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        } catch (error) {
+          reject(new Error('Failed to parse Paystack response'));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      console.error('Paystack OTP API error:', error.message);
+      reject(error);
+    });
+
+    req.write(requestBody);
+    req.end();
+  });
+}

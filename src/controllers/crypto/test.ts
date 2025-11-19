@@ -1,4 +1,4 @@
-import { initiatePaystackTransfer } from '@/services/paystack';
+// import { initiatePaystackTransfer } from '@/services/paystack';
 import { logger } from '@/lib/winston';
 import config from '@/config';
 
@@ -15,8 +15,8 @@ async function testPaystackTransfer() {
   };
 
   try {
-    const response = await initiatePaystackTransfer(secretKey, transferData);
-    logger.info('Paystack Transfer Response:', response);
+    // const response = await initiatePaystackTransfer(secretKey, transferData);
+    // logger.info('Paystack Transfer Response:', response);
   } catch (error) {
     logger.error('Error initiating Paystack transfer:', error);
   }

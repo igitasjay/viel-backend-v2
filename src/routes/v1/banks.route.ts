@@ -6,10 +6,10 @@ import authenticate from '@/middlewares/authenticate';
 import getBanks from '@/services/banks.service';
 import addBankAccount from '@/controllers/user/bank.controller';
 import getCurrentUserBank from '@/controllers/user/my-bank.controller';
-import {
-  verifyBankDetails,
-  verifyBankValidation,
-} from '@/controllers/user/verify-bank.controller';
+// import {
+//   verifyBankDetails,
+//   verifyBankValidation,
+// } from '@/controllers/user/verify-bank.controller';
 
 const router = Router();
 
@@ -35,11 +35,11 @@ router.post(
 
 router.get('/my-bank', getCurrentUserBank);
 
-router.post(
-  '/verify',
-  verifyBankValidation,
-  validationError,
-  verifyBankDetails,
-);
+// router.post(
+//   '/verify',
+//   verifyBankValidation,
+//   validationError,
+//   verifyBankDetails,
+// );
 
 export default router;

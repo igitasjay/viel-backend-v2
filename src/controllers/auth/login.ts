@@ -11,7 +11,7 @@ import { sendEmail } from '@/lib/email';
 type UserData = Pick<IUser, 'email' | 'password'>;
 
 const generateOTP = (): string => {
-  return Math.floor(100000 + Math.random() * 900000).toString(); // Six-digit OTP
+  return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
 const login = async (req: Request, res: Response): Promise<void> => {

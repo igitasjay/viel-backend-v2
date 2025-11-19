@@ -9,6 +9,11 @@ export interface IUser {
   password: string;
   role: 'user' | 'admin';
   isEmailVerified: boolean;
+  verifiedUser: boolean;
+  netTradingVolumn?: number;
+  passcode?: string;
+  nin?: string;
+  bvn?: string;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -49,7 +54,24 @@ const UserSchema = new Schema<IUser>(
     },
     isEmailVerified: {
       type: Boolean,
-      default: false, // New users start unverified
+      default: false,
+    },
+    verifiedUser: {
+      type: Boolean,
+      default: false,
+    },
+    netTradingVolumn: {
+      type: Number,
+      default: 0,
+    },
+    passcode: {
+      type: String,
+    },
+    nin: {
+      type: String,
+    },
+    bvn: {
+      type: String,
     },
   },
   {

@@ -3,8 +3,8 @@ import User from '@/models/user';
 import { IUser } from '@/models/user';
 import { logger } from '@/lib/winston';
 import { Request, Response } from 'express';
-import OTP from '@/models/otp'; // New import
-import { sendEmail } from '@/lib/email'; // New import
+import OTP from '@/models/otp';
+import { sendEmail } from '@/lib/email';
 
 type UserData = Pick<
   IUser,
@@ -12,7 +12,7 @@ type UserData = Pick<
 >;
 
 const generateOTP = (): string => {
-  return Math.floor(100000 + Math.random() * 900000).toString(); // Six-digit OTP
+  return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
 const register = async (req: Request, res: Response): Promise<void> => {
@@ -43,7 +43,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
       phone,
       password,
       role,
-      isEmailVerified: false, // Explicitly set
+      isEmailVerified: false,
     });
 
     const otp = generateOTP();
