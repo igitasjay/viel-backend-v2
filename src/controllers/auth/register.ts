@@ -8,7 +8,7 @@ import { sendEmail } from '@/lib/email';
 
 type UserData = Pick<
   IUser,
-  'firstname' | 'lastname' | 'email' | 'phone' | 'password' | 'role'
+  'firstname' | 'lastname' | 'email' | 'password' | 'role'
 >;
 
 const generateOTP = (): string => {
@@ -16,8 +16,7 @@ const generateOTP = (): string => {
 };
 
 const register = async (req: Request, res: Response): Promise<void> => {
-  const { firstname, lastname, email, phone, password, role } =
-    req.body as UserData;
+  const { firstname, lastname, email, password, role } = req.body as UserData;
 
   if (role === 'admin' && !config.WHITELIST_ADMINS_EMAIL.includes(email)) {
     res.status(403).json({
@@ -40,10 +39,14 @@ const register = async (req: Request, res: Response): Promise<void> => {
       firstname,
       lastname,
       email,
-      phone,
       password,
       role,
       isEmailVerified: false,
+      verifiedUser: false,
+      netTradingVolumn: 0,
+      passcode: '',
+      nin: '',
+      bvn: '',
     });
 
     const otp = generateOTP();
@@ -72,7 +75,6 @@ const register = async (req: Request, res: Response): Promise<void> => {
       firstname: newUser.firstname,
       lastname: newUser.lastname,
       email: newUser.email,
-      phone: newUser.phone,
       role: newUser.role,
     });
   } catch (error) {

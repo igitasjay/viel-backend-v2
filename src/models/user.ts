@@ -5,7 +5,7 @@ export interface IUser {
   firstname: string;
   lastname: string;
   email: string;
-  phone: string;
+  referralCode?: string;
   password: string;
   role: 'user' | 'admin';
   isEmailVerified: boolean;
@@ -33,11 +33,11 @@ const UserSchema = new Schema<IUser>(
       required: [true, 'Email is required'],
       unique: [true, 'Email already exists'],
     },
-    phone: {
+    referralCode: {
       type: String,
       required: [true, 'Phone is required'],
       unique: [true, 'Phone already exists'],
-      maxlength: [13, 'Phone number cannot exceed 13 characters'],
+      maxlength: [12, 'Referral code cannot exceed 12 characters'],
     },
     password: {
       type: String,

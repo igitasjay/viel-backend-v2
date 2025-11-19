@@ -79,7 +79,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
-        phone: user.phone,
+        phone: user.referralCode,
         role: user.role,
       },
       accessToken,
