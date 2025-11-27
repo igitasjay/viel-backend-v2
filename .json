@@ -1,0 +1,22 @@
+{
+  "ip": "::ffff:127.0.0.1",
+  "userAgent": "Thunder Client (https://www.thunderclient.com)",
+  "error": {
+    "errors": {
+      "referralCode": {
+        "name": "ValidatorError",
+        "message": "Phone is required",
+        "properties": {
+          "message": "Phone is required",
+          "type": "required",
+          "path": "referralCode"
+        },
+        "kind": "required",
+        "path": "referralCode"
+      }
+    },
+    "_message": "User validation failed",
+    "name": "ValidationError",
+    "message": "User validation failed: referralCode: Phone is required"
+  }
+}
