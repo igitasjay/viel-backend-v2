@@ -1,13 +1,13 @@
 import Router from 'express';
-import register from '@/controllers/auth/register';
-import login from '@/controllers/auth/login';
+import register from '@/controllers/auth/register.controller';
+import login from '@/controllers/auth/login.comtroller';
 import { body, cookie } from 'express-validator';
-import validationError from '@/middlewares/validation-error';
-import User from '@/models/user';
-import refreshToken from '@/controllers/auth/refresh-token';
-import logout from '@/controllers/auth/logout';
-import authenticate from '@/middlewares/authenticate';
-import verifyOTP from '@/controllers/auth/verify-otp';
+import validationError from '@/middlewares/validation-error.middleware';
+import User from '@/models/user.model';
+import refreshToken from '@/controllers/auth/refresh-token.controller';
+import logout from '@/controllers/auth/logout.controller';
+import authenticate from '@/middlewares/authenticate.middleware';
+import verifyOTP from '@/controllers/auth/verify-otp.controller';
 const router = Router();
 
 router.post(
@@ -32,12 +32,6 @@ router.post(
     .withMessage('Password must be at least 6 characters long.'),
   body('firstname').trim().notEmpty().withMessage('First name is required.'),
   body('lastname').trim().notEmpty().withMessage('Last name is required.'),
-  body('phone')
-    .trim()
-    .notEmpty()
-    .withMessage('Phone is required.')
-    .isLength({ max: 13 })
-    .withMessage('Phone number cannot exceed 13 characters.'),
   body('role')
     .optional()
     .isString()

@@ -4,7 +4,9 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "nodemon",
-    "seed:crypto": "ts-node -r tsconfig-paths/register src/seed/crypto-seeds.ts"
+    "seed:crypto": "ts-node -r tsconfig-paths/register src/seed/crypto-seeds.ts",
+    "seed:transaction": "ts-node src/seed/transaction-seeds.ts",
+    "start": "ts-node -r tsconfig-paths/register src/server.ts"
   },
   "keywords": [],
   "author": "",

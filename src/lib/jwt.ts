@@ -1,10 +1,5 @@
-/*
- * @copyright 2024 Your Name
- * @license Apache-2.0
- */
-
 import jwt from 'jsonwebtoken';
-import config from '@/config';
+import config from '@/config/config';
 import { Types } from 'mongoose';
 
 export const generateAccessToken = (userId: Types.ObjectId): string => {

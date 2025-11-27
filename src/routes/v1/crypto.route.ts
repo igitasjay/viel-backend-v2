@@ -9,8 +9,8 @@ import {
   updateCrypto,
   deleteCrypto,
 } from '@/controllers/crypto/admin.crypto.controller';
-import authenticate from '@/middlewares/authenticate';
-import { isAdmin } from '@/middlewares/role-check';
+import authenticate from '@/middlewares/authenticate.middleware';
+import { isAdmin } from '@/middlewares/role-check.middleware';
 import { requestDepositAddress } from '@/controllers/crypto/deposit.controller';
 
 const router = Router();

@@ -1,17 +1,17 @@
-import config from '@/config';
+import config from '@/config/config';
 import { Request, Response } from 'express';
 import { generateAccessToken, generateRefreshToken } from '@/lib/jwt';
-import User from '@/models/user';
-import { IUser } from '@/models/user';
-import Token from '@/models/token';
+import User from '@/models/user.model';
+import { IUser } from '@/models/user.model';
+import Token from '@/models/token.model';
 import { logger } from '@/lib/winston';
-import OTP from '@/models/otp';
+import OTP from '@/models/otp.mode';
 import { sendEmail } from '@/lib/email';
 
 type UserData = Pick<IUser, 'email' | 'password'>;
 
 const generateOTP = (): string => {
-  return Math.floor(100000 + Math.random() * 900000).toString(); // Six-digit OTP
+  return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
 const login = async (req: Request, res: Response): Promise<void> => {
@@ -79,7 +79,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
-        phone: user.phone,
+        phone: user.myReferralCode,
         role: user.role,
       },
       accessToken,

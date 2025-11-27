@@ -1,4 +1,4 @@
-import User from '@/models/user';
+import User from '@/models/user.model';
 import type { Request, Response } from 'express';
 import { logger } from '@/lib/winston';
 import { Types } from 'mongoose';
@@ -21,7 +21,7 @@ const updateCurrentUser = async (
     if (firstname) user.firstname = firstname;
     if (lastname) user.lastname = lastname;
     if (email) user.email = email;
-    if (phone) user.phone = phone;
+    // if (phone) user.phone = phone;
     if (password) user.password = password;
 
     await user.save();

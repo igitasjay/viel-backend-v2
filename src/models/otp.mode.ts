@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import config from '@/config';
+import config from '@/config/config';
 
 export interface IOTP {
   userId: string;

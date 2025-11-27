@@ -1,23 +1,22 @@
-import config from '@/config';
-import User from '@/models/user';
-import { IUser } from '@/models/user';
+import config from '@/config/config';
+import User from '@/models/user.model';
+import { IUser } from '@/models/user.model';
 import { logger } from '@/lib/winston';
 import { Request, Response } from 'express';
-import OTP from '@/models/otp'; // New import
-import { sendEmail } from '@/lib/email'; // New import
+import OTP from '@/models/otp.mode';
+import { sendEmail } from '@/lib/email';
 
 type UserData = Pick<
   IUser,
-  'firstname' | 'lastname' | 'email' | 'phone' | 'password' | 'role'
+  'firstname' | 'lastname' | 'email' | 'password' | 'role'
 >;
 
 const generateOTP = (): string => {
-  return Math.floor(100000 + Math.random() * 900000).toString(); // Six-digit OTP
+  return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
 const register = async (req: Request, res: Response): Promise<void> => {
-  const { firstname, lastname, email, phone, password, role } =
-    req.body as UserData;
+  const { firstname, lastname, email, password, role } = req.body as UserData;
 
   if (role === 'admin' && !config.WHITELIST_ADMINS_EMAIL.includes(email)) {
     res.status(403).json({
@@ -40,10 +39,14 @@ const register = async (req: Request, res: Response): Promise<void> => {
       firstname,
       lastname,
       email,
-      phone,
       password,
       role,
-      isEmailVerified: false, // Explicitly set
+      isEmailVerified: false,
+      verifiedUser: false,
+      netTradingVolumn: 0,
+      passcode: '',
+      nin: '',
+      bvn: '',
     });
 
     const otp = generateOTP();
@@ -72,7 +75,6 @@ const register = async (req: Request, res: Response): Promise<void> => {
       firstname: newUser.firstname,
       lastname: newUser.lastname,
       email: newUser.email,
-      phone: newUser.phone,
       role: newUser.role,
     });
   } catch (error) {

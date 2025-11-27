@@ -1,4 +1,4 @@
-import User from '@/models/user';
+import User from '@/models/user.model';
 import BankAccount from '@/models/bank.model';
 import type { Request, Response } from 'express';
 import { logger } from '@/lib/winston';

@@ -5,10 +5,16 @@ export interface IUser {
   firstname: string;
   lastname: string;
   email: string;
-  phone: string;
   password: string;
   role: 'user' | 'admin';
   isEmailVerified: boolean;
+  verifiedUser: boolean;
+  netTradingVolumn?: number;
+  passcode?: string;
+  nin?: string;
+  bvn?: string;
+  myReferralCode?: string;
+  referredBy?: string;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -28,12 +34,6 @@ const UserSchema = new Schema<IUser>(
       required: [true, 'Email is required'],
       unique: [true, 'Email already exists'],
     },
-    phone: {
-      type: String,
-      required: [true, 'Phone is required'],
-      unique: [true, 'Phone already exists'],
-      maxlength: [13, 'Phone number cannot exceed 13 characters'],
-    },
     password: {
       type: String,
       required: [true, 'Password is required'],
@@ -49,7 +49,33 @@ const UserSchema = new Schema<IUser>(
     },
     isEmailVerified: {
       type: Boolean,
-      default: false, // New users start unverified
+      default: false,
+    },
+    verifiedUser: {
+      type: Boolean,
+      default: false,
+    },
+    netTradingVolumn: {
+      type: Number,
+      default: 0,
+    },
+    passcode: {
+      type: String,
+    },
+    nin: {
+      type: String,
+    },
+    bvn: {
+      type: String,
+    },
+    myReferralCode: {
+      type: String,
+      unique: true,
+      maxlength: [10, 'Referral code cannot exceed 12 characters'],
+    },
+    referredBy: {
+      type: String,
+      required: false,
     },
   },
   {

@@ -1,5 +1,5 @@
 import { logger } from '@/lib/winston';
-import User from '@/models/user';
+import User from '@/models/user.model';
 import type { Request, Response, NextFunction } from 'express';
 
 export type AuthRole = 'admin' | 'user';

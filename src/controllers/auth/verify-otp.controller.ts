@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import { generateAccessToken, generateRefreshToken } from '@/lib/jwt';
-import User from '@/models/user';
-import Token from '@/models/token';
+import User from '@/models/user.model';
+import Token from '@/models/token.model';
 import { logger } from '@/lib/winston';
-import OTP from '@/models/otp'; // New import
-import config from '@/config';
+import OTP from '@/models/otp.mode';
+import config from '@/config/config';
+import crypto from 'crypto';
 
 const verifyOTP = async (req: Request, res: Response) => {
   try {
@@ -36,8 +37,27 @@ const verifyOTP = async (req: Request, res: Response) => {
       return;
     }
 
-    // Mark email as verified
-    await User.updateOne({ _id: user._id }, { isEmailVerified: true });
+    if (!user.myReferralCode) {
+      let referralCode: string;
+      let codeExists: boolean;
+
+      do {
+        referralCode = crypto.randomBytes(5).toString('hex').toUpperCase();
+        codeExists =
+          (await User.exists({ myReferralCode: referralCode })) !== null;
+      } while (codeExists);
+
+      await User.updateOne(
+        { _id: user._id },
+        {
+          isEmailVerified: true,
+          myReferralCode: referralCode,
+        },
+      );
+    } else {
+      // Existing user already has a code – just verify email
+      await User.updateOne({ _id: user._id }, { isEmailVerified: true });
+    }
 
     // Delete the used OTP
     await OTP.deleteOne({ _id: otpRecord._id });
@@ -66,7 +86,7 @@ const verifyOTP = async (req: Request, res: Response) => {
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
-        phone: user.phone,
+        myReferralCode: user.myReferralCode,
         role: user.role,
       },
       accessToken,
