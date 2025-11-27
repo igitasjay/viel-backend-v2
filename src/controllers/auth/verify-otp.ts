@@ -66,7 +66,7 @@ const verifyOTP = async (req: Request, res: Response) => {
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
-        phone: user.phone,
+        // phone: user.phone,
         role: user.role,
       },
       accessToken,

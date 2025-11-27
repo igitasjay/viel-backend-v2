@@ -21,7 +21,7 @@ const updateCurrentUser = async (
     if (firstname) user.firstname = firstname;
     if (lastname) user.lastname = lastname;
     if (email) user.email = email;
-    if (phone) user.phone = phone;
+    // if (phone) user.phone = phone;
     if (password) user.password = password;
 
     await user.save();
