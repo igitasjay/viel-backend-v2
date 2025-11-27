@@ -2,7 +2,7 @@ import { logger } from '@/lib/winston';
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import type { Request, Response, NextFunction } from 'express';
 import type { Types } from 'mongoose';
-import Token from '@/models/token';
+import Token from '@/models/token.model';
 import { verifyAccessToken } from '@/lib/jwt';
 
 const authenticate = async (

@@ -1,11 +1,11 @@
-import config from '@/config';
+import config from '@/config/config';
 import { Request, Response } from 'express';
 import { generateAccessToken, generateRefreshToken } from '@/lib/jwt';
-import User from '@/models/user';
-import { IUser } from '@/models/user';
-import Token from '@/models/token';
+import User from '@/models/user.model';
+import { IUser } from '@/models/user.model';
+import Token from '@/models/token.model';
 import { logger } from '@/lib/winston';
-import OTP from '@/models/otp';
+import OTP from '@/models/otp.mode';
 import { sendEmail } from '@/lib/email';
 
 type UserData = Pick<IUser, 'email' | 'password'>;

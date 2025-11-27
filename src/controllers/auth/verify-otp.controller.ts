@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { generateAccessToken, generateRefreshToken } from '@/lib/jwt';
-import User from '@/models/user';
-import Token from '@/models/token';
+import User from '@/models/user.model';
+import Token from '@/models/token.model';
 import { logger } from '@/lib/winston';
-import OTP from '@/models/otp'; // New import
-import config from '@/config';
+import OTP from '@/models/otp.mode'; // New import
+import config from '@/config/config';
 
 const verifyOTP = async (req: Request, res: Response) => {
   try {

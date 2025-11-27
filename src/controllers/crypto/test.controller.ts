@@ -1,6 +1,6 @@
 // import { initiatePaystackTransfer } from '@/services/paystack';
 import { logger } from '@/lib/winston';
-import config from '@/config';
+import config from '@/config/config';
 
 // Test function to initiate a Paystack transfer
 async function testPaystackTransfer() {

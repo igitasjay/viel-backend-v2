@@ -1,6 +1,6 @@
 // src/lib/twelve-data.ts
 import axios from 'axios';
-import config from '@/config';
+import config from '@/config/config';
 import { logger } from '@/lib/winston';
 
 const API_KEY = config.TWELVE_DATA_API_KEY;

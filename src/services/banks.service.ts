@@ -1,4 +1,4 @@
-import config from '@/config';
+import config from '@/config/config';
 import { Request, Response } from 'express';
 // import { getPaystackBanks } from './paystack';
 

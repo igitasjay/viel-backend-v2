@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import authRouter from '@/routes/v1/auth';
-import userRouter from '@/routes/v1/user';
+import authRouter from '@/routes/v1/auth.route';
+import userRouter from '@/routes/v1/user.route';
 // import payRouter from '@/routes/v1/pay';
 import bankRouter from '@/routes/v1/banks.route';
 import cryptoRouter from '@/routes/v1/crypto.route';
-import chargeRouter from '@/routes/v1/charge';
+import chargeRouter from '@/routes/v1/charge.route';
 import { getBankCodes } from '@/scripts/validateBankCodes';
 const router = Router();
 

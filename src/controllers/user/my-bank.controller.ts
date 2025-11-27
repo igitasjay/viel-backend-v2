@@ -2,7 +2,7 @@
 import type { Request, Response } from 'express';
 import { logger } from '@/lib/winston';
 import BankAccount from '@/models/bank.model';
-import User from '@/models/user';
+import User from '@/models/user.model';
 
 const getCurrentUserBank = async (
   req: Request,

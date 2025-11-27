@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { chargeBankAccount, submitOtp } from '@/services/paystack';
-import { ChargeBankRequest, SubmitOtpRequest } from '@/types/paystack';
+import { chargeBankAccount, submitOtp } from '@/services/paystack.service';
+import { ChargeBankRequest, SubmitOtpRequest } from '@/types/paystack.type';
 
 const router = Router();
 

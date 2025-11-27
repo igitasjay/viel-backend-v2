@@ -1,9 +1,9 @@
-import config from '@/config';
-import User from '@/models/user';
-import { IUser } from '@/models/user';
+import config from '@/config/config';
+import User from '@/models/user.model';
+import { IUser } from '@/models/user.model';
 import { logger } from '@/lib/winston';
 import { Request, Response } from 'express';
-import OTP from '@/models/otp';
+import OTP from '@/models/otp.mode';
 import { sendEmail } from '@/lib/email';
 
 type UserData = Pick<

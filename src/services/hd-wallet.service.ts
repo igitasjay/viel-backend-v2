@@ -1,7 +1,7 @@
 // src/services/hd-wallet.service.ts
 import { ethers } from 'ethers';
 import { logger } from '@/lib/winston';
-import config from '@/config';
+import config from '@/config/config';
 
 /**
  * BIP-44 coin types for the EVM chains we support.

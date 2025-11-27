@@ -3,7 +3,7 @@ import {
   ChargeBankRequest,
   PaystackResponse,
   SubmitOtpRequest,
-} from '../types/paystack';
+} from '../types/paystack.type';
 
 const PAYSTACK_API_URL = 'api.paystack.co';
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;

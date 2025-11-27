@@ -6,12 +6,12 @@ import helmet from 'helmet';
 
 // custom module import
 import limiter from '@/lib/express_rate_limit';
-import config from '@/config';
+import config from '@/config/config';
 import { connectToDatabase, disconnectFromDatabase } from '@/lib/mongoose';
 import { logger } from '@/lib/winston';
 
 // routes
-import v1Routes from '@/routes/v1';
+import v1Routes from '@/routes/v1/routes';
 
 // types
 import type { CorsOptions } from 'cors';

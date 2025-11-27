@@ -1,8 +1,8 @@
 // @/routes/v1/user.ts
 import Router from 'express';
 import { body } from 'express-validator';
-import validationError from '@/middlewares/validation-error';
-import authenticate from '@/middlewares/authenticate';
+import validationError from '@/middlewares/validation-error.middleware';
+import authenticate from '@/middlewares/authenticate.middleware';
 import getBanks from '@/services/banks.service';
 import addBankAccount from '@/controllers/user/bank.controller';
 import getCurrentUserBank from '@/controllers/user/my-bank.controller';

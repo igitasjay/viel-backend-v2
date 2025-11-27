@@ -7,7 +7,7 @@ import { fetchLiveRate } from '@/lib/twelve-data';
 import { logger } from '@/lib/winston';
 import { getNextSequence } from '@/lib/sequence';
 import { initializeTransaction, verifyTransaction } from '@/lib/paystack';
-import config from '@/config';
+import config from '@/config/config';
 
 const buyValidation = [
   body('coin').trim().notEmpty().toUpperCase(),

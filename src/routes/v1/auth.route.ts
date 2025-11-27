@@ -1,13 +1,13 @@
 import Router from 'express';
-import register from '@/controllers/auth/register';
-import login from '@/controllers/auth/login';
+import register from '@/controllers/auth/register.controller';
+import login from '@/controllers/auth/login.comtroller';
 import { body, cookie } from 'express-validator';
-import validationError from '@/middlewares/validation-error';
-import User from '@/models/user';
-import refreshToken from '@/controllers/auth/refresh-token';
-import logout from '@/controllers/auth/logout';
-import authenticate from '@/middlewares/authenticate';
-import verifyOTP from '@/controllers/auth/verify-otp';
+import validationError from '@/middlewares/validation-error.middleware';
+import User from '@/models/user.model';
+import refreshToken from '@/controllers/auth/refresh-token.controller';
+import logout from '@/controllers/auth/logout.controller';
+import authenticate from '@/middlewares/authenticate.middleware';
+import verifyOTP from '@/controllers/auth/verify-otp.controller';
 const router = Router();
 
 router.post(

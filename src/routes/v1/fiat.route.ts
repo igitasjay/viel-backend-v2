@@ -1,6 +1,6 @@
 // src/routes/v1/fiat.routes.ts
 import { Router } from 'express';
-import authenticate from '@/middlewares/authenticate';
+import authenticate from '@/middlewares/authenticate.middleware';
 import {
   initializeBuyCrypto,
   verifyPayment,

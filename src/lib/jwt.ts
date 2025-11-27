@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import config from '@/config';
+import config from '@/config/config';
 import { Types } from 'mongoose';
 
 export const generateAccessToken = (userId: Types.ObjectId): string => {
