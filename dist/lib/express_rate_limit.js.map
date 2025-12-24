@@ -1,0 +1,1 @@
+{"version":3,"file":"express_rate_limit.js","sourceRoot":"","sources":["../../src/lib/express_rate_limit.ts"],"names":[],"mappings":";;AAAA,2DAA+C;AAE/C,MAAM,OAAO,GAAG,IAAA,8BAAS,EAAC;IACxB,QAAQ,EAAE,KAAK;IACf,KAAK,EAAE,EAAE;IACT,eAAe,EAAE,SAAS;IAC1B,aAAa,EAAE,KAAK;IACpB,OAAO,EAAE;QACP,KAAK,EAAE,4CAA4C;KACpD;CACF,CAAC,CAAC;AAEH,kBAAe,OAAO,CAAC"}

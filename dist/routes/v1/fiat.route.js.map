@@ -1,0 +1,1 @@
+{"version":3,"file":"fiat.route.js","sourceRoot":"","sources":["../../../src/routes/v1/fiat.route.ts"],"names":[],"mappings":";;;;;AACA,qCAAiC;AACjC,oGAAiE;AACjE,wEAG4C;AAE5C,MAAM,MAAM,GAAG,IAAA,gBAAM,GAAE,CAAC;AAExB,MAAM,CAAC,IAAI,CAAC,aAAa,EAAE,iCAAY,EAAE,qCAAmB,CAAC,CAAC;AAC9D,MAAM,CAAC,GAAG,CAAC,oBAAoB,EAAE,+BAAa,CAAC,CAAC;AAEhD,kBAAe,MAAM,CAAC"}
