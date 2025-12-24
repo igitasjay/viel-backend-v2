@@ -56,11 +56,20 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             otp,
             expiresAt,
         });
-        yield (0, email_1.sendEmail)(newUser.email, 'Email Verification OTP', `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`);
+        try {
+            yield (0, email_1.sendEmail)(newUser.email, 'Email Verification OTP', `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`);
+        }
+        catch (emailError) {
+            winston_1.logger.warn('Failed to send verification email', {
+                email: newUser.email,
+                error: emailError,
+            });
+        }
         res.status(201).json({
             message: 'User registered. Please verify your email with the OTP sent.',
             user: {
                 email: newUser.email,
+                otp: otp,
             },
         });
         winston_1.logger.info('New user registered, OTP sent', {

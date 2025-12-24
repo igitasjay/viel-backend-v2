@@ -59,16 +59,25 @@ const register = async (req: Request, res: Response): Promise<void> => {
       expiresAt,
     });
 
-    await sendEmail(
-      newUser.email,
-      'Email Verification OTP',
-      `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`,
-    );
+    try {
+      await sendEmail(
+        newUser.email,
+        'Email Verification OTP',
+        `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`,
+      );
+    } catch (emailError) {
+      logger.warn('Failed to send verification email', {
+        email: newUser.email,
+        error: emailError,
+      });
+      // Do not throw — registration succeeds, user must retry OTP or resend later
+    }
 
     res.status(201).json({
       message: 'User registered. Please verify your email with the OTP sent.',
       user: {
         email: newUser.email,
+        otp: otp,
       },
     });
     logger.info('New user registered, OTP sent', {

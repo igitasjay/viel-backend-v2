@@ -67,7 +67,7 @@ const UserSchema = new mongoose_1.Schema({
     myReferralCode: {
         type: String,
         unique: true,
-        maxlength: [10, 'Referral code cannot exceed 12 characters'],
+        default: () => Math.random().toString(36).substring(2, 10).toUpperCase(),
     },
     referredBy: {
         type: String,

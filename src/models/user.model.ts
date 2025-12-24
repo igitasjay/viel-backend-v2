@@ -71,7 +71,7 @@ const UserSchema = new Schema<IUser>(
     myReferralCode: {
       type: String,
       unique: true,
-      maxlength: [10, 'Referral code cannot exceed 12 characters'],
+      default: () => Math.random().toString(36).substring(2, 10).toUpperCase(),
     },
     referredBy: {
       type: String,
