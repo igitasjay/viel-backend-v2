@@ -6,7 +6,8 @@
     "dev": "nodemon",
     "seed:crypto": "ts-node -r tsconfig-paths/register src/seed/crypto-seeds.ts",
     "seed:transaction": "ts-node src/seed/transaction-seeds.ts",
-    "start": "ts-node -r tsconfig-paths/register src/server.ts"
+    "start": "ts-node -r tsconfig-paths/register src/server.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
