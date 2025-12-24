@@ -74,8 +74,9 @@ const register = async (req: Request, res: Response): Promise<void> => {
     }
 
     res.status(201).json({
+      success: true,
       message: 'User registered. Please verify your email with the OTP sent.',
-      user: {
+      title: {
         email: newUser.email,
         otp: otp,
       },

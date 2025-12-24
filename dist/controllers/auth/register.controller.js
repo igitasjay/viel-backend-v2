@@ -66,8 +66,9 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
         res.status(201).json({
+            success: true,
             message: 'User registered. Please verify your email with the OTP sent.',
-            user: {
+            title: {
                 email: newUser.email,
                 otp: otp,
             },
