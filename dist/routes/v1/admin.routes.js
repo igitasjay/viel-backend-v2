@@ -34,8 +34,8 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const upload_1 = require("@/middlewares/upload");
-const adminCtrl = __importStar(require("@/controllers/giftcard/admin.controller"));
+const upload_1 = require("../../middlewares/upload");
+const adminCtrl = __importStar(require("../../controllers/giftcard/admin.controller"));
 const router = (0, express_1.Router)();
 router.post('/create', upload_1.upload.single('image'), adminCtrl.createGiftCard);
 router.post('/countries', adminCtrl.createCountry);

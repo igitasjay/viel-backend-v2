@@ -12,10 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto_model_1 = __importDefault(require("@/models/crypto.model"));
-const mongoose_1 = require("@/lib/mongoose");
+const crypto_model_1 = __importDefault(require("../models/crypto.model"));
+const mongoose_1 = require("../lib/mongoose");
 const mongoose_2 = __importDefault(require("mongoose"));
-const winston_1 = require("@/lib/winston");
+const winston_1 = require("../lib/winston");
 const randomHex = (len) => Array(len)
     .fill(0)
     .map(() => Math.floor(Math.random() * 16).toString(16))

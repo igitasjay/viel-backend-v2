@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "src/server.ts",
   "scripts": {
+    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
+    "start": "node -r tsconfig-paths/register dist/server.js",
     "dev": "nodemon",
     "seed:crypto": "ts-node -r tsconfig-paths/register src/seed/crypto-seeds.ts",
-    "seed:transaction": "ts-node src/seed/transaction-seeds.ts",
-    "start": "ts-node -r tsconfig-paths/register src/server.ts",
-    "build": "tsc"
+    "seed:transaction": "ts-node src/seed/transaction-seeds.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.9.1",
     "@types/nodemailer": "^7.0.3",
+    "tscpaths": "^0.0.9",
     "morgan": "^1.10.1",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",

@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = require("@/lib/mongoose");
-const sequence_1 = require("@/lib/sequence");
-const winston_1 = require("@/lib/winston");
+const mongoose_1 = require("../lib/mongoose");
+const sequence_1 = require("../lib/sequence");
+const winston_1 = require("../lib/winston");
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, mongoose_1.connectToDatabase)();
     yield (0, sequence_1.getNextSequence)('transactionId');

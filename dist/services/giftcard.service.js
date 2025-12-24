@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.purchaseGiftCard = exports.getGiftCardById = exports.getGiftCardsByCountry = exports.updateGiftCard = exports.createGiftCard = void 0;
 const giftcard_model_1 = __importDefault(require("../models/giftcard.model"));
-const giftcard_purchase_model_1 = __importDefault(require("@/models/giftcard-purchase.model"));
-const api_error_util_1 = require("@/utils/api-error.util");
+const giftcard_purchase_model_1 = __importDefault(require("../models/giftcard-purchase.model"));
+const api_error_util_1 = require("../utils/api-error.util");
 const mongoose_1 = __importDefault(require("mongoose"));
 const createGiftCard = (payload) => {
     console.log('payload →', {

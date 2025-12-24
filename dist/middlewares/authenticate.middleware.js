@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const winston_1 = require("@/lib/winston");
+const winston_1 = require("../lib/winston");
 const jsonwebtoken_1 = require("jsonwebtoken");
-const jwt_1 = require("@/lib/jwt");
+const jwt_1 = require("../lib/jwt");
 const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const paystack_service_1 = require("@/services/paystack.service");
+const paystack_service_1 = require("../../services/paystack.service");
 const router = (0, express_1.Router)();
 router.post('/charge', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, amount, bank, birthday, metadata } = req.body;

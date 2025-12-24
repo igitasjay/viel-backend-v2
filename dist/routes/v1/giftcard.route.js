@@ -34,7 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const gc = __importStar(require("@/controllers/giftcard/giftcard.controller"));
+const gc = __importStar(require("../../controllers/giftcard/giftcard.controller"));
 const router = (0, express_1.Router)();
 router.get('/countries', gc.listCountries);
 router.get('/countries/:countryId/giftcards', gc.listGiftCardsByCountry);

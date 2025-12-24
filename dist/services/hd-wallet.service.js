@@ -7,8 +7,8 @@ exports.deriveEVMAddress = deriveEVMAddress;
 exports.getSignerForIndex = getSignerForIndex;
 exports.getProvider = getProvider;
 const ethers_1 = require("ethers");
-const winston_1 = require("@/lib/winston");
-const config_1 = __importDefault(require("@/config/config"));
+const winston_1 = require("../lib/winston");
+const config_1 = __importDefault(require("../config/config"));
 const EVM_COIN_TYPE = 60;
 let masterNode = null;
 function getMasterNode() {

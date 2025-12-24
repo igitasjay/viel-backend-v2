@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = __importDefault(require("@/config/config"));
-const winston_1 = require("@/lib/winston");
-const token_model_1 = __importDefault(require("@/models/token.model"));
+const config_1 = __importDefault(require("../../config/config"));
+const winston_1 = require("../../lib/winston");
+const token_model_1 = __importDefault(require("../../models/token.model"));
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const refreshToken = req.cookies['refreshToken'];

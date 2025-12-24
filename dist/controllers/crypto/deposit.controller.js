@@ -13,11 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requestDepositAddress = void 0;
-const deposit_address_model_1 = __importDefault(require("@/models/deposit-address.model"));
-const crypto_model_1 = __importDefault(require("@/models/crypto.model"));
-const hd_wallet_service_1 = require("@/services/hd-wallet.service");
-const index_service_1 = require("@/services/index.service");
-const twelve_data_1 = require("@/lib/twelve-data");
+const deposit_address_model_1 = __importDefault(require("../../models/deposit-address.model"));
+const crypto_model_1 = __importDefault(require("../../models/crypto.model"));
+const hd_wallet_service_1 = require("../../services/hd-wallet.service");
+const index_service_1 = require("../../services/index.service");
+const twelve_data_1 = require("../../lib/twelve-data");
 const requestDepositAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { coin, network } = req.query;

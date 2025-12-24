@@ -4,12 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const auth_route_1 = __importDefault(require("@/routes/v1/auth.route"));
-const user_route_1 = __importDefault(require("@/routes/v1/user.route"));
-const banks_route_1 = __importDefault(require("@/routes/v1/banks.route"));
-const charge_route_1 = __importDefault(require("@/routes/v1/charge.route"));
-const deposit_route_1 = __importDefault(require("@/crypto/routes/deposit.route"));
-const admin_routes_1 = __importDefault(require("@/routes/v1/admin.routes"));
+const auth_route_1 = __importDefault(require("./auth.route"));
+const user_route_1 = __importDefault(require("./user.route"));
+const banks_route_1 = __importDefault(require("./banks.route"));
+const charge_route_1 = __importDefault(require("./charge.route"));
+const deposit_route_1 = __importDefault(require("../../crypto/routes/deposit.route"));
+const admin_routes_1 = __importDefault(require("./admin.routes"));
 const router = (0, express_1.Router)();
 router.get('/', (req, res) => {
     res.status(200).json({

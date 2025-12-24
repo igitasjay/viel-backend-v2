@@ -34,7 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const p = __importStar(require("@/controllers/giftcard/purchase.controller"));
+const p = __importStar(require("../../controllers/giftcard/purchase.controller"));
 const router = (0, express_1.Router)();
 router.post('/purchase', p.purchaseGiftCard);
 exports.default = router;

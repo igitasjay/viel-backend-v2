@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDepositWallet = exports.getSupportedCoins = void 0;
-const crypto_model_1 = __importDefault(require("@/models/crypto.model"));
-const twelve_data_1 = require("@/lib/twelve-data");
-const winston_1 = require("@/lib/winston");
+const crypto_model_1 = __importDefault(require("../../models/crypto.model"));
+const twelve_data_1 = require("../../lib/twelve-data");
+const winston_1 = require("../../lib/winston");
 const getSupportedCoins = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const assets = yield crypto_model_1.default.find({ status: 1 }).lean();

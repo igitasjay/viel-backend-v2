@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const winston_1 = require("@/lib/winston");
+const winston_1 = require("../../lib/winston");
 function testPaystackTransfer() {
     return __awaiter(this, void 0, void 0, function* () {
         const secretKey = 'sk_test_8eda7e3abe0ca75dc2087b0629608bee7c2d1420';

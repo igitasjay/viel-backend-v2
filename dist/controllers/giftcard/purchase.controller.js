@@ -43,10 +43,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.purchaseGiftCard = void 0;
-const purchaseService = __importStar(require("@/services/giftcard.service"));
-const async_handler_util_1 = require("@/utils/async-handler.util");
-const email_1 = require("@/lib/email");
-const email_temeplate_1 = require("@/lib/email-temeplate");
+const purchaseService = __importStar(require("../../services/giftcard.service"));
+const async_handler_util_1 = require("../../utils/async-handler.util");
+const email_1 = require("../../lib/email");
+const email_temeplate_1 = require("../../lib/email-temeplate");
 exports.purchaseGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const userId = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.id) || req.body.userId || 'anonymous';

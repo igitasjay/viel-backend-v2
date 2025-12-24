@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const user_model_1 = __importDefault(require("@/models/user.model"));
-const bank_model_1 = __importDefault(require("@/models/bank.model"));
-const winston_1 = require("@/lib/winston");
+const user_model_1 = __importDefault(require("../../models/user.model"));
+const bank_model_1 = __importDefault(require("../../models/bank.model"));
+const winston_1 = require("../../lib/winston");
 const mongoose_1 = require("mongoose");
 const addBankAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.userId;

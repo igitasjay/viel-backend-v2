@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteCrypto = exports.updateCrypto = exports.createCrypto = void 0;
-const crypto_model_1 = __importDefault(require("@/models/crypto.model"));
-const winston_1 = require("@/lib/winston");
+const crypto_model_1 = __importDefault(require("../../models/crypto.model"));
+const winston_1 = require("../../lib/winston");
 const express_validator_1 = require("express-validator");
 const adminValidation = [
     (0, express_validator_1.body)('name').trim().notEmpty(),

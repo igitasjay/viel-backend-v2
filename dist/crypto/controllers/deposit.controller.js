@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.allocateAddress = allocateAddress;
 exports.getDeposit = getDeposit;
 exports.listUserDeposits = listUserDeposits;
-const deposit_address_1 = require("@/crypto/models/deposit-address");
-const deposit_1 = require("@/crypto/models/deposit");
+const deposit_address_1 = require("../models/deposit-address");
+const deposit_1 = require("../models/deposit");
 function generateDepositAddressForUser(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         const fake = '0x' + Math.random().toString(16).slice(2).padEnd(40, '0');

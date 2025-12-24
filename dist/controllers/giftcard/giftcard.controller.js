@@ -43,9 +43,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.listGiftCardsByCountry = exports.listCountries = void 0;
-const giftService = __importStar(require("@/services/giftcard.service"));
-const countryService = __importStar(require("@/services/country.service"));
-const async_handler_util_1 = require("@/utils/async-handler.util");
+const giftService = __importStar(require("../../services/giftcard.service"));
+const countryService = __importStar(require("../../services/country.service"));
+const async_handler_util_1 = require("../../utils/async-handler.util");
 exports.listCountries = (0, async_handler_util_1.asyncHandler)((_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const countries = yield countryService.getAllCountries();
     res.json({ success: true, data: countries });

@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const user_crypto_controller_1 = require("@/controllers/crypto/user.crypto.controller");
-const admin_crypto_controller_1 = require("@/controllers/crypto/admin.crypto.controller");
-const authenticate_middleware_1 = __importDefault(require("@/middlewares/authenticate.middleware"));
-const role_check_middleware_1 = require("@/middlewares/role-check.middleware");
-const deposit_controller_1 = require("@/controllers/crypto/deposit.controller");
+const user_crypto_controller_1 = require("../../controllers/crypto/user.crypto.controller");
+const admin_crypto_controller_1 = require("../../controllers/crypto/admin.crypto.controller");
+const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
+const role_check_middleware_1 = require("../../middlewares/role-check.middleware");
+const deposit_controller_1 = require("../../controllers/crypto/deposit.controller");
 const router = (0, express_1.Router)();
 router.use(authenticate_middleware_1.default);
 router.get('/coins', user_crypto_controller_1.getSupportedCoins);

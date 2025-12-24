@@ -14,13 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyPayment = exports.initializeBuyCrypto = void 0;
 const express_validator_1 = require("express-validator");
-const crypto_model_1 = __importDefault(require("@/models/crypto.model"));
-const transaction_model_1 = __importDefault(require("@/models/transaction.model"));
-const twelve_data_1 = require("@/lib/twelve-data");
-const winston_1 = require("@/lib/winston");
-const sequence_1 = require("@/lib/sequence");
-const paystack_1 = require("@/lib/paystack");
-const config_1 = __importDefault(require("@/config/config"));
+const crypto_model_1 = __importDefault(require("../../models/crypto.model"));
+const transaction_model_1 = __importDefault(require("../../models/transaction.model"));
+const twelve_data_1 = require("../../lib/twelve-data");
+const winston_1 = require("../../lib/winston");
+const sequence_1 = require("../../lib/sequence");
+const paystack_1 = require("../../lib/paystack");
+const config_1 = __importDefault(require("../../config/config"));
 const buyValidation = [
     (0, express_validator_1.body)('coin').trim().notEmpty().toUpperCase(),
     (0, express_validator_1.body)('network').trim().notEmpty().toUpperCase(),
