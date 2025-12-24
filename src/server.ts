@@ -3,7 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import helmet from 'helmet';
-
+import morgan from 'morgan';
 // custom module import
 import limiter from '@/lib/express_rate_limit';
 import config from '@/config/config';
@@ -15,8 +15,10 @@ import v1Routes from '@/routes/v1/routes';
 
 // types
 import type { CorsOptions } from 'cors';
+import { startScanner } from './crypto/service/deposit-scanner.service';
 
 const app = express();
+app.use(morgan('dev'));
 
 const corsOptions: CorsOptions = {
   origin(origin, callback) {
@@ -60,6 +62,7 @@ app.use(limiter);
     app.listen(config.PORT, () => {
       logger.info(`Server is running on http://localhost:${config.PORT}`);
     });
+    startScanner('ethereum');
   } catch (error) {
     logger.error('Error starting the server:', error);
     if (config.NODE_ENV == 'production') {

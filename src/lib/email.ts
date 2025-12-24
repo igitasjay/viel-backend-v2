@@ -21,3 +21,16 @@ export const sendEmail = async (
     text,
   });
 };
+
+export const sendPurchaseEmail = async (
+  to: string,
+  subject: string,
+  html: string,
+) => {
+  await transporter.sendMail({
+    from: config.EMAIL_FROM,
+    to,
+    subject,
+    html,
+  });
+};

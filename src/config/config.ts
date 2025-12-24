@@ -23,6 +23,7 @@ const config = {
   ALCHEMY_API_KEY: process.env.ALCHEMY_API_KEY!,
   TENDERLY_RPC_URL: process.env.TENDERLY_RPC_URL!,
   FRONTEND_URL: 'https://myviel.ng',
+  RPC_URL: process.env.RPC_URL,
 };
 
 export default config;
