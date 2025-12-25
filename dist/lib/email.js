@@ -48,12 +48,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendPurchaseEmail = exports.sendEmail = exports.sendVerificationEmail = void 0;
 const nodemailer = __importStar(require("nodemailer"));
 const config_1 = __importDefault(require("../config/config"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: config_1.default.EMAIL_USER,
         pass: config_1.default.EMAIL_PASS,
     },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
 });
 transporter.verify((error, success) => {
     if (error) {
