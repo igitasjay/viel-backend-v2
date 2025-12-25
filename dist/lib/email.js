@@ -16,7 +16,9 @@ exports.sendPurchaseEmail = exports.sendEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const config_1 = __importDefault(require("../config/config"));
 const transporter = nodemailer_1.default.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: config_1.default.EMAIL_USER,
         pass: config_1.default.EMAIL_PASS,

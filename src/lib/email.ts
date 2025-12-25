@@ -2,7 +2,9 @@ import nodemailer from 'nodemailer';
 import config from '@/config/config';
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // Replace with your email service
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: config.EMAIL_USER,
     pass: config.EMAIL_PASS,
