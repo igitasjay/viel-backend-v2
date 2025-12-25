@@ -24,13 +24,27 @@ const transporter = nodemailer_1.default.createTransport({
         pass: config_1.default.EMAIL_PASS,
     },
 });
+transporter.verify((error, success) => {
+    if (error) {
+        console.error('SMTP Connection Error:', error);
+    }
+    else {
+        console.log('Server is ready to take our messages');
+    }
+});
 const sendEmail = (to, subject, text) => __awaiter(void 0, void 0, void 0, function* () {
-    yield transporter.sendMail({
-        from: config_1.default.EMAIL_FROM,
-        to,
-        subject,
-        text,
-    });
+    try {
+        yield transporter.sendMail({
+            from: config_1.default.EMAIL_FROM,
+            to,
+            subject,
+            text,
+        });
+    }
+    catch (error) {
+        console.error('Email send failed:', error);
+        throw new Error('Failed to send email');
+    }
 });
 exports.sendEmail = sendEmail;
 const sendPurchaseEmail = (to, subject, html) => __awaiter(void 0, void 0, void 0, function* () {
