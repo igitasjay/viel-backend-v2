@@ -2,16 +2,11 @@ import * as nodemailer from 'nodemailer';
 import config from '@/config/config';
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465, // Use 465 for SSL - much more stable on Render
+  host: 'gmail',
   auth: {
     user: config.EMAIL_USER,
     pass: config.EMAIL_PASS, // MUST be a 16-character App Password
   },
-  // 2. Add explicit timeouts to prevent Render from killing the process
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
 });
 
 transporter.verify((error, success) => {
