@@ -5,8 +5,8 @@ dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465, // Use 465 for SSL - much more stable on Render
-  secure: true,
+  port: 587,
+  secure: false,
   auth: {
     user: config.EMAIL_USER,
     pass: config.EMAIL_PASS, // MUST be a 16-character App Password
