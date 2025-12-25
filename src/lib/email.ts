@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 import config from '@/config/config';
 
 const transporter = nodemailer.createTransport({
@@ -22,27 +22,27 @@ transporter.verify((error, success) => {
   }
 });
 
-// export const sendVerificationEmail = async (email: String, otp: String) => {
-//   const mailOptions = {
-//     from: `"Viel OTP Test" <${process.env.MY_EMAIL}>`,
-//     to: email,
-//     subject: 'Email Verification OTP',
-//     html: `
-//       <h1>Email Verification</h1>
-//       <p>Your verification code is: <strong>${otp}</strong></p>
-//       <p>This code will expire in 10 minutes.</p>
-//     `,
-//   };
+export const sendVerificationEmail = async (email: string, otp: string) => {
+  try {
+    const mailOptions = {
+      from: `"Viel OTP Test" <${process.env.MY_EMAIL}>`,
+      to: email,
+      subject: 'Email Verification OTP',
+      html: `
+        <h1>Email Verification</h1>
+        <p>Your verification code is: <strong>${otp}</strong></p>
+        <p>This code will expire in 10 minutes.</p>
+      `,
+    };
 
-//   try {
-//     const info = await transporter.sendMail(mailOptions);
-//     console.log('Email sent:', info.response);
-//     return info;
-//   } catch (error) {
-//     console.error('Error sending email:', error.message);
-//     throw error;
-//   }
-// };
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent:', info.response);
+    return;
+  } catch (error: any) {
+    console.error('Error sending email:', error.message);
+    throw error;
+  }
+};
 
 export const sendEmail = async (
   to: string,

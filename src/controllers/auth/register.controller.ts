@@ -4,7 +4,7 @@ import { IUser } from '@/models/user.model';
 import { logger } from '@/lib/winston';
 import { Request, Response } from 'express';
 import OTP from '@/models/otp.mode';
-import { sendEmail } from '@/lib/email';
+import { sendVerificationEmail } from '@/lib/email';
 
 type UserData = Pick<
   IUser,
@@ -60,10 +60,11 @@ const register = async (req: Request, res: Response): Promise<void> => {
     });
 
     try {
-      await sendEmail(
+      await sendVerificationEmail(
         newUser.email,
-        'Email Verification OTP',
-        `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`,
+        otp,
+        // 'Email Verification OTP',
+        // `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`,
       );
     } catch (emailError) {
       logger.warn('Failed to send verification email', {
