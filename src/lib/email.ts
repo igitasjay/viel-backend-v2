@@ -2,7 +2,7 @@ import * as nodemailer from 'nodemailer';
 import config from '@/config/config';
 
 const transporter = nodemailer.createTransport({
-  host: 'gmail',
+  host: 'smtp.gmail.com',
   auth: {
     user: config.EMAIL_USER,
     pass: config.EMAIL_PASS, // MUST be a 16-character App Password
