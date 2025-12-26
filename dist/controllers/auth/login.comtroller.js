@@ -18,7 +18,6 @@ const user_model_1 = __importDefault(require("../../models/user.model"));
 const token_model_1 = __importDefault(require("../../models/token.model"));
 const winston_1 = require("../../lib/winston");
 const otp_mode_1 = __importDefault(require("../../models/otp.mode"));
-const email_1 = require("../../lib/email");
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
@@ -45,7 +44,6 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 otp,
                 expiresAt,
             });
-            yield (0, email_1.sendEmail)(user.email, 'Email Verification OTP', `Your OTP for login is: ${otp}. It expires in 10 minutes.`);
             res.status(200).json({
                 message: 'Please verify your email with the OTP sent.',
                 user: {

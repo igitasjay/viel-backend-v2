@@ -57,7 +57,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             expiresAt,
         });
         try {
-            yield (0, email_1.sendVerificationEmail)(newUser.email, otp);
+            yield (0, email_1.sendVerificationEmail)(newUser.email, newUser.firstname, otp);
         }
         catch (emailError) {
             winston_1.logger.warn('Failed to send verification email', {

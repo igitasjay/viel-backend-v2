@@ -45,7 +45,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.purchaseGiftCard = void 0;
 const purchaseService = __importStar(require("../../services/giftcard.service"));
 const async_handler_util_1 = require("../../utils/async-handler.util");
-const email_1 = require("../../lib/email");
 const email_temeplate_1 = require("../../lib/email-temeplate");
 exports.purchaseGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -53,7 +52,6 @@ exports.purchaseGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => 
     const { giftCardId, amount, quantity, email } = req.body;
     const purchase = yield purchaseService.purchaseGiftCard(userId, giftCardId, amount, quantity, email);
     const html = (0, email_temeplate_1.purchaseEmailHtml)(purchase);
-    (0, email_1.sendPurchaseEmail)(email, `Your Gift Card Purchase - ${purchase._id}`, html).catch(console.error);
     res.status(201).json({ success: true, data: purchase });
 }));
 //# sourceMappingURL=purchase.controller.js.map

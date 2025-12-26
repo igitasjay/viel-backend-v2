@@ -25,6 +25,7 @@ const config = {
     TENDERLY_RPC_URL: process.env.TENDERLY_RPC_URL,
     FRONTEND_URL: 'https://myviel.ng',
     RPC_URL: process.env.RPC_URL,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
 };
 exports.default = config;
 //# sourceMappingURL=config.js.map

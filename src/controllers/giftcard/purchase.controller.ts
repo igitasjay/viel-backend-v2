@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as purchaseService from '@/services/giftcard.service'; // purchase function lives here
 import { asyncHandler } from '@/utils/async-handler.util';
-import { sendPurchaseEmail } from '@/lib/email';
+// import { sendPurchaseEmail } from '@/lib/email';
 import { purchaseEmailHtml } from '@/lib/email-temeplate';
 
 export const purchaseGiftCard = asyncHandler(
@@ -19,11 +19,11 @@ export const purchaseGiftCard = asyncHandler(
 
     // send email (fire-and-forget)
     const html = purchaseEmailHtml(purchase);
-    sendPurchaseEmail(
-      email,
-      `Your Gift Card Purchase - ${purchase._id}`,
-      html,
-    ).catch(console.error);
+    // sendPurchaseEmail(
+    //   email,
+    //   `Your Gift Card Purchase - ${purchase._id}`,
+    //   html,
+    // ).catch(console.error);
 
     res.status(201).json({ success: true, data: purchase });
   },

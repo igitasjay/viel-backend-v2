@@ -62,6 +62,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
     try {
       await sendVerificationEmail(
         newUser.email,
+        newUser.firstname,
         otp,
         // 'Email Verification OTP',
         // `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`,
