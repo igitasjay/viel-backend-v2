@@ -24,9 +24,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
       .lean()
       .exec();
     if (!user) {
-      res.status(404).json({
-        code: 'NotFound',
-        message: 'User not found',
+      res.status(401).json({
+        code: 'INVLIDCREDENTIALS',
+        message: 'Invalid credentials',
       });
       return;
     }
