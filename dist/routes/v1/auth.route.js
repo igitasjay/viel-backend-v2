@@ -22,6 +22,7 @@ const refresh_token_controller_1 = __importDefault(require("../../controllers/au
 const logout_controller_1 = __importDefault(require("../../controllers/auth/logout.controller"));
 const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
 const verify_otp_controller_1 = __importDefault(require("../../controllers/auth/verify-otp.controller"));
+const resend_otp_controller_1 = __importDefault(require("../../controllers/auth/resend-otp.controller"));
 const router = (0, express_1.default)();
 router.post('/register', (0, express_validator_1.body)('email')
     .trim()
@@ -55,6 +56,12 @@ router.post('/login', (0, express_validator_1.body)('email')
     .withMessage('Password is required.')
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long.'), validation_error_middleware_1.default, login_comtroller_1.default);
+router.post('/resend-otp', (0, express_validator_1.body)('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required.')
+    .isEmail()
+    .withMessage('Invalid email address.'), validation_error_middleware_1.default, resend_otp_controller_1.default);
 router.post('/verify-otp', (0, express_validator_1.body)('email')
     .trim()
     .notEmpty()

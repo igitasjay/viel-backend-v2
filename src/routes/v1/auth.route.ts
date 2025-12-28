@@ -8,6 +8,7 @@ import refreshToken from '@/controllers/auth/refresh-token.controller';
 import logout from '@/controllers/auth/logout.controller';
 import authenticate from '@/middlewares/authenticate.middleware';
 import verifyOTP from '@/controllers/auth/verify-otp.controller';
+import resendOTP from '@/controllers/auth/resend-otp.controller';
 const router = Router();
 
 router.post(
@@ -57,6 +58,18 @@ router.post(
     .withMessage('Password must be at least 6 characters long.'),
   validationError,
   login,
+);
+
+router.post(
+  '/resend-otp',
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required.')
+    .isEmail()
+    .withMessage('Invalid email address.'),
+  validationError,
+  resendOTP,
 );
 
 router.post(

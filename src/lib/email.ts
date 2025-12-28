@@ -56,6 +56,7 @@ export const sendVerificationEmail = async (
       subject: `Hello ${firstname},`,
       html:
         '<p>Your OTP for email verification is: <strong>' +
+        'V-' +
         otp +
         '</strong>. It expires in 10 minutes.</p>',
     });

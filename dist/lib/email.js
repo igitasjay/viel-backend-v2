@@ -26,6 +26,7 @@ const sendVerificationEmail = (email, firstname, otp) => __awaiter(void 0, void 
             to: email,
             subject: `Hello ${firstname},`,
             html: '<p>Your OTP for email verification is: <strong>' +
+                'V-' +
                 otp +
                 '</strong>. It expires in 10 minutes.</p>',
         });

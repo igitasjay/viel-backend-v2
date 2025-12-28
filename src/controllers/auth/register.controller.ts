@@ -50,7 +50,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
     });
 
     const otp = generateOTP();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
     await OTP.create({
       userId: newUser._id,
@@ -60,13 +60,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
     });
 
     try {
-      await sendVerificationEmail(
-        newUser.email,
-        newUser.firstname,
-        otp,
-        // 'Email Verification OTP',
-        // `Your OTP for email verification is: ${otp}. It expires in 10 minutes.`,
-      );
+      await sendVerificationEmail(newUser.email, newUser.firstname, otp);
     } catch (emailError) {
       logger.warn('Failed to send verification email', {
         email: newUser.email,
