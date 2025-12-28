@@ -18,12 +18,14 @@ const user_model_1 = __importDefault(require("../../models/user.model"));
 const token_model_1 = __importDefault(require("../../models/token.model"));
 const winston_1 = require("../../lib/winston");
 const otp_mode_1 = __importDefault(require("../../models/otp.mode"));
+const email_1 = require("../../lib/email");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { email } = req.body;
+        const { email, password } = req.body;
         const user = yield user_model_1.default.findOne({ email })
             .select('firstname lastname email phone password role isEmailVerified')
             .lean()
@@ -35,6 +37,15 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
             return;
         }
+        const isMatch = yield bcrypt_1.default.compare(password, user.password);
+        if (!isMatch) {
+            res.status(401).json({
+                success: false,
+                message: 'Invalid credentials',
+            });
+            winston_1.logger.warn('Failed login attempt: Incorrect password', { email });
+            return;
+        }
         if (!user.isEmailVerified) {
             const otp = generateOTP();
             const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
@@ -44,7 +55,17 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 otp,
                 expiresAt,
             });
-            res.status(200).json({
+            try {
+                yield (0, email_1.sendVerificationEmail)(user.email, user.firstname, otp);
+            }
+            catch (emailError) {
+                winston_1.logger.warn('Failed to send verification email', {
+                    email: user.email,
+                    error: emailError,
+                });
+            }
+            res.status(401).json({
+                success: false,
                 message: 'Please verify your email with the OTP sent.',
                 user: {
                     email: user.email,

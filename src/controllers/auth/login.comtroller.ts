@@ -6,6 +6,8 @@ import { IUser } from '@/models/user.model';
 import Token from '@/models/token.model';
 import { logger } from '@/lib/winston';
 import OTP from '@/models/otp.mode';
+import { sendVerificationEmail } from '@/lib/email';
+import bcrypt from 'bcrypt';
 // import { sendEmail } from '@/lib/email';
 
 type UserData = Pick<IUser, 'email' | 'password'>;
@@ -16,7 +18,7 @@ const generateOTP = (): string => {
 
 const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email } = req.body as UserData;
+    const { email, password } = req.body as UserData;
     const user = await User.findOne({ email })
       .select('firstname lastname email phone password role isEmailVerified')
       .lean()
@@ -26,6 +28,17 @@ const login = async (req: Request, res: Response): Promise<void> => {
         code: 'NotFound',
         message: 'User not found',
       });
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      res.status(401).json({
+        success: false,
+        message: 'Invalid credentials',
+      });
+      logger.warn('Failed login attempt: Incorrect password', { email });
       return;
     }
 
@@ -40,13 +53,17 @@ const login = async (req: Request, res: Response): Promise<void> => {
         expiresAt,
       });
 
-      // await sendEmail(
-      //   user.email,
-      //   'Email Verification OTP',
-      //   `Your OTP for login is: ${otp}. It expires in 10 minutes.`,
-      // );
+      try {
+        await sendVerificationEmail(user.email, user.firstname, otp);
+      } catch (emailError) {
+        logger.warn('Failed to send verification email', {
+          email: user.email,
+          error: emailError,
+        });
+      }
 
-      res.status(200).json({
+      res.status(401).json({
+        success: false,
         message: 'Please verify your email with the OTP sent.',
         user: {
           email: user.email,
