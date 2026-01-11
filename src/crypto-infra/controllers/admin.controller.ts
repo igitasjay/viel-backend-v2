@@ -28,8 +28,15 @@ export const addCurrency = async (req: Request, res: Response) => {
     } = req.body;
 
     // Check if file exists (Multer)
-    if (!req.file) {
+    const file = (req as any).file;
+    if (!file) {
       return res.status(400).json({ error: 'Coin image is required' });
+    }
+
+    // Check for existing currency with same symbol and network
+    const existingCurrency = await Currency.findOne({ symbol, network });
+    if (existingCurrency) {
+      return res.status(409).json({ error: `Currency ${symbol} on ${network} already exists` });
     }
 
     const newCurrency = await Currency.create({
@@ -37,7 +44,7 @@ export const addCurrency = async (req: Request, res: Response) => {
       name,
       network,
       contractAddress,
-      imageUrl: `/uploads/${req.file.filename}`, // Valid URL path
+      imageUrl: file.path, // Use Cloudinary URL
       buySpread: Number(buySpread || 0),
       sellSpread: Number(sellSpread || 0),
       
