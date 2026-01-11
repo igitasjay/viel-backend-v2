@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import { Ledger } from '../models/Ledger';
+import { Wallet } from '../models/Wallet';
 import { WalletService } from '../services/wallet.service';
 import { LedgerService } from '../services/ledger.service';
 import { LedgerType } from '../models/Ledger';
@@ -23,6 +24,23 @@ export const getBalances = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+/**
+ * GET /wallets/addresses
+ * Get all generated addresses for the user
+ */
+export const getUserWallets = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const wallets = await Wallet.find({ userId }).select('currency network address');
+    return res.json({ success: true, data: wallets });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
+
 
 /**
  * POST /wallets/generate
