@@ -1,24 +1,14 @@
-import multer from "multer";
-import path from "path";
-import fs from "fs";
+import multer from 'multer';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import cloudinary from '@/config/cloudinary.config';
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = "uploads/";
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    // Save as: usdt-erc20-123456789.png
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
-    );
-  },
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => ({
+    folder: 'crypto-icons',
+    allowedFormats: ['jpg', 'jpeg', 'png'],
+    public_id: `${Date.now()}_${file.originalname}`,
+  }),
 });
 
 export const upload = multer({ storage: storage });
