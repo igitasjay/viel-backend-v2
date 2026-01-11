@@ -23,7 +23,6 @@ const config_1 = __importDefault(require("./config/config"));
 const mongoose_1 = require("./lib/mongoose");
 const winston_1 = require("./lib/winston");
 const routes_1 = __importDefault(require("./routes/v1/routes"));
-const deposit_scanner_service_1 = require("./crypto/service/deposit-scanner.service");
 const app = (0, express_1.default)();
 app.use((0, morgan_1.default)('dev'));
 const corsOptions = {
@@ -50,12 +49,12 @@ app.use((0, helmet_1.default)());
 app.use(express_rate_limit_1.default);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, mongoose_1.connectToDatabase)();
+    app.use('/uploads', express_1.default.static('uploads'));
     app.use('/api/v1', routes_1.default);
     try {
         app.listen(config_1.default.PORT, () => {
             winston_1.logger.info(`Server is running on http://localhost:${config_1.default.PORT}`);
         });
-        (0, deposit_scanner_service_1.startScanner)('ethereum');
     }
     catch (error) {
         winston_1.logger.error('Error starting the server:', error);

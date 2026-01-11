@@ -15,7 +15,7 @@ import v1Routes from '@/routes/v1/routes';
 
 // types
 import type { CorsOptions } from 'cors';
-import { startScanner } from './crypto/service/deposit-scanner.service';
+// import { startScanner } from './crypto/service/deposit-scanner.service';
 
 const app = express();
 app.use(morgan('dev'));
@@ -63,7 +63,7 @@ app.use(limiter);
     app.listen(config.PORT, () => {
       logger.info(`Server is running on http://localhost:${config.PORT}`);
     });
-    startScanner('ethereum');
+    // startScanner('ethereum');
   } catch (error) {
     logger.error('Error starting the server:', error);
     if (config.NODE_ENV == 'production') {

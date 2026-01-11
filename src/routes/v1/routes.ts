@@ -5,7 +5,7 @@ import userRouter from '@/routes/v1/user.route';
 import bankRouter from '@/routes/v1/banks.route';
 // import cryptoRouter from '@/routes/v1/crypto.route';
 import chargeRouter from '@/routes/v1/charge.route';
-import cryptoRoute from '@/crypto/routes/deposit.route';
+// import cryptoRoute from '@/crypto/routes/deposit.route';
 import adminGiftCardRoute from '@/routes/v1/admin.routes';
 import authorisationRoute from '@/routes/v1/authorisation.route';
 import initializeRedisClient from '@/config/redis.config';
@@ -42,7 +42,7 @@ router.use('/banks', bankRouter);
 // router.use('/crypto', cryptoRouter);
 router.use('/charge', chargeRouter);
 // router.get('/bankcodes', getBankCodes);
-router.use('/crypto', cryptoRoute);
+// router.use('/crypto', cryptoRoute);
 router.use('/admin/giftcard', adminGiftCardRoute);
 router.use('/authorisation', authorisationRoute);
 
