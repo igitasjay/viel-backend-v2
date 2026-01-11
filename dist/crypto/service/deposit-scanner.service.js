@@ -40,12 +40,12 @@ function processBlock(chain, blockNumber) {
         if (!block)
             return;
         const addresses = yield deposit_address_1.DepositAddress.find({ chain }).lean();
-        const addrSet = new Set(addresses.map((a) => a.address.toLowerCase()));
+        const addrSet = new Set(addresses.map((a) => a.address));
         for (const txHash of block.transactions) {
             const tx = yield provider.getTransaction(txHash);
             if (!tx || !tx.to)
                 continue;
-            const toLower = tx.to.toLowerCase();
+            const toLower = tx.to;
             if (!addrSet.has(toLower))
                 continue;
             try {

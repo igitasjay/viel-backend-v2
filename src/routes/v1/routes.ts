@@ -7,9 +7,18 @@ import bankRouter from '@/routes/v1/banks.route';
 import chargeRouter from '@/routes/v1/charge.route';
 import cryptoRoute from '@/crypto/routes/deposit.route';
 import adminGiftCardRoute from '@/routes/v1/admin.routes';
+import authorisationRoute from '@/routes/v1/authorisation.route';
+import initializeRedisClient from '@/config/redis.config';
+
+import walletRoutes from '../../crypto-infra/routes/wallet.routes';
+import tradeRoutes from '../../crypto-infra/routes/trade.routes';
+import webhookRoutes from '../../crypto-infra/routes/webhook.routes';
+import adminRoutes from '../../crypto-infra/routes/admin.routes';
+import authenticate from '@/middlewares/authenticate.middleware';
+
 const router = Router();
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   res.status(200).json({
     message: 'API is live!!',
     status: 'ok',
@@ -17,6 +26,12 @@ router.get('/', (req, res) => {
     docs: '/docs',
     timestamp: new Date().toISOString(),
   });
+});
+
+router.post('/red', async (req, res) => {
+  const data = req.body;
+  const client = await initializeRedisClient();
+  res.send('redis thing');
 });
 
 router.use('/auth', authRouter);
@@ -28,5 +43,15 @@ router.use('/charge', chargeRouter);
 // router.get('/bankcodes', getBankCodes);
 router.use('/crypto', cryptoRoute);
 router.use('/admin/giftcard', adminGiftCardRoute);
+router.use('/authorisation', authorisationRoute);
+
+// CRYPTO INFRA
+
+router.use(authenticate);
+
+router.use('/infra/admin', adminRoutes);
+router.use('/infra/wallets', walletRoutes); // Add userAuth middleware here
+router.use('/infra/trade', tradeRoutes); // Add userAuth middleware here
+router.use('/infra/webhooks', webhookRoutes);
 
 export default router;

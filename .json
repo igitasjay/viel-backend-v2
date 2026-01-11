@@ -1,22 +1,322 @@
 {
-  "ip": "::ffff:127.0.0.1",
-  "userAgent": "Thunder Client (https://www.thunderclient.com)",
-  "error": {
-    "errors": {
-      "referralCode": {
-        "name": "ValidatorError",
-        "message": "Phone is required",
-        "properties": {
-          "message": "Phone is required",
-          "type": "required",
-          "path": "referralCode"
+    "all": [
+        {
+            "id": 12,
+            "name": "Bitcoin",
+            "code": "BTC",
+            "icon": "https://res.cloudinary.com/dhxukz6em/image/upload/v1737075761/crypto_icons/qfuhnqnttq4fhtrv54nj.png",
+            "networks": [
+                {
+                    "id": 28,
+                    "addressRegex": "^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^[(bc1q)|(bc1p)][0-9A-Za-z]{37,62}$",
+                    "memoRegex": null,
+                    "name": "Bitcoin",
+                    "code": "BTC",
+                    "fee": "0.0003000000",
+                    "feeType": "FLAT",
+                    "minimum": "0.0005000000",
+                    "contractAddress": null,
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:10.000000Z",
+                    "updated_at": "2025-01-17T07:04:10.000000Z"
+                },
+                {
+                    "id": 29,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "BSC (BEP20)",
+                    "code": "BSC",
+                    "fee": "0.0001000000",
+                    "feeType": "FLAT",
+                    "minimum": "0.0003000000",
+                    "contractAddress": "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:10.000000Z",
+                    "updated_at": "2025-01-17T07:04:10.000000Z"
+                }
+            ],
+            "status": 1,
+            "created_at": "2025-01-17T07:02:18.000000Z",
+            "updated_at": "2025-01-17T07:02:18.000000Z",
+            "is_stable": 0,
+            "color": "FF8C00",
+            "minimumDeposit": "0.0001000000",
+            "maximumDecimalPlaces": 8,
+            "naira_rate": "1455",
+            "usd_rate": "92822.0000000000"
         },
-        "kind": "required",
-        "path": "referralCode"
-      }
-    },
-    "_message": "User validation failed",
-    "name": "ValidationError",
-    "message": "User validation failed: referralCode: Phone is required"
-  }
+        {
+            "id": 3,
+            "name": "Ethereum",
+            "code": "ETH",
+            "icon": "https://res.cloudinary.com/dhxukz6em/image/upload/v1737075761/crypto_icons/wsomjikdvl7yyv80q6gs.png",
+            "networks": [
+                {
+                    "id": 5,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "BSC (BEP20)",
+                    "code": "BSC",
+                    "fee": "0.0002500000",
+                    "feeType": "FLAT",
+                    "minimum": "0.0001300000",
+                    "contractAddress": "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:05.000000Z",
+                    "updated_at": "2025-01-17T07:04:05.000000Z"
+                },
+                {
+                    "id": 6,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "Arbitrum One",
+                    "code": "ARBITRUM",
+                    "fee": "0.0004000000",
+                    "feeType": "FLAT",
+                    "minimum": "0.0010000000",
+                    "contractAddress": null,
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:05.000000Z",
+                    "updated_at": "2025-01-17T07:04:05.000000Z"
+                }
+            ],
+            "status": 1,
+            "created_at": "2025-01-17T07:02:18.000000Z",
+            "updated_at": "2025-01-17T07:02:18.000000Z",
+            "is_stable": 0,
+            "color": "4E73FF",
+            "minimumDeposit": "0.0140000000",
+            "maximumDecimalPlaces": 8,
+            "naira_rate": "1455",
+            "usd_rate": "2450.1800000000"
+        },
+        {
+            "id": 5,
+            "name": "Tether",
+            "code": "USDT",
+            "icon": "https://res.cloudinary.com/dhxukz6em/image/upload/v1737075762/crypto_icons/sbolsks8zsetet7abpnl.png",
+            "networks": [
+                {
+                    "id": 9,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "Ethereum (ERC20)",
+                    "code": "ETH",
+                    "fee": "10.0000000000",
+                    "feeType": "FLAT",
+                    "minimum": "20.0000000000",
+                    "contractAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:06.000000Z",
+                    "updated_at": "2025-01-17T07:04:06.000000Z"
+                },
+                {
+                    "id": 10,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "BSC (BEP20)",
+                    "code": "BSC",
+                    "fee": "0.5000000000",
+                    "feeType": "FLAT",
+                    "minimum": "10.5000000000",
+                    "contractAddress": "0x55d398326f99059ff775485246999027b3197955",
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:06.000000Z",
+                    "updated_at": "2025-01-17T07:04:06.000000Z"
+                }
+            ],
+            "status": 1,
+            "created_at": "2025-01-17T07:02:18.000000Z",
+            "updated_at": "2025-01-17T07:02:18.000000Z",
+            "is_stable": 1,
+            "color": "22BB8F",
+            "minimumDeposit": "1.0000000000",
+            "maximumDecimalPlaces": 4,
+            "naira_rate": "1460",
+            "usd_rate": "0.9996890000"
+        },
+        {
+            "id": 10,
+            "name": "USD Coin",
+            "code": "USDC",
+            "icon": "https://res.cloudinary.com/dhxukz6em/image/upload/v1737075762/crypto_icons/ncfhhwuddbvj2y5zcg8c.png",
+            "networks": [
+                {
+                    "id": 21,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "Ethereum (ERC20)",
+                    "code": "ETH",
+                    "fee": "10.0000000000",
+                    "feeType": "FLAT",
+                    "minimum": "20.0000000000",
+                    "contractAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:09.000000Z",
+                    "updated_at": "2025-01-17T07:04:09.000000Z"
+                },
+                {
+                    "id": 22,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "BSC (BEP20)",
+                    "code": "BSC",
+                    "fee": "0.5000000000",
+                    "feeType": "FLAT",
+                    "minimum": "10.0000000000",
+                    "contractAddress": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:09.000000Z",
+                    "updated_at": "2025-01-17T07:04:09.000000Z"
+                }
+            ],
+            "status": 1,
+            "created_at": "2025-01-17T07:02:18.000000Z",
+            "updated_at": "2025-01-17T07:02:18.000000Z",
+            "is_stable": 1,
+            "color": "318FF6",
+            "minimumDeposit": "1.0000000000",
+            "maximumDecimalPlaces": 4,
+            "naira_rate": "1460",
+            "usd_rate": "0.9998810000"
+        },
+        {
+            "id": 2,
+            "name": "Binance Coin",
+            "code": "BNB",
+            "icon": "https://res.cloudinary.com/dhxukz6em/image/upload/v1737075761/crypto_icons/mhtcjaqmbmjit6v2viob.png",
+            "networks": [
+                {
+                    "id": 3,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "BSC (BEP20)",
+                    "code": "BSC",
+                    "fee": "0.0010000000",
+                    "feeType": "FLAT",
+                    "minimum": "0.0100000000",
+                    "contractAddress": null,
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:04.000000Z",
+                    "updated_at": "2025-01-17T07:04:04.000000Z"
+                }
+            ],
+            "status": 1,
+            "created_at": "2025-01-17T07:02:18.000000Z",
+            "updated_at": "2025-01-17T07:02:18.000000Z",
+            "is_stable": 0,
+            "color": "FFB500",
+            "minimumDeposit": "0.0100000000",
+            "maximumDecimalPlaces": 8,
+            "naira_rate": "1420",
+            "usd_rate": "612.2200000000"
+        },
+        {
+            "id": 8,
+            "name": "Tron",
+            "code": "TRX",
+            "icon": "https://res.cloudinary.com/dhxukz6em/image/upload/v1737075762/crypto_icons/zajyj1wbc3i6flvpwnhh.png",
+            "networks": [
+                {
+                    "id": 18,
+                    "addressRegex": "^T[1-9A-HJ-NP-Za-km-z]{33}$",
+                    "memoRegex": null,
+                    "name": "Tron (TRC20)",
+                    "code": "TRX",
+                    "fee": "5.0000000000",
+                    "feeType": "FLAT",
+                    "minimum": "105.0000000000",
+                    "contractAddress": null,
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:08.000000Z",
+                    "updated_at": "2025-01-17T07:04:08.000000Z"
+                }
+            ],
+            "status": 1,
+            "created_at": "2025-01-17T07:02:18.000000Z",
+            "updated_at": "2025-01-17T07:02:18.000000Z",
+            "is_stable": 0,
+            "color": "FF002C",
+            "minimumDeposit": "5.0000000000",
+            "maximumDecimalPlaces": 6,
+            "naira_rate": "1420",
+            "usd_rate": "0.2422950000"
+        },
+        {
+            "id": 1,
+            "name": "Shiba Inu",
+            "code": "SHIB",
+            "icon": "https://res.cloudinary.com/dhxukz6em/image/upload/v1737075762/crypto_icons/h34vbdgqr28ifimwwnze.png",
+            "networks": [
+                {
+                    "id": 1,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "Ethereum (ERC20)",
+                    "code": "ETH",
+                    "fee": "420000.0000000000",
+                    "feeType": "FLAT",
+                    "minimum": "636554.0000000000",
+                    "contractAddress": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:04.000000Z",
+                    "updated_at": "2025-01-17T07:04:04.000000Z"
+                },
+                {
+                    "id": 2,
+                    "addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+                    "memoRegex": null,
+                    "name": "BSC (BEP20)",
+                    "code": "BSC",
+                    "fee": "48610.0000000000",
+                    "feeType": "FLAT",
+                    "minimum": "23000.0000000000",
+                    "contractAddress": "0x2859e4544c4bb03966803b044a93563bd2d0dd4d",
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:04.000000Z",
+                    "updated_at": "2025-01-17T07:04:04.000000Z"
+                }
+            ],
+            "status": 1,
+            "created_at": "2025-01-17T07:02:18.000000Z",
+            "updated_at": "2025-01-17T07:02:18.000000Z",
+            "is_stable": 0,
+            "color": "E82C13",
+            "minimumDeposit": "70000.0000000000",
+            "maximumDecimalPlaces": 2,
+            "naira_rate": "1420",
+            "usd_rate": "0.0000145300"
+        },
+        {
+            "id": 4,
+            "name": "Solana",
+            "code": "SOL",
+            "icon": "https://res.cloudinary.com/dhxukz6em/image/upload/v1737075761/crypto_icons/cdpxbitpmc3ke5ukk7pk.png",
+            "networks": [
+                {
+                    "id": 7,
+                    "addressRegex": "^[1-9A-HJ-NP-Za-km-z]{32,44}$",
+                    "memoRegex": null,
+                    "name": "Solana",
+                    "code": "SOL",
+                    "fee": "0.0150000000",
+                    "feeType": "FLAT",
+                    "minimum": "0.3200000000",
+                    "contractAddress": null,
+                    "explorerLink": null,
+                    "created_at": "2025-01-17T07:04:05.000000Z",
+                    "updated_at": "2025-01-17T07:04:05.000000Z"
+                }
+            ],
+            "status": 1,
+            "created_at": "2025-01-17T07:02:18.000000Z",
+            "updated_at": "2025-01-17T07:02:18.000000Z",
+            "is_stable": 0,
+            "color": "D114F4",
+            "minimumDeposit": "0.0100000000",
+            "maximumDecimalPlaces": 8,
+            "naira_rate": "1420",
+            "usd_rate": "169.5000000000"
+        }
+    ]
 }

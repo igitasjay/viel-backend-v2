@@ -31,9 +31,9 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             .lean()
             .exec();
         if (!user) {
-            res.status(404).json({
-                code: 'NotFound',
-                message: 'User not found',
+            res.status(401).json({
+                code: 'INVLIDCREDENTIALS',
+                message: 'Invalid credentials',
             });
             return;
         }

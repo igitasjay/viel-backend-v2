@@ -57,6 +57,7 @@ app.use(limiter);
 
 (async () => {
   await connectToDatabase();
+  app.use('/uploads', express.static('uploads'));
   app.use('/api/v1', v1Routes);
   try {
     app.listen(config.PORT, () => {

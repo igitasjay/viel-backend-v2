@@ -29,7 +29,7 @@ async function processBlock(chain: string, blockNumber: number) {
 
   // map of deposit addresses to userId
   const addresses = await DepositAddress.find({ chain }).lean();
-  const addrSet = new Set(addresses.map((a) => a.address.toLowerCase()));
+  const addrSet = new Set(addresses.map((a) => a.address));
 
   // iterate txs
   // iterate txs (hashes only)
@@ -37,7 +37,7 @@ async function processBlock(chain: string, blockNumber: number) {
     const tx = await provider.getTransaction(txHash);
     if (!tx || !tx.to) continue;
 
-    const toLower = tx.to.toLowerCase();
+    const toLower = tx.to;
     if (!addrSet.has(toLower)) continue;
 
     try {

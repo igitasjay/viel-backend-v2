@@ -57,6 +57,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     passcode: {
         type: String,
+        select: false,
     },
     nin: {
         type: String,
@@ -80,6 +81,9 @@ UserSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (this.isModified('password')) {
             this.password = yield bcrypt_1.default.hash(this.password, 10);
+        }
+        if (this.isModified('passcode') && this.passcode) {
+            this.passcode = yield bcrypt_1.default.hash(this.passcode, 10);
         }
         next();
     });

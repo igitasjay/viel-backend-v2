@@ -61,6 +61,7 @@ const UserSchema = new Schema<IUser>(
     },
     passcode: {
       type: String,
+      select: false,
     },
     nin: {
       type: String,
@@ -85,8 +86,11 @@ const UserSchema = new Schema<IUser>(
 
 UserSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
-    // Fixed logic to only hash if password is modified
     this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  if (this.isModified('passcode') && this.passcode) {
+    this.passcode = await bcrypt.hash(this.passcode, 10);
   }
   next();
 });
