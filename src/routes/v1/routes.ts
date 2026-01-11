@@ -15,6 +15,7 @@ import tradeRoutes from '../../crypto-infra/routes/trade.routes';
 import webhookRoutes from '../../crypto-infra/routes/webhook.routes';
 import adminRoutes from '../../crypto-infra/routes/admin.routes';
 import authenticate from '@/middlewares/authenticate.middleware';
+import userCryptoRoute from '../../crypto-infra/routes/crypto.routes';
 
 const router = Router();
 
@@ -53,5 +54,6 @@ router.use('/infra/admin', adminRoutes);
 router.use('/infra/wallets', walletRoutes); // Add userAuth middleware here
 router.use('/infra/trade', tradeRoutes); // Add userAuth middleware here
 router.use('/infra/webhooks', webhookRoutes);
+router.use('/infra/crypto', userCryptoRoute);
 
 export default router;
