@@ -52,6 +52,7 @@ export interface IGiftCardRange {
 export interface IGiftCardCountry {
   name: string;
   iso: string;
+  currencySymbol: string; // Moved here
   ranges: IGiftCardRange[];
 }
 
@@ -59,7 +60,6 @@ export interface IGiftCardBrand {
   _id?: string;
   name: string;
   logoUrl: string;
-  currencySymbol: string; // e.g. "$", "€"
   countries: IGiftCardCountry[];
   isActive: boolean;
   createdAt?: Date;

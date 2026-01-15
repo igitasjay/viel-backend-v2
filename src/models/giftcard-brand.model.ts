@@ -15,6 +15,7 @@ const RangeSchema = new Schema<IGiftCardRange>({
 const CountrySchema = new Schema<IGiftCardCountry>({
   name: { type: String, required: true },
   iso: { type: String, required: true },
+  currencySymbol: { type: String, required: true },
   ranges: [RangeSchema],
 }, { _id: false, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
@@ -26,7 +27,6 @@ const BrandSchema = new Schema<IGiftCardBrand>(
   {
     name: { type: String, required: true, unique: true },
     logoUrl: { type: String, required: true },
-    currencySymbol: { type: String, required: true },
     countries: [CountrySchema],
     isActive: { type: Boolean, default: true },
   },

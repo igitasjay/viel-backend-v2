@@ -14,6 +14,9 @@ router.put('/giftcards/:id', adminCtrl.updateGiftCard);
 // --- Sell Flow Admin Routes ---
 router.post('/sell/brands', upload.single('logo'), sellAdminCtrl.addBrand);
 router.get('/sell/brands', sellAdminCtrl.listBrands);
+router.post('/sell/brands/:id/countries', sellAdminCtrl.addCountry);
+router.post('/sell/brands/:id/countries/:iso/ranges', sellAdminCtrl.addRange);
+router.post('/sell/brands/:id/countries/:iso/ranges/:range/types', sellAdminCtrl.addType);
 router.get('/sell/requests', sellAdminCtrl.listSales);
 router.patch('/sell/requests/:id', sellAdminCtrl.updateSale);
 

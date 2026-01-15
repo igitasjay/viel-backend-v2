@@ -7,6 +7,30 @@ export const getAllBrands = () => GiftCardBrand.find().sort({ name: 1 });
 export const updateBrand = (id: string, data: any) => GiftCardBrand.findByIdAndUpdate(id, data, { new: true });
 export const getBrandById = (id: string) => GiftCardBrand.findById(id);
 
+// --- Incremental Brand Updates ---
+export const pushCountry = (brandId: string, country: any) => 
+  GiftCardBrand.findByIdAndUpdate(brandId, { $push: { countries: country } }, { new: true });
+
+export const pushRange = (brandId: string, iso: string, range: any) => 
+  GiftCardBrand.findOneAndUpdate(
+    { _id: brandId, "countries.iso": iso },
+    { $push: { "countries.$.ranges": range } },
+    { new: true }
+  );
+
+export const pushType = (brandId: string, iso: string, range: string, type: any) => 
+  GiftCardBrand.findOneAndUpdate(
+    { _id: brandId },
+    { $push: { "countries.$[c].ranges.$[r].types": type } },
+    { 
+      new: true,
+      arrayFilters: [
+        { "c.iso": iso },
+        { "r.range": range }
+      ]
+    }
+  );
+
 // --- SALE SERVICES ---
 export const createSaleEntry = (data: any) => GiftCardSale.create(data);
 export const getSalesByStatus = (status?: string) => {

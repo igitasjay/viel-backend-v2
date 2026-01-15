@@ -1119,3 +1119,9 @@ and response when user initiates a sell gift card transaction:
     }
 
 }
+
+
+POST /api/v1/admin/giftcard/sell/brands/6968c61c6dcb556c2a3567e6/countries
+POST /api/v1/admin/giftcard/sell/brands/6968c61c6dcb556c2a3567e6/countries/CA/ranges
+POST /api/v1/admin/giftcard/sell/brands/6968c61c6dcb556c2a3567e6/countries/CA/ranges/10-100/types
+POST /api/v1/admin/giftcard/sell/brands/6968c61c6dcb556c2a3567e6/countries
