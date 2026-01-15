@@ -1,506 +1,1121 @@
+this is the expected json response when a user loads the sell gift cards api:
+
+
+
 {
+
     "all_giftcards": [
+
         {
+
             "id": 1,
+
             "title": "Amazon",
+
             "image": "http://localhost/Gift-Card/Cards//amazon.png",
+
             "brand_logo": "http://localhost/Gift-Card/icons//amazon.png",
+
             "status": "1",
+
             "created_at": "2 years ago",
+
             "confirm_min": 1,
+
             "confirm_max": 20,
+
             "countries": [
+
                 {
+
                     "id": 1,
+
                     "status": "1",
+
                     "name": "UNITED KINGDOM",
+
                     "image": "http://localhost/images/flags/gb.png",
+
                     "iso": "GB",
+
                     "currency": {
+
                         "id": 38,
+
                         "name": "British Pound Sterling",
+
                         "symbol": "£",
+
                         "symbolNative": "£",
+
                         "decimalDigits": 2,
+
                         "rounding": 0,
+
                         "code": "GBP",
+
                         "namePlural": "British pounds sterling",
+
                         "created_at": "2022-10-22T09:21:29.000000Z",
+
                         "updated_at": "2022-10-22T09:21:29.000000Z"
+
                     },
+
                     "ranges": [
+
                         {
+
                             "id": 1,
+
                             "gift_card_id": "1",
+
                             "gift_card_country_id": "1",
+
                             "status": "0",
+
                             "min": "5",
+
                             "max": "55",
+
                             "updated_by": "1",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 1,
+
                                     "updated_by": "1",
+
                                     "status": "1",
+
                                     "title": "Cash Receipt",
+
                                     "amount": "500.00",
+
                                     "range_id": "1",
+
                                     "gift_card_country_id": "1",
+
                                     "gift_card_id": "1"
+
                                 },
+
                                 {
+
                                     "id": 75,
+
                                     "updated_by": "1",
+
                                     "status": "1",
+
                                     "title": "Debit Receipt",
+
                                     "amount": "500.00",
+
                                     "range_id": "1",
+
                                     "gift_card_country_id": "1",
+
                                     "gift_card_id": "1"
+
                                 }
+
                             ]
+
                         },
+
                         {
+
                             "id": 2,
+
                             "gift_card_id": "1",
+
                             "gift_card_country_id": "1",
+
                             "status": "1",
+
                             "min": "100",
+
                             "max": "500",
+
                             "updated_by": "11",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 2,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "Cash Receipt",
+
                                     "amount": "870.00",
+
                                     "range_id": "2",
+
                                     "gift_card_country_id": "1",
+
                                     "gift_card_id": "1"
+
                                 }
+
                             ]
+
                         }
+
                     ]
+
                 },
+
                 {
+
                     "id": 2,
+
                     "status": "1",
+
                     "name": "UNITED STATES",
+
                     "image": "http://localhost/images/flags/us.png",
+
                     "iso": "US",
+
                     "currency": {
+
                         "id": 1,
+
                         "name": "US Dollar",
+
                         "symbol": "$",
+
                         "symbolNative": "$",
+
                         "decimalDigits": 2,
+
                         "rounding": 0,
+
                         "code": "USD",
+
                         "namePlural": "US dollars",
+
                         "created_at": "2022-10-22T09:21:29.000000Z",
+
                         "updated_at": "2022-10-22T09:21:29.000000Z"
+
                     },
+
                     "ranges": [
+
                         {
+
                             "id": 5,
+
                             "gift_card_id": "1",
+
                             "gift_card_country_id": "2",
+
                             "status": "1",
+
                             "min": "100",
+
                             "max": "200",
+
                             "updated_by": "0",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 10,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "Cash Receipt",
+
                                     "amount": "770.00",
+
                                     "range_id": "5",
+
                                     "gift_card_country_id": "2",
+
                                     "gift_card_id": "1"
+
                                 },
+
                                 {
+
                                     "id": 71,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "Debit Receipt",
+
                                     "amount": "740.00",
+
                                     "range_id": "5",
+
                                     "gift_card_country_id": "2",
+
                                     "gift_card_id": "1"
+
                                 }
+
                             ]
+
                         },
+
                         {
+
                             "id": 6,
+
                             "gift_card_id": "1",
+
                             "gift_card_country_id": "2",
+
                             "status": "1",
+
                             "min": "201",
+
                             "max": "500",
+
                             "updated_by": "1",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 12,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "Cash Receipt",
+
                                     "amount": "780.00",
+
                                     "range_id": "6",
+
                                     "gift_card_country_id": "2",
+
                                     "gift_card_id": "1"
+
                                 },
+
                                 {
+
                                     "id": 73,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "Debit Receipt",
+
                                     "amount": "740.00",
+
                                     "range_id": "6",
+
                                     "gift_card_country_id": "2",
+
                                     "gift_card_id": "1"
+
                                 }
+
                             ]
+
                         }
+
                     ]
+
                 }
+
             ]
+
         },
+
         {
+
             "id": 6,
+
             "title": "Apple/iTunes",
+
             "image": "http://localhost/Gift-Card/Cards//itunes.png",
+
             "brand_logo": "http://localhost/Gift-Card/icons//itunes.png",
+
             "status": "1",
+
             "created_at": "2 years ago",
+
             "confirm_min": 1,
+
             "confirm_max": 15,
+
             "countries": [
+
                 {
+
                     "id": 22,
+
                     "status": "1",
+
                     "name": "UNITED STATES",
+
                     "image": "http://localhost/images/flags/us.png",
+
                     "iso": "US",
+
                     "currency": {
+
                         "id": 1,
+
                         "name": "US Dollar",
+
                         "symbol": "$",
+
                         "symbolNative": "$",
+
                         "decimalDigits": 2,
+
                         "rounding": 0,
+
                         "code": "USD",
+
                         "namePlural": "US dollars",
+
                         "created_at": "2022-10-22T09:21:29.000000Z",
+
                         "updated_at": "2022-10-22T09:21:29.000000Z"
+
                     },
+
                     "ranges": [
+
                         {
+
                             "id": 37,
+
                             "gift_card_id": "6",
+
                             "gift_card_country_id": "22",
+
                             "status": "1",
+
                             "min": "25",
+
                             "max": "99",
+
                             "updated_by": "11",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 96,
+
                                     "updated_by": "11",
+
                                     "status": "1",
+
                                     "title": "Physical",
+
                                     "amount": "1040.00",
+
                                     "range_id": "37",
+
                                     "gift_card_country_id": "22",
+
                                     "gift_card_id": "6"
+
                                 },
+
                                 {
+
                                     "id": 152,
+
                                     "updated_by": "11",
+
                                     "status": "1",
+
                                     "title": "E-Code",
+
                                     "amount": "970.00",
+
                                     "range_id": "37",
+
                                     "gift_card_country_id": "22",
+
                                     "gift_card_id": "6"
+
                                 }
+
                             ]
+
                         },
+
                         {
+
                             "id": 38,
+
                             "gift_card_id": "6",
+
                             "gift_card_country_id": "22",
+
                             "status": "1",
+
                             "min": "100",
+
                             "max": "200",
+
                             "updated_by": "11",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 38,
+
                                     "updated_by": "11",
+
                                     "status": "1",
+
                                     "title": "Physical",
+
                                     "amount": "1050.00",
+
                                     "range_id": "38",
+
                                     "gift_card_country_id": "10",
+
                                     "gift_card_id": "7"
+
                                 },
+
                                 {
+
                                     "id": 153,
+
                                     "updated_by": "11",
+
                                     "status": "1",
+
                                     "title": "E-Code",
+
                                     "amount": "970.00",
+
                                     "range_id": "38",
+
                                     "gift_card_country_id": "22",
+
                                     "gift_card_id": "6"
+
                                 }
+
                             ]
+
                         },
+
                         {
+
                             "id": 66,
+
                             "gift_card_id": "6",
+
                             "gift_card_country_id": "22",
+
                             "status": "1",
+
                             "min": "300",
+
                             "max": "500",
+
                             "updated_by": "11",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 143,
+
                                     "updated_by": "11",
+
                                     "status": "1",
+
                                     "title": "Physical",
+
                                     "amount": "1080.00",
+
                                     "range_id": "66",
+
                                     "gift_card_country_id": "22",
+
                                     "gift_card_id": "6"
+
                                 },
+
                                 {
+
                                     "id": 144,
+
                                     "updated_by": "11",
+
                                     "status": "1",
+
                                     "title": "E-Code",
+
                                     "amount": "970.00",
+
                                     "range_id": "66",
+
                                     "gift_card_country_id": "22",
+
                                     "gift_card_id": "6"
+
                                 }
+
                             ]
+
                         }
+
                     ]
+
                 },
+
                 {
+
                     "id": 31,
+
                     "status": "1",
+
                     "name": "CANADA",
+
                     "image": "http://localhost/images/flags/ca.png",
+
                     "iso": "CA",
+
                     "currency": {
+
                         "id": 2,
+
                         "name": "Canadian Dollar",
+
                         "symbol": "CA$",
+
                         "symbolNative": "$",
+
                         "decimalDigits": 2,
+
                         "rounding": 0,
+
                         "code": "CAD",
+
                         "namePlural": "Canadian dollars",
+
                         "created_at": "2022-10-22T09:21:29.000000Z",
+
                         "updated_at": "2022-10-22T09:21:29.000000Z"
+
                     },
+
                     "ranges": [
+
                         {
+
                             "id": 46,
+
                             "gift_card_id": "6",
+
                             "gift_card_country_id": "31",
+
                             "status": "1",
+
                             "min": "50",
+
                             "max": "500",
+
                             "updated_by": "11",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 119,
+
                                     "updated_by": "11",
+
                                     "status": "1",
+
                                     "title": "Physical",
+
                                     "amount": "690.00",
+
                                     "range_id": "46",
+
                                     "gift_card_country_id": "31",
+
                                     "gift_card_id": "6"
+
                                 },
+
                                 {
+
                                     "id": 120,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "E-Code",
+
                                     "amount": "650.00",
+
                                     "range_id": "46",
+
                                     "gift_card_country_id": "31",
+
                                     "gift_card_id": "6"
+
                                 }
+
                             ]
+
                         }
+
                     ]
+
                 },
+
                 {
+
                     "id": 33,
+
                     "status": "1",
+
                     "name": "UNITED KINGDOM",
+
                     "image": "http://localhost/images/flags/gb.png",
+
                     "iso": "GB",
+
                     "currency": {
+
                         "id": 38,
+
                         "name": "British Pound Sterling",
+
                         "symbol": "£",
+
                         "symbolNative": "£",
+
                         "decimalDigits": 2,
+
                         "rounding": 0,
+
                         "code": "GBP",
+
                         "namePlural": "British pounds sterling",
+
                         "created_at": "2022-10-22T09:21:29.000000Z",
+
                         "updated_at": "2022-10-22T09:21:29.000000Z"
+
                     },
+
                     "ranges": [
+
                         {
+
                             "id": 48,
+
                             "gift_card_id": "6",
+
                             "gift_card_country_id": "33",
+
                             "status": "1",
+
                             "min": "50",
+
                             "max": "500",
+
                             "updated_by": "11",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 112,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "Physical",
+
                                     "amount": "990.00",
+
                                     "range_id": "48",
+
                                     "gift_card_country_id": "33",
+
                                     "gift_card_id": "6"
+
                                 },
+
                                 {
+
                                     "id": 113,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "E-Code",
+
                                     "amount": "930.00",
+
                                     "range_id": "48",
+
                                     "gift_card_country_id": "33",
+
                                     "gift_card_id": "6"
+
                                 }
+
                             ]
+
                         }
+
                     ]
+
                 },
+
                 {
+
                     "id": 36,
+
                     "status": "1",
+
                     "name": "NEW ZEALAND",
+
                     "image": "http://localhost/images/flags/nz.png",
+
                     "iso": "NZ",
+
                     "currency": {
+
                         "id": 82,
+
                         "name": "New Zealand Dollar",
+
                         "symbol": "NZ$",
+
                         "symbolNative": "$",
+
                         "decimalDigits": 2,
+
                         "rounding": 0,
+
                         "code": "NZD",
+
                         "namePlural": "New Zealand dollars",
+
                         "created_at": "2022-10-22T09:21:29.000000Z",
+
                         "updated_at": "2022-10-22T09:21:29.000000Z"
+
                     },
+
                     "ranges": [
+
                         {
+
                             "id": 54,
+
                             "gift_card_id": "6",
+
                             "gift_card_country_id": "36",
+
                             "status": "1",
+
                             "min": "50",
+
                             "max": "500",
+
                             "updated_by": "11",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 121,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "Physical",
+
                                     "amount": "510.00",
+
                                     "range_id": "54",
+
                                     "gift_card_country_id": "36",
+
                                     "gift_card_id": "6"
+
                                 },
+
                                 {
+
                                     "id": 122,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "E-Code",
+
                                     "amount": "510.00",
+
                                     "range_id": "54",
+
                                     "gift_card_country_id": "36",
+
                                     "gift_card_id": "6"
+
                                 }
+
                             ]
+
                         }
+
                     ]
+
                 },
+
                 {
+
                     "id": 37,
+
                     "status": "1",
+
                     "name": "GERMANY",
+
                     "image": "http://localhost/images/flags/de.png",
+
                     "iso": "DE",
+
                     "currency": {
+
                         "id": 3,
+
                         "name": "Euro",
+
                         "symbol": "€",
+
                         "symbolNative": "€",
+
                         "decimalDigits": 2,
+
                         "rounding": 0,
+
                         "code": "EUR",
+
                         "namePlural": "euros",
+
                         "created_at": "2022-10-22T09:21:29.000000Z",
+
                         "updated_at": "2022-10-22T09:21:29.000000Z"
+
                     },
+
                     "ranges": [
+
                         {
+
                             "id": 51,
+
                             "gift_card_id": "6",
+
                             "gift_card_country_id": "37",
+
                             "status": "1",
+
                             "min": "50",
+
                             "max": "500",
+
                             "updated_by": "11",
+
                             "receipt_categories": [
+
                                 {
+
                                     "id": 114,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "Physical",
+
                                     "amount": "940.00",
+
                                     "range_id": "51",
+
                                     "gift_card_country_id": "37",
+
                                     "gift_card_id": "6"
+
                                 },
+
                                 {
+
                                     "id": 115,
+
                                     "updated_by": "58",
+
                                     "status": "1",
+
                                     "title": "E-Code",
+
                                     "amount": "870.00",
+
                                     "range_id": "51",
+
                                     "gift_card_country_id": "37",
+
                                     "gift_card_id": "6"
+
                                 }
+
                             ]
+
                         }
+
                     ]
+
                 }
+
             ]
+
         }
+
     ]
+
+}
+
+
+
+
+
+and response when user initiates a sell gift card transaction:
+
+
+
+{
+
+    "message": "Transaction completed",
+
+    "data": {
+
+        "id": 6602,
+
+        "user_id": 17426,
+
+        "icon": "http://localhost/Gift-Card/icons//amazon.png",
+
+        "gift_card_image": "http://localhost/Gift-Card/Cards//amazon.png",
+
+        "service_id": 1,
+
+        "card_value": "55",
+
+        "usd_rate": "500.00",
+
+        "ngn_amount": 27500,
+
+        "transaction_ref": 6602,
+
+        "status": "Pending",
+
+        "giftcard_type": "Amazon",
+
+        "proof": "https://res.cloudinary.com/dwushw5uv/image/upload/v1741047992/ddxrn7lbcvvzavqr0aez.png",
+
+        "category": "Cash Receipt",
+
+        "note": "Please credit me asap",
+
+        "currency": {
+
+            "id": 38,
+
+            "name": "British Pound Sterling",
+
+            "symbol": "£",
+
+            "symbolNative": "£",
+
+            "decimalDigits": 2,
+
+            "rounding": 0,
+
+            "code": "GBP",
+
+            "namePlural": "British pounds sterling",
+
+            "created_at": "2022-10-22T09:21:29.000000Z",
+
+            "updated_at": "2022-10-22T09:21:29.000000Z"
+
+        },
+
+        "rejected_reason": null,
+
+        "range": {
+
+            "max": 55,
+
+            "min": 5,
+
+            "rate": "500.00"
+
+        },
+
+        "country": "UNITED KINGDOM",
+
+        "iso": "GB",
+
+        "created_at": "2025-03-04T00:26:34.000000Z",
+
+        "response_image": null,
+
+        "proofs": [
+
+            "https://res.cloudinary.com/dwushw5uv/image/upload/v1741047992/ddxrn7lbcvvzavqr0aez.png",
+
+            "https://res.cloudinary.com/dwushw5uv/image/upload/v1741047994/eiv3euy4btumfreno4ri.png"
+
+        ],
+
+        "qty": "3",
+
+        "approved_qty": null,
+
+        "promo_code": "EXTRA2K",
+
+        "promo_gain": 2000
+
+    }
+
 }

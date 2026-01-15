@@ -16,6 +16,7 @@ import webhookRoutes from '../../crypto-infra/routes/webhook.routes';
 import adminRoutes from '../../crypto-infra/routes/admin.routes';
 import authenticate from '@/middlewares/authenticate.middleware';
 import userCryptoRoute from '../../crypto-infra/routes/crypto.routes';
+import giftcardRoute from '@/routes/v1/giftcard.route';
 
 const router = Router();
 
@@ -43,6 +44,7 @@ router.use('/banks', bankRouter);
 router.use('/charge', chargeRouter);
 // router.get('/bankcodes', getBankCodes);
 // router.use('/crypto', cryptoRoute);
+router.use('/giftcard', giftcardRoute);
 router.use('/admin/giftcard', adminGiftCardRoute);
 router.use('/authorisation', authorisationRoute);
 

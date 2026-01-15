@@ -15,8 +15,8 @@ export const createGiftCard = (payload: any) => {
 
 export const updateGiftCard = (id: string, payload: any) =>
   GiftCard.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
-export const getGiftCardsByCountry = (countryId: string) =>
-  GiftCard.find({ countryId, isAvailable: true });
+export const getGiftCardsByCountry = (country: string) =>
+  GiftCard.find({ country, isAvailable: true });
 export const getGiftCardById = (id: string) => GiftCard.findById(id);
 
 // Purchase function: uses transaction to ensure stock consistency

@@ -12,9 +12,8 @@ export const listCountries = asyncHandler(
 
 export const listGiftCardsByCountry = asyncHandler(
   async (req: Request, res: Response) => {
-    const giftcards = await giftService.getGiftCardsByCountry(
-      req.params.countryId,
-    );
+    const { country } = req.query;
+    const giftcards = await giftService.getGiftCardsByCountry(country as string);
     res.json({ success: true, data: giftcards });
   },
 );
