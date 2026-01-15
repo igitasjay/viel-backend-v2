@@ -26,6 +26,7 @@ const webhook_routes_1 = __importDefault(require("../../crypto-infra/routes/webh
 const admin_routes_2 = __importDefault(require("../../crypto-infra/routes/admin.routes"));
 const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
 const crypto_routes_1 = __importDefault(require("../../crypto-infra/routes/crypto.routes"));
+const giftcard_route_1 = __importDefault(require("./giftcard.route"));
 const router = (0, express_1.Router)();
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({
@@ -45,6 +46,7 @@ router.use('/auth', auth_route_1.default);
 router.use('/users', user_route_1.default);
 router.use('/banks', banks_route_1.default);
 router.use('/charge', charge_route_1.default);
+router.use('/giftcard', giftcard_route_1.default);
 router.use('/admin/giftcard', admin_routes_1.default);
 router.use('/authorisation', authorisation_route_1.default);
 router.use(authenticate_middleware_1.default);

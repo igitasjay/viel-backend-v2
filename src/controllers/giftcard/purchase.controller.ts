@@ -1,19 +1,33 @@
 import { Request, Response } from 'express';
-import * as purchaseService from '@/services/giftcard.service'; // purchase function lives here
+import User from '@/models/user.model';
+import * as purchaseService from '@/services/giftcard.service';
 import { asyncHandler } from '@/utils/async-handler.util';
-// import { sendPurchaseEmail } from '@/lib/email';
+import { ApiError } from '@/utils/api-error.util';
 import { purchaseEmailHtml } from '@/lib/email-temeplate';
 
 export const purchaseGiftCard = asyncHandler(
   async (req: Request, res: Response) => {
-    const userId = (req as any).user?.id || req.body.userId || 'anonymous'; // assume auth middleware
     const { giftCardId, amount, quantity, email } = req.body;
+    const userId = req.userId?.toString();
+
+    if (!userId) {
+      throw new ApiError(401, 'Unauthorized');
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    const fullName = `${user.firstname} ${user.lastname}`;
 
     const purchase = await purchaseService.purchaseGiftCard(
       userId,
+      fullName,
+      user.email,
       giftCardId,
-      amount,
-      quantity,
+      Number(amount),
+      Number(quantity),
       email,
     );
 

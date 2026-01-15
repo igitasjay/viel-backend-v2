@@ -36,9 +36,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const upload_1 = require("../../middlewares/upload");
 const adminCtrl = __importStar(require("../../controllers/giftcard/admin.controller"));
+const sellAdminCtrl = __importStar(require("../../controllers/giftcard/admin-sell.controller"));
 const router = (0, express_1.Router)();
 router.post('/create', upload_1.upload.single('image'), adminCtrl.createGiftCard);
 router.post('/countries', adminCtrl.createCountry);
 router.put('/giftcards/:id', adminCtrl.updateGiftCard);
+router.post('/sell/brands', upload_1.upload.single('logo'), sellAdminCtrl.addBrand);
+router.get('/sell/brands', sellAdminCtrl.listBrands);
+router.post('/sell/brands/:id/countries', sellAdminCtrl.addCountry);
+router.post('/sell/brands/:id/countries/:iso/ranges', sellAdminCtrl.addRange);
+router.post('/sell/brands/:id/countries/:iso/ranges/:range/types', sellAdminCtrl.addType);
+router.get('/sell/requests', sellAdminCtrl.listSales);
+router.patch('/sell/requests/:id', sellAdminCtrl.updateSale);
 exports.default = router;
 //# sourceMappingURL=admin.routes.js.map

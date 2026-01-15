@@ -29,11 +29,11 @@ const createGiftCard = (payload) => {
 exports.createGiftCard = createGiftCard;
 const updateGiftCard = (id, payload) => giftcard_model_1.default.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
 exports.updateGiftCard = updateGiftCard;
-const getGiftCardsByCountry = (countryId) => giftcard_model_1.default.find({ countryId, isAvailable: true });
+const getGiftCardsByCountry = (country) => giftcard_model_1.default.find({ country, isAvailable: true });
 exports.getGiftCardsByCountry = getGiftCardsByCountry;
 const getGiftCardById = (id) => giftcard_model_1.default.findById(id);
 exports.getGiftCardById = getGiftCardById;
-const purchaseGiftCard = (userId, giftCardId, amount, quantity, email) => __awaiter(void 0, void 0, void 0, function* () {
+const purchaseGiftCard = (userId, fullName, userEmail, giftCardId, amount, quantity, email) => __awaiter(void 0, void 0, void 0, function* () {
     const session = yield mongoose_1.default.startSession();
     session.startTransaction();
     try {
@@ -42,38 +42,43 @@ const purchaseGiftCard = (userId, giftCardId, amount, quantity, email) => __awai
             throw new api_error_util_1.ApiError(404, 'Gift card not found');
         if (!card.isAvailable)
             throw new api_error_util_1.ApiError(400, 'Gift card unavailable');
-        if (amount < card.minAmount)
+        if (card.minAmount > 0 && amount < card.minAmount)
             throw new api_error_util_1.ApiError(400, `Amount cannot be below ${card.minAmount}`);
-        if (amount > card.maxAmount)
+        if (card.maxAmount > 0 && amount > card.maxAmount)
             throw new api_error_util_1.ApiError(400, `Amount cannot exceed ${card.maxAmount}`);
         if (!card.validAmounts.includes(amount))
             throw new api_error_util_1.ApiError(400, `Invalid amount for this gift card`);
         if (quantity < 1)
             throw new api_error_util_1.ApiError(400, `Quantity must be >= 1`);
         if (quantity > card.availableQty)
-            throw new api_error_util_1.ApiError(400, `Requested quantity exceeds available stock`);
+            throw new api_error_util_1.ApiError(400, `Requested quantity (${quantity}) exceeds available stock (${card.availableQty})`);
         const totalInNaira = amount * quantity * card.rate;
         const purchase = yield giftcard_purchase_model_1.default.create([
             {
                 userId,
+                fullName,
+                userEmail,
                 giftCardId,
                 amount,
                 quantity,
                 totalInNaira,
                 sendEmailTo: email,
+                status: 'pending',
                 detailsSnapshot: {
                     brandName: card.name,
-                    countryId: card.country,
+                    country: card.country,
                     instruction: card.instruction,
                     rate: card.rate,
                     image: card.imageUrl,
-                    currency: card.rate,
+                    currency: card.currency,
                 },
             },
         ], { session });
         card.availableQty -= quantity;
-        if (card.availableQty <= 0)
+        if (card.availableQty <= 0) {
+            card.availableQty = 0;
             card.isAvailable = false;
+        }
         yield card.save({ session });
         yield session.commitTransaction();
         session.endSession();

@@ -93,8 +93,12 @@ exports.createGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => __
             instruction: (instruction || '').trim(),
             currency: (currency || '').trim(),
             validAmounts,
-            minAmount: Number(minAmount || 0),
-            maxAmount: Number(maxAmount || 0),
+            minAmount: minAmount
+                ? Number(minAmount)
+                : Math.min(...(validAmounts.length ? validAmounts : [0])),
+            maxAmount: maxAmount
+                ? Number(maxAmount)
+                : Math.max(...(validAmounts.length ? validAmounts : [0])),
             availableQty: Number(availableQty || 0),
             rate: Number(rate || 0),
         };

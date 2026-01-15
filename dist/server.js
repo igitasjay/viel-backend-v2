@@ -23,6 +23,7 @@ const config_1 = __importDefault(require("./config/config"));
 const mongoose_1 = require("./lib/mongoose");
 const winston_1 = require("./lib/winston");
 const routes_1 = __importDefault(require("./routes/v1/routes"));
+const error_middleware_1 = require("./middlewares/error.middleware");
 const app = (0, express_1.default)();
 app.use((0, morgan_1.default)('dev'));
 const corsOptions = {
@@ -51,6 +52,7 @@ app.use(express_rate_limit_1.default);
     yield (0, mongoose_1.connectToDatabase)();
     app.use('/uploads', express_1.default.static('uploads'));
     app.use('/api/v1', routes_1.default);
+    app.use(error_middleware_1.globalErrorHandler);
     try {
         app.listen(config_1.default.PORT, () => {
             winston_1.logger.info(`Server is running on http://localhost:${config_1.default.PORT}`);

@@ -41,17 +41,41 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listGiftCardsByCountry = exports.listCountries = void 0;
+exports.buyGiftCard = exports.listGiftCardsByCountry = exports.listCountries = void 0;
 const giftService = __importStar(require("../../services/giftcard.service"));
 const countryService = __importStar(require("../../services/country.service"));
 const async_handler_util_1 = require("../../utils/async-handler.util");
+const user_model_1 = __importDefault(require("../../models/user.model"));
+const api_error_util_1 = require("../../utils/api-error.util");
 exports.listCountries = (0, async_handler_util_1.asyncHandler)((_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const countries = yield countryService.getAllCountries();
     res.json({ success: true, data: countries });
 }));
 exports.listGiftCardsByCountry = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const giftcards = yield giftService.getGiftCardsByCountry(req.params.countryId);
+    const { country } = req.query;
+    const giftcards = yield giftService.getGiftCardsByCountry(country);
     res.json({ success: true, data: giftcards });
+}));
+exports.buyGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { giftCardId, amount, quantity, email } = req.body;
+    if (!giftCardId || !amount || !quantity || !email) {
+        throw new api_error_util_1.ApiError(400, 'Missing required purchase fields');
+    }
+    const user = yield user_model_1.default.findById(req.userId);
+    if (!user) {
+        throw new api_error_util_1.ApiError(404, 'User not found');
+    }
+    const fullName = `${user.firstname} ${user.lastname}`;
+    const purchase = yield giftService.purchaseGiftCard((_a = req.userId) === null || _a === void 0 ? void 0 : _a.toString(), fullName, user.email, giftCardId, Number(amount), Number(quantity), email);
+    res.status(201).json({
+        success: true,
+        message: 'Gift card purchase request submitted successfully',
+        data: purchase,
+    });
 }));
 //# sourceMappingURL=giftcard.controller.js.map

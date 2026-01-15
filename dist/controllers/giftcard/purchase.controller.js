@@ -41,16 +41,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.purchaseGiftCard = void 0;
+const user_model_1 = __importDefault(require("../../models/user.model"));
 const purchaseService = __importStar(require("../../services/giftcard.service"));
 const async_handler_util_1 = require("../../utils/async-handler.util");
+const api_error_util_1 = require("../../utils/api-error.util");
 const email_temeplate_1 = require("../../lib/email-temeplate");
 exports.purchaseGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const userId = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.id) || req.body.userId || 'anonymous';
     const { giftCardId, amount, quantity, email } = req.body;
-    const purchase = yield purchaseService.purchaseGiftCard(userId, giftCardId, amount, quantity, email);
+    const userId = (_a = req.userId) === null || _a === void 0 ? void 0 : _a.toString();
+    if (!userId) {
+        throw new api_error_util_1.ApiError(401, 'Unauthorized');
+    }
+    const user = yield user_model_1.default.findById(userId);
+    if (!user) {
+        throw new api_error_util_1.ApiError(404, 'User not found');
+    }
+    const fullName = `${user.firstname} ${user.lastname}`;
+    const purchase = yield purchaseService.purchaseGiftCard(userId, fullName, user.email, giftCardId, Number(amount), Number(quantity), email);
     const html = (0, email_temeplate_1.purchaseEmailHtml)(purchase);
     res.status(201).json({ success: true, data: purchase });
 }));

@@ -32,11 +32,20 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const gc = __importStar(require("../../controllers/giftcard/giftcard.controller"));
+const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
+const sellGc = __importStar(require("../../controllers/giftcard/giftcard-sell.controller"));
+const upload_1 = require("../../middlewares/upload");
 const router = (0, express_1.Router)();
 router.get('/countries', gc.listCountries);
-router.get('/countries/:countryId/giftcards', gc.listGiftCardsByCountry);
+router.get('/giftcards', gc.listGiftCardsByCountry);
+router.post('/buy', authenticate_middleware_1.default, gc.buyGiftCard);
+router.get('/sell/brands', sellGc.getSellBrands);
+router.post('/sell', authenticate_middleware_1.default, upload_1.upload.array('images', 10), sellGc.sellGiftCard);
 exports.default = router;
 //# sourceMappingURL=giftcard.route.js.map
