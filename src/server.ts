@@ -12,6 +12,7 @@ import { logger } from '@/lib/winston';
 
 // routes
 import v1Routes from '@/routes/v1/routes';
+import { globalErrorHandler } from '@/middlewares/error.middleware';
 
 // types
 import type { CorsOptions } from 'cors';
@@ -59,6 +60,10 @@ app.use(limiter);
   await connectToDatabase();
   app.use('/uploads', express.static('uploads'));
   app.use('/api/v1', v1Routes);
+
+  // global error handler
+  app.use(globalErrorHandler);
+
   try {
     app.listen(config.PORT, () => {
       logger.info(`Server is running on http://localhost:${config.PORT}`);
