@@ -2,25 +2,17 @@ import { Request, Response } from 'express';
 import * as sellService from '@/services/giftcard-sell.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { ApiError } from '@/utils/api-error.util';
-import GiftCardCategory from '@/models/giftcard-category.model';
 
 export const getSellBrands = asyncHandler(async (req: Request, res: Response) => {
   const brands = await sellService.getAllBrands();
   res.json({ success: true, data: brands });
 });
 
-export const getSellCategories = asyncHandler(async (req: Request, res: Response) => {
-  const { brandId } = req.query;
-  if (!brandId) throw new ApiError(400, 'brandId is required');
-  const categories = await sellService.getCategoriesByBrand(brandId as string);
-  res.json({ success: true, data: categories });
-});
-
 export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => {
-  const { categoryId, amount, quantity, comment } = req.body;
+  const { brandId, country, range, type, amount, quantity, comment } = req.body;
   const files = req.files as Express.Multer.File[];
 
-  if (!categoryId || !amount || !quantity) {
+  if (!brandId || !country || !range || !type || !amount || !quantity) {
     throw new ApiError(400, 'Missing required fields');
   }
 
@@ -28,21 +20,37 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
     throw new ApiError(400, 'At least one proof image is required');
   }
 
-  const category = await GiftCardCategory.findById(categoryId);
-  if (!category || !category.isActive) {
-    throw new ApiError(404, 'Selected category not found or inactive');
+  const brand = await sellService.getBrandById(brandId);
+  if (!brand || !brand.isActive) {
+    throw new ApiError(404, 'Brand not found or inactive');
   }
 
-  if (!category.denominations.includes(Number(amount))) {
-    throw new ApiError(400, `Invalid amount. Supported amounts: ${category.denominations.join(', ')}`);
+  // Deep validation
+  const countryData = brand.countries.find(c => c.name === country);
+  if (!countryData) throw new ApiError(400, 'Invalid country for this brand');
+
+  const rangeData = countryData.ranges.find(r => r.range === range);
+  if (!rangeData) throw new ApiError(400, 'Invalid range for this country');
+
+  const typeData = rangeData.types.find(t => t.name === type);
+  if (!typeData) throw new ApiError(400, 'Invalid type for this range');
+
+  if (!typeData.denominations.includes(Number(amount))) {
+    throw new ApiError(400, `Invalid amount. Supported: ${typeData.denominations.join(', ')}`);
   }
 
-  const totalInNaira = Number(amount) * Number(quantity) * category.rate;
-  const imageUrls = files.map(file => file.path); // Assuming Cloudinary path
+  const totalInNaira = Number(amount) * Number(quantity) * typeData.rate;
+  const imageUrls = files.map(file => file.path);
 
   const sale = await sellService.createSaleEntry({
     userId: req.userId,
-    categoryId,
+    brandId,
+    selection: {
+      country,
+      range,
+      type,
+      rate: typeData.rate,
+    },
     amount: Number(amount),
     quantity: Number(quantity),
     totalInNaira,

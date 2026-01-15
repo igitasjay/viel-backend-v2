@@ -38,23 +38,29 @@ export interface IGiftCardPurchase {
   createdAt?: Date;
 }
 
+export interface IGiftCardType {
+  name: 'physical' | 'digital';
+  rate: number;
+  denominations: number[];
+}
+
+export interface IGiftCardRange {
+  range: string; // e.g. "100-500"
+  types: IGiftCardType[];
+}
+
+export interface IGiftCardCountry {
+  name: string;
+  iso: string;
+  ranges: IGiftCardRange[];
+}
+
 export interface IGiftCardBrand {
   _id?: string;
   name: string;
   logoUrl: string;
-  isActive: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-export interface IGiftCardCategory {
-  _id?: string;
-  brandId: Types.ObjectId;
-  country: string; // e.g. "USA", "UK"
-  type: 'physical' | 'digital';
-  range: string; // e.g. "50-100", "101-500"
-  denominations: number[]; // e.g. [50, 100, 200]
-  rate: number; // exchange rate to NGN
+  currencySymbol: string; // e.g. "$", "€"
+  countries: IGiftCardCountry[];
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -63,7 +69,13 @@ export interface IGiftCardCategory {
 export interface IGiftCardSale {
   _id?: string;
   userId: Types.ObjectId;
-  categoryId: Types.ObjectId;
+  brandId: Types.ObjectId;
+  selection: {
+    country: string;
+    range: string;
+    type: string;
+    rate: number;
+  };
   amount: number; // Face value per card
   quantity: number;
   totalInNaira: number;

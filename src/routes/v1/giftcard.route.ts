@@ -14,7 +14,6 @@ router.post('/buy', authenticate, gc.buyGiftCard);
 
 // --- Sell Flow ---
 router.get('/sell/brands', sellGc.getSellBrands);
-router.get('/sell/categories', sellGc.getSellCategories);
 router.post('/sell', authenticate, upload.array('images', 10), sellGc.sellGiftCard);
 
 export default router;
