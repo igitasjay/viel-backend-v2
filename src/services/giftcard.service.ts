@@ -22,10 +22,12 @@ export const getGiftCardById = (id: string) => GiftCard.findById(id);
 // Purchase function: uses transaction to ensure stock consistency
 export const purchaseGiftCard = async (
   userId: string,
+  fullName: string,
+  userEmail: string,
   giftCardId: string,
   amount: number,
   quantity: number,
-  email: string,
+  email: string, // This is the 'sendEmailTo' field
 ) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -33,15 +35,22 @@ export const purchaseGiftCard = async (
     const card = await GiftCard.findById(giftCardId).session(session);
     if (!card) throw new ApiError(404, 'Gift card not found');
     if (!card.isAvailable) throw new ApiError(400, 'Gift card unavailable');
-    if (amount < card.minAmount)
+
+    // Amount validation
+    if (card.minAmount > 0 && amount < card.minAmount)
       throw new ApiError(400, `Amount cannot be below ${card.minAmount}`);
-    if (amount > card.maxAmount)
+    if (card.maxAmount > 0 && amount > card.maxAmount)
       throw new ApiError(400, `Amount cannot exceed ${card.maxAmount}`);
     if (!card.validAmounts.includes(amount))
       throw new ApiError(400, `Invalid amount for this gift card`);
+
+    // Quantity validation
     if (quantity < 1) throw new ApiError(400, `Quantity must be >= 1`);
     if (quantity > card.availableQty)
-      throw new ApiError(400, `Requested quantity exceeds available stock`);
+      throw new ApiError(
+        400,
+        `Requested quantity (${quantity}) exceeds available stock (${card.availableQty})`,
+      );
 
     const totalInNaira = amount * quantity * card.rate;
 
@@ -50,18 +59,21 @@ export const purchaseGiftCard = async (
       [
         {
           userId,
+          fullName,
+          userEmail,
           giftCardId,
           amount,
           quantity,
           totalInNaira,
           sendEmailTo: email,
+          status: 'pending',
           detailsSnapshot: {
             brandName: card.name,
-            countryId: card.country,
+            country: card.country,
             instruction: card.instruction,
             rate: card.rate,
             image: card.imageUrl,
-            currency: card.rate,
+            currency: card.currency,
           },
         },
       ],
@@ -70,7 +82,10 @@ export const purchaseGiftCard = async (
 
     // decrement stock atomically
     card.availableQty -= quantity;
-    if (card.availableQty <= 0) card.isAvailable = false;
+    if (card.availableQty <= 0) {
+      card.availableQty = 0; // Guard against negative stock
+      card.isAvailable = false;
+    }
     await card.save({ session });
 
     await session.commitTransaction();

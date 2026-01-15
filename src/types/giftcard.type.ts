@@ -26,11 +26,14 @@ export interface IGiftCard {
 export interface IGiftCardPurchase {
   _id?: string;
   userId: ObjectId;
+  fullName: string;
+  userEmail: string;
   giftCardId: ObjectId;
   quantity: number;
   amount: number; // value per unit
   totalInNaira: number;
   sendEmailTo: string;
   detailsSnapshot: Record<string, any>;
+  status: 'pending' | 'completed' | 'declined';
   createdAt?: Date;
 }

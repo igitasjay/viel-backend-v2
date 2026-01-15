@@ -67,8 +67,12 @@ export const createGiftCard = asyncHandler(
         instruction: (instruction || '').trim(),
         currency: (currency || '').trim(),
         validAmounts,
-        minAmount: Number(minAmount || 0),
-        maxAmount: Number(maxAmount || 0),
+        minAmount: minAmount
+          ? Number(minAmount)
+          : Math.min(...(validAmounts.length ? validAmounts : [0])),
+        maxAmount: maxAmount
+          ? Number(maxAmount)
+          : Math.max(...(validAmounts.length ? validAmounts : [0])),
         availableQty: Number(availableQty || 0),
         rate: Number(rate || 0),
       };

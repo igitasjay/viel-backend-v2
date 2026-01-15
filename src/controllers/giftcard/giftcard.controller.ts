@@ -3,6 +3,9 @@ import * as giftService from '@/services/giftcard.service';
 import * as countryService from '@/services/country.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 
+import User from '@/models/user.model';
+import { ApiError } from '@/utils/api-error.util';
+
 export const listCountries = asyncHandler(
   async (_req: Request, res: Response) => {
     const countries = await countryService.getAllCountries();
@@ -13,7 +16,42 @@ export const listCountries = asyncHandler(
 export const listGiftCardsByCountry = asyncHandler(
   async (req: Request, res: Response) => {
     const { country } = req.query;
-    const giftcards = await giftService.getGiftCardsByCountry(country as string);
+    const giftcards = await giftService.getGiftCardsByCountry(
+      country as string,
+    );
     res.json({ success: true, data: giftcards });
+  },
+);
+
+export const buyGiftCard = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { giftCardId, amount, quantity, email } = req.body;
+
+    if (!giftCardId || !amount || !quantity || !email) {
+      throw new ApiError(400, 'Missing required purchase fields');
+    }
+
+    const user = await User.findById(req.userId);
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    const fullName = `${user.firstname} ${user.lastname}`;
+
+    const purchase = await giftService.purchaseGiftCard(
+      req.userId?.toString() as string,
+      fullName,
+      user.email,
+      giftCardId,
+      Number(amount),
+      Number(quantity),
+      email,
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'Gift card purchase request submitted successfully',
+      data: purchase,
+    });
   },
 );
