@@ -8,7 +8,7 @@ import { ApiError } from '@/utils/api-error.util';
 
 export const listCountries = asyncHandler(
   async (_req: Request, res: Response) => {
-    const countries = await countryService.getAllCountries();
+    const countries = await countryService.getAllCountriesWithGiftCards();
     res.json({ success: true, data: countries });
   },
 );

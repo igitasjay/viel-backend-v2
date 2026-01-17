@@ -52,7 +52,7 @@ const async_handler_util_1 = require("../../utils/async-handler.util");
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const api_error_util_1 = require("../../utils/api-error.util");
 exports.listCountries = (0, async_handler_util_1.asyncHandler)((_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const countries = yield countryService.getAllCountries();
+    const countries = yield countryService.getAllCountriesWithGiftCards();
     res.json({ success: true, data: countries });
 }));
 exports.listGiftCardsByCountry = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
