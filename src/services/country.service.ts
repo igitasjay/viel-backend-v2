@@ -16,6 +16,17 @@ export const getAllCountriesWithGiftCards = async () => {
         pipeline: [{ $match: { isAvailable: true } }],
       },
     },
+    {
+      $addFields: {
+        flag: {
+          $concat: [
+            'https://cdn.jsdelivr.net/npm/country-flag-icons/3x2/',
+            { $toUpper: '$code' },
+            '.svg',
+          ],
+        },
+      },
+    },
     { $sort: { name: 1 } },
   ]);
 };
