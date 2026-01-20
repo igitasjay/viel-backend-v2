@@ -18,6 +18,7 @@ import authenticate from '@/middlewares/authenticate.middleware';
 import userCryptoRoute from '../../crypto-infra/routes/crypto.routes';
 import giftcardRoute from '@/routes/v1/giftcard.route';
 import transactionRouter from '@/routes/v1/transaction.route';
+import monnifyRoute from '@/routes/v1/monnify.route';
 
 const router = Router();
 
@@ -49,6 +50,7 @@ router.use('/giftcard', giftcardRoute);
 router.use('/admin/giftcard', adminGiftCardRoute);
 router.use('/authorisation', authorisationRoute);
 router.use('/transactions', transactionRouter);
+router.use('/monnify', monnifyRoute);
 
 // CRYPTO INFRA
 
