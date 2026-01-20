@@ -8,25 +8,24 @@ export const authorizeTransaction = async (req: Request, res: Response) => {
 
   try {
     // 1. Fetch from MONGODB
-    const user = await User.findById(userId);
+    // We must explicitly select passcode as it is select: false by default
+    const user = await User.findById(userId).select('+passcode');
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     // 2. Compare input with hashed passcode in MongoDB
-    const isValid = await bcrypt.compare(passcode, user.passcode!);
+    if (!user.passcode) {
+        return res.status(400).json({ error: 'Passcode not set for user' });
+    }
+    const isValid = await bcrypt.compare(passcode, user.passcode);
 
     if (!isValid) {
       return res.status(401).json({ error: 'Invalid passcode' });
     }
 
-    // 3. Create the 60s "Permission Slip" in REDIS
-    const grantKey = `tx_grant:${userId}`;
-    // await redisClient.set(grantKey, 'true', { EX: 60 });
-
-    return res.json({ message: 'Authorized! You have 60 seconds.' });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };

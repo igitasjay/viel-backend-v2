@@ -1,6 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 
-export type TransactionType = 'buy_crypto' | 'deposit_crypto' | 'withdraw_fiat';
+export type TransactionType = 'buy_crypto' | 'deposit_crypto' | 'withdraw_fiat' | 'buy_giftcard';
 export type TransactionStatus =
   | 'pending'
   | 'initialized'
@@ -19,9 +19,11 @@ export interface ITransaction extends Document {
   crypto_amount?: string;
   fiat_amount?: string; // Naira amount
   receive_address?: string;
-  reference?: string; // Paystack reference
+  reference?: string; // Paystack or Monnify reference
   status: TransactionStatus;
   paystack_data?: any;
+  monnify_data?: any;
+  giftcard_data?: any;
   metadata?: Record<string, any>;
 }
 
@@ -36,7 +38,7 @@ const TransactionSchema = new Schema<ITransaction>(
     },
     type: {
       type: String,
-      enum: ['buy_crypto', 'deposit_crypto', 'withdraw_fiat'],
+      enum: ['buy_crypto', 'deposit_crypto', 'withdraw_fiat', 'buy_giftcard'],
       required: true,
     },
     coin: { type: String },
@@ -59,6 +61,8 @@ const TransactionSchema = new Schema<ITransaction>(
       default: 'pending',
     },
     paystack_data: { type: Schema.Types.Mixed },
+    monnify_data: { type: Schema.Types.Mixed },
+    giftcard_data: { type: Schema.Types.Mixed },
     metadata: { type: Schema.Types.Mixed, default: {} },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },

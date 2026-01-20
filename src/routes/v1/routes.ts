@@ -19,6 +19,8 @@ import userCryptoRoute from '../../crypto-infra/routes/crypto.routes';
 import giftcardRoute from '@/routes/v1/giftcard.route';
 import transactionRouter from '@/routes/v1/transaction.route';
 import monnifyRoute from '@/routes/v1/monnify.route';
+import { handleMonnifyWebhook } from '@/controllers/monnify.webhook';
+import { verifyTransactionStatus } from '@/controllers/verification.controller';
 
 const router = Router();
 
@@ -51,6 +53,9 @@ router.use('/admin/giftcard', adminGiftCardRoute);
 router.use('/authorisation', authorisationRoute);
 router.use('/transactions', transactionRouter);
 router.use('/monnify', monnifyRoute);
+
+router.post('/monnify/webhook', handleMonnifyWebhook);
+router.post('/transactions/:reference/verify', verifyTransactionStatus);
 
 // CRYPTO INFRA
 

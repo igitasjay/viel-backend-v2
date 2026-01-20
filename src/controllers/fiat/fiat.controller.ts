@@ -6,7 +6,7 @@ import Transaction from '@/models/transaction.model';
 import { fetchLiveRate } from '@/lib/twelve-data';
 import { logger } from '@/lib/winston';
 import { getNextSequence } from '@/lib/sequence';
-import { initializeTransaction, verifyTransaction } from '@/lib/paystack';
+// import { initializeTransaction, verifyTransaction } from '@/lib/paystack';
 import config from '@/config/config';
 
 const buyValidation = [
@@ -77,7 +77,7 @@ export const initializeBuyCrypto = [
       const rate = parseFloat(String(live?.ngn ?? asset.naira_rate));
       const nairaAmount = cryptoAmount * rate;
 
-      // Generate reference
+      // Generate reference (Monnify compliant if needed, or just unique)
       const reference = `buy_${req.userId}_${Date.now()}`;
 
       // Create transaction
@@ -93,47 +93,23 @@ export const initializeBuyCrypto = [
         receive_address: receiveAddress,
         reference,
         status: 'pending',
-      });
-
-      // Initialize Paystack
-      const paystackRes = await initializeTransaction({
-        email: req.body.email,
-        amount: nairaAmount,
-        reference,
-        callback_url: `${config.FRONTEND_URL}/pay/success?ref=${reference}`,
-        metadata: { txId, coin, crypto_amount: cryptoAmount },
-      });
-
-      if (!paystackRes.status) {
-        await tx.deleteOne();
-        res.status(500).json({
-          code: 'PaystackError',
-          message: 'Payment initialization failed.',
-        });
-        return;
-      }
-
-      await Transaction.updateOne(
-        { id: txId },
-        {
-          status: 'initialized',
-          paystack_data: paystackRes.data,
+        monnify_data: {
+          initiation_source: 'frontend_bank_transfer',
         },
-      );
+      });
 
-      logger.info('Paystack payment initialized', {
+      logger.info('Buy crypto transaction initialized (pending payment)', {
         txId,
         reference,
         nairaAmount,
       });
 
       res.status(201).json({
-        message: 'Payment initialized successfully.',
+        message: 'Transaction initialized. Please proceed to payment.',
         data: {
           reference,
           naira_amount: nairaAmount.toFixed(2),
-          authorization_url: paystackRes.data.authorization_url,
-          access_code: paystackRes.data.access_code,
+          transactionId: txId,
         },
       });
     } catch (error) {
@@ -148,61 +124,9 @@ export const initializeBuyCrypto = [
 export const verifyPayment = [
   param('reference').trim().notEmpty(),
   async (req: Request, res: Response): Promise<void> => {
-    const { reference } = req.params;
-
-    try {
-      const paystackData = await verifyTransaction(reference);
-      if (
-        paystackData.status !== true ||
-        paystackData.data.status !== 'success'
-      ) {
-        await Transaction.updateOne({ reference }, { status: 'failed' });
-        res.status(400).json({
-          code: 'PaymentFailed',
-          message: 'Payment was not successful.',
-        });
-        return;
-      }
-
-      const tx = await Transaction.findOne({ reference });
-      if (!tx || (tx.status !== 'pending' && tx.status !== 'initialized')) {
-        res.status(400).json({
-          code: 'InvalidTx',
-          message: 'Transaction not found or already processed.',
-        });
-        return;
-      }
-
-      // Update to paid
-      await Transaction.updateOne(
-        { id: tx.id },
-        {
-          status: 'paid',
-          paystack_data: paystackData.data,
-        },
-      );
-
-      // TODO: Dispatch crypto (integrate your Ethers.js scripts here)
-      // Example stub:
-      logger.info('Payment verified - Dispatch crypto:', {
-        txId: tx.id,
-        coin: tx.coin,
-        amount: tx.crypto_amount,
-        to: tx.receive_address,
-      });
-      // await sendCrypto(tx.coin!, tx.network!, tx.crypto_amount!, tx.receive_address!);
-      // await Transaction.updateOne({ id: tx.id }, { status: 'completed' });
-
-      logger.info('Buy crypto payment completed', { reference });
-      res.json({
-        message: 'Payment verified successfully. Crypto dispatch initiated.',
-        data: paystackData.data,
-      });
-    } catch (error: any) {
-      logger.error('Verify failed:', error);
-      res
-        .status(500)
-        .json({ code: 'ServerError', message: 'Verification failed.' });
-    }
+    // This endpoint was for Paystack verification. 
+    // For Monnify, we use a separate verification flow.
+    // Leaving this here as legacy or placeholder if needed later.
+    res.status(400).json({ message: 'Deprecated for Monnify flow. Use /transactions/:reference/verify' });
   },
 ];

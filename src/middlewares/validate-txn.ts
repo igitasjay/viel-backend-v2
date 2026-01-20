@@ -1,4 +1,4 @@
-// import redisClient from '@/config/redis.config';
+import redisClient from '@/config/redis.config';
 import { Request, Response, NextFunction } from 'express';
 
 export const validateTxGrant = async (
@@ -10,19 +10,21 @@ export const validateTxGrant = async (
   const grantKey = `tx_grant:${userId}`;
 
   // 1. Check if the grant exists
-  // const grant = await redisClient.get(grantKey);
+  // 1. Check if the grant exists
+  const client = await redisClient();
+  const grant = await client.get(grantKey);
 
-  // if (!grant) {
-  //   return res.status(403).json({
-  //     error: 'Authorization Expired',
-  //     message:
-  //       'Transaction must be completed within 60 seconds of passcode entry.',
-  //   });
-  // }
+  if (!grant) {
+    return res.status(403).json({
+      error: 'Authorization Expired',
+      message:
+        'Transaction must be completed within 60 seconds of passcode entry.',
+    });
+  }
 
   // 2. IMPORTANT: Delete the grant immediately (Single Use)
   // This ensures the user must enter the passcode again for the NEXT transaction
-  // await redisClient.del(grantKey);
+  await client.del(grantKey);
 
   // 3. Move to the transaction function
   next();
