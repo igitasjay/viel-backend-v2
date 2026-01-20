@@ -1,9 +1,10 @@
 import type { Request, Response } from 'express';
 import crypto from 'crypto';
 import { LedgerService } from '../services/ledger.service';
-import { LedgerType } from '../models/Ledger';
+import { LedgerCategory, LedgerType, TransactionAction } from '../models/Ledger';
+import config from '@/config/config';
 
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET!;
+const PAYSTACK_SECRET = config.PAYSTACK_SECRET_KEY;
 
 export const paystackWebhook = async (req: Request, res: Response) => {
   try {
@@ -38,6 +39,8 @@ export const paystackWebhook = async (req: Request, res: Response) => {
           amountNGN,
           LedgerType.DEPOSIT,
           `PAYSTACK-${reference}`,
+          LedgerCategory.CRYPTO,
+          TransactionAction.SELL,
         );
       } catch (e) {
         console.log('Duplicate Paystack Event:', reference);

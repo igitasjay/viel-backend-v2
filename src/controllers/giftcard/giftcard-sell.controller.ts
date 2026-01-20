@@ -2,6 +2,12 @@ import { Request, Response } from 'express';
 import * as sellService from '@/services/giftcard-sell.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { ApiError } from '@/utils/api-error.util';
+import { LedgerService } from '@/crypto-infra/services/ledger.service';
+import {
+  LedgerType,
+  LedgerCategory,
+  TransactionAction,
+} from '@/crypto-infra/models/Ledger';
 
 export const getSellBrands = asyncHandler(async (req: Request, res: Response) => {
   const brands = await sellService.getAllBrands();
@@ -58,6 +64,17 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
     comment,
     status: 'pending',
   });
+
+  // Log to Ledger (Credit Naira - user receives money for selling)
+  await LedgerService.creditUser(
+    req.userId!.toString(),
+    'NGN',
+    totalInNaira,
+    LedgerType.GIFTCARD_SELL,
+    `GCS-${sale._id}`,
+    LedgerCategory.GIFTCARD,
+    TransactionAction.SELL,
+  );
 
   res.status(201).json({
     success: true,

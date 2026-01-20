@@ -36,11 +36,11 @@ export const buyGiftCard = asyncHandler(
       throw new ApiError(404, 'User not found');
     }
 
-    const fullName = `${user.firstname} ${user.lastname}`;
+    const fullname = `${user.firstname} ${user.lastname}`;
 
     const purchase = await giftService.purchaseGiftCard(
       req.userId?.toString() as string,
-      fullName,
+      fullname,
       user.email,
       giftCardId,
       Number(amount),

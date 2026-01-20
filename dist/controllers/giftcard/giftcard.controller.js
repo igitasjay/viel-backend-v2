@@ -70,8 +70,8 @@ exports.buyGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => __awa
     if (!user) {
         throw new api_error_util_1.ApiError(404, 'User not found');
     }
-    const fullName = `${user.firstname} ${user.lastname}`;
-    const purchase = yield giftService.purchaseGiftCard((_a = req.userId) === null || _a === void 0 ? void 0 : _a.toString(), fullName, user.email, giftCardId, Number(amount), Number(quantity), email);
+    const fullname = `${user.firstname} ${user.lastname}`;
+    const purchase = yield giftService.purchaseGiftCard((_a = req.userId) === null || _a === void 0 ? void 0 : _a.toString(), fullname, user.email, giftCardId, Number(amount), Number(quantity), email);
     res.status(201).json({
         success: true,
         message: 'Gift card purchase request submitted successfully',

@@ -1,5 +1,10 @@
 import mongoose from 'mongoose';
-import { Ledger, LedgerType } from '../models/Ledger';
+import {
+  Ledger,
+  LedgerType,
+  LedgerCategory,
+  TransactionAction,
+} from '../models/Ledger';
 
 export class LedgerService {
   /**
@@ -11,6 +16,8 @@ export class LedgerService {
     amount: number,
     type: LedgerType,
     refId: string,
+    category: LedgerCategory,
+    action: TransactionAction,
   ) {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -34,6 +41,8 @@ export class LedgerService {
             asset,
             amount, // Positive
             type,
+            transactionCategory: category,
+            transactionType: action,
             referenceId: refId,
             description: `Credit ${amount} ${asset} via ${type}`,
           },

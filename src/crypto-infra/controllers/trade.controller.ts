@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { Currency } from '../models/Currency';
 import { LedgerService } from '../services/ledger.service';
-import { LedgerType } from '../models/Ledger';
+import { LedgerType, LedgerCategory, TransactionAction } from '../models/Ledger';
 import axios from 'axios';
 
 // Mock Oracle Price
@@ -60,6 +60,8 @@ export const buyCrypto = async (req: Request, res: Response) => {
       -amountNGN,
       LedgerType.TRADE_BUY,
       `${ref}-DR`,
+      LedgerCategory.CRYPTO,
+      TransactionAction.BUY,
     );
     // Credit Crypto
     await LedgerService.creditUser(
@@ -68,6 +70,8 @@ export const buyCrypto = async (req: Request, res: Response) => {
       cryptoAmount,
       LedgerType.TRADE_BUY,
       `${ref}-CR`,
+      LedgerCategory.CRYPTO,
+      TransactionAction.BUY,
     );
 
     return res.json({ success: true, received: cryptoAmount, asset: symbol });

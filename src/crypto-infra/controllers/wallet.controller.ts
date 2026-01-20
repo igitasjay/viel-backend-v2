@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { Ledger } from '../models/Ledger';
+import { Ledger, LedgerCategory, TransactionAction } from '../models/Ledger';
 import { Wallet } from '../models/Wallet';
 import { WalletService } from '../services/wallet.service';
 import { LedgerService } from '../services/ledger.service';
@@ -84,6 +84,8 @@ export const withdrawCrypto = async (req: Request, res: Response) => {
       -Math.abs(amount), // Negative for debit
       LedgerType.WITHDRAWAL,
       withdrawalRef,
+      LedgerCategory.CRYPTO,
+      TransactionAction.SELL,
     );
 
     // 3. Trigger Async Withdrawal Job

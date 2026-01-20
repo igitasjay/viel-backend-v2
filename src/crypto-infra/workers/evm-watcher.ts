@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
 import dotenv from "dotenv";
-import { connectDB } from "../config/database.js";
 import { Wallet } from "../models/Wallet.js";
 import { LedgerService } from "../services/ledger.service.js";
-import { LedgerType } from "../models/Ledger.js";
+import { LedgerType, LedgerCategory, TransactionAction } from "../models/Ledger.js";
+import { connectToDatabase } from "@/lib/mongoose.js";
 
 dotenv.config();
 
@@ -11,8 +11,20 @@ dotenv.config();
 const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_RPC_URL);
 
 async function startWatcher() {
-  await connectDB();
-  console.log("👀 EVM Watcher Started...");
+  await connectToDatabase();
+  console.log("👀 EVM Watcher Starting...");
+
+  try {
+    const network = await provider.getNetwork();
+    const currentBlock = await provider.getBlockNumber();
+    console.log(`📡 Connected to ${network.name} (ChainID: ${network.chainId})`);
+    console.log(`⛓️  Current Block Height: ${currentBlock}`);
+  } catch (error) {
+    console.error("❌ Failed to connect to Provider. Please check ALCHEMY_RPC_URL.");
+    process.exit(1);
+  }
+
+  console.log("🚀 EVM Watcher Started and Listening...");
 
   // Listen to every block
   provider.on("block", async (blockNumber: number) => {
@@ -47,7 +59,9 @@ async function startWatcher() {
               targetWallet.currency,
               amount,
               LedgerType.DEPOSIT,
-              tx.hash // Uses TxHash as Idempotency Key
+              tx.hash, // Uses TxHash as Idempotency Key
+              LedgerCategory.CRYPTO,
+              TransactionAction.SELL,
             );
             console.log(`✅ User Credited: ${amount} ${targetWallet.currency}`);
           } catch (err) {
