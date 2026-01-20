@@ -41,10 +41,11 @@ const gc = __importStar(require("../../controllers/giftcard/giftcard.controller"
 const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
 const sellGc = __importStar(require("../../controllers/giftcard/giftcard-sell.controller"));
 const upload_1 = require("../../middlewares/upload");
+const purchase_controller_1 = require("../../controllers/giftcard/purchase.controller");
 const router = (0, express_1.Router)();
 router.get('/countries', gc.listCountries);
 router.get('/giftcards', gc.listGiftCardsByCountry);
-router.post('/buy', authenticate_middleware_1.default, gc.buyGiftCard);
+router.post('/buy', authenticate_middleware_1.default, purchase_controller_1.initiateGiftCardPurchase);
 router.get('/sell/brands', sellGc.getSellBrands);
 router.post('/sell', authenticate_middleware_1.default, upload_1.upload.array('images', 10), sellGc.sellGiftCard);
 exports.default = router;

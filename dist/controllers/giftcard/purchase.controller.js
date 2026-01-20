@@ -45,13 +45,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.purchaseGiftCard = void 0;
+exports.fulfillGiftCardPurchase = exports.initiateGiftCardPurchase = void 0;
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const purchaseService = __importStar(require("../../services/giftcard.service"));
 const async_handler_util_1 = require("../../utils/async-handler.util");
 const api_error_util_1 = require("../../utils/api-error.util");
 const email_temeplate_1 = require("../../lib/email-temeplate");
-exports.purchaseGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const sequence_1 = require("../../lib/sequence");
+const transaction_model_1 = __importDefault(require("../../models/transaction.model"));
+const winston_1 = require("../../lib/winston");
+exports.initiateGiftCardPurchase = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { giftCardId, amount, quantity, email } = req.body;
     const userId = (_a = req.userId) === null || _a === void 0 ? void 0 : _a.toString();
@@ -62,9 +65,52 @@ exports.purchaseGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => 
     if (!user) {
         throw new api_error_util_1.ApiError(404, 'User not found');
     }
-    const fullName = `${user.firstname} ${user.lastname}`;
-    const purchase = yield purchaseService.purchaseGiftCard(userId, fullName, user.email, giftCardId, Number(amount), Number(quantity), email);
-    const html = (0, email_temeplate_1.purchaseEmailHtml)(purchase);
-    res.status(201).json({ success: true, data: purchase });
+    const reference = `gift_${req.userId}_${Date.now()}`;
+    const txId = yield (0, sequence_1.getNextSequence)('transactionId');
+    yield transaction_model_1.default.create({
+        id: txId,
+        userId: user._id,
+        type: 'buy_giftcard',
+        fiat_amount: (Number(amount) * Number(quantity)).toFixed(2),
+        reference,
+        status: 'pending',
+        monnify_data: {
+            initiation_source: 'frontend_bank_transfer',
+        },
+        giftcard_data: {
+            giftCardId,
+            amount,
+            quantity,
+            recipientEmail: email,
+        },
+    });
+    winston_1.logger.info('Gift card purchase initialized (pending payment)', {
+        txId,
+        reference,
+        amount: amount * quantity,
+    });
+    res.status(201).json({
+        success: true,
+        data: {
+            reference,
+            amount: Number(amount) * Number(quantity),
+            transactionId: txId,
+        },
+    });
 }));
+const fulfillGiftCardPurchase = (transaction) => __awaiter(void 0, void 0, void 0, function* () {
+    const { giftCardId, amount, quantity, recipientEmail } = transaction.giftcard_data;
+    const user = yield user_model_1.default.findById(transaction.userId);
+    if (!user) {
+        throw new Error('User not found for gift card fulfillment');
+    }
+    const fullName = `${user.firstname} ${user.lastname}`;
+    const purchase = yield purchaseService.purchaseGiftCard(user._id.toString(), fullName, user.email, giftCardId, Number(amount), Number(quantity), recipientEmail);
+    transaction.giftcard_data.purchase_result = purchase;
+    transaction.status = 'completed';
+    yield transaction.save();
+    const html = (0, email_temeplate_1.purchaseEmailHtml)(purchase);
+    return purchase;
+});
+exports.fulfillGiftCardPurchase = fulfillGiftCardPurchase;
 //# sourceMappingURL=purchase.controller.js.map

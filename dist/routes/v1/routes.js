@@ -28,6 +28,9 @@ const authenticate_middleware_1 = __importDefault(require("../../middlewares/aut
 const crypto_routes_1 = __importDefault(require("../../crypto-infra/routes/crypto.routes"));
 const giftcard_route_1 = __importDefault(require("./giftcard.route"));
 const transaction_route_1 = __importDefault(require("./transaction.route"));
+const monnify_route_1 = __importDefault(require("./monnify.route"));
+const monnify_webhook_1 = require("../../controllers/monnify.webhook");
+const verification_controller_1 = require("../../controllers/verification.controller");
 const router = (0, express_1.Router)();
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({
@@ -51,6 +54,9 @@ router.use('/giftcard', giftcard_route_1.default);
 router.use('/admin/giftcard', admin_routes_1.default);
 router.use('/authorisation', authorisation_route_1.default);
 router.use('/transactions', transaction_route_1.default);
+router.use('/monnify', monnify_route_1.default);
+router.post('/monnify/webhook', monnify_webhook_1.handleMonnifyWebhook);
+router.post('/transactions/:reference/verify', verification_controller_1.verifyTransactionStatus);
 router.use(authenticate_middleware_1.default);
 router.use('/infra/admin', admin_routes_2.default);
 router.use('/infra/wallets', wallet_routes_1.default);

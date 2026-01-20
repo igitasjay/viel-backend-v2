@@ -36,6 +36,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const p = __importStar(require("../../controllers/giftcard/purchase.controller"));
 const router = (0, express_1.Router)();
-router.post('/purchase', p.purchaseGiftCard);
+router.post('/purchase', p.initiateGiftCardPurchase);
 exports.default = router;
 //# sourceMappingURL=purchase.route.js.map

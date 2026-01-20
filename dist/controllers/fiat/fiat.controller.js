@@ -19,8 +19,6 @@ const transaction_model_1 = __importDefault(require("../../models/transaction.mo
 const twelve_data_1 = require("../../lib/twelve-data");
 const winston_1 = require("../../lib/winston");
 const sequence_1 = require("../../lib/sequence");
-const paystack_1 = require("../../lib/paystack");
-const config_1 = __importDefault(require("../../config/config"));
 const buyValidation = [
     (0, express_validator_1.body)('coin').trim().notEmpty().toUpperCase(),
     (0, express_validator_1.body)('network').trim().notEmpty().toUpperCase(),
@@ -90,38 +88,21 @@ exports.initializeBuyCrypto = [
                 receive_address: receiveAddress,
                 reference,
                 status: 'pending',
+                monnify_data: {
+                    initiation_source: 'frontend_bank_transfer',
+                },
             });
-            const paystackRes = yield (0, paystack_1.initializeTransaction)({
-                email: req.body.email,
-                amount: nairaAmount,
-                reference,
-                callback_url: `${config_1.default.FRONTEND_URL}/pay/success?ref=${reference}`,
-                metadata: { txId, coin, crypto_amount: cryptoAmount },
-            });
-            if (!paystackRes.status) {
-                yield tx.deleteOne();
-                res.status(500).json({
-                    code: 'PaystackError',
-                    message: 'Payment initialization failed.',
-                });
-                return;
-            }
-            yield transaction_model_1.default.updateOne({ id: txId }, {
-                status: 'initialized',
-                paystack_data: paystackRes.data,
-            });
-            winston_1.logger.info('Paystack payment initialized', {
+            winston_1.logger.info('Buy crypto transaction initialized (pending payment)', {
                 txId,
                 reference,
                 nairaAmount,
             });
             res.status(201).json({
-                message: 'Payment initialized successfully.',
+                message: 'Transaction initialized. Please proceed to payment.',
                 data: {
                     reference,
                     naira_amount: nairaAmount.toFixed(2),
-                    authorization_url: paystackRes.data.authorization_url,
-                    access_code: paystackRes.data.access_code,
+                    transactionId: txId,
                 },
             });
         }
@@ -136,48 +117,7 @@ exports.initializeBuyCrypto = [
 exports.verifyPayment = [
     (0, express_validator_1.param)('reference').trim().notEmpty(),
     (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const { reference } = req.params;
-        try {
-            const paystackData = yield (0, paystack_1.verifyTransaction)(reference);
-            if (paystackData.status !== true ||
-                paystackData.data.status !== 'success') {
-                yield transaction_model_1.default.updateOne({ reference }, { status: 'failed' });
-                res.status(400).json({
-                    code: 'PaymentFailed',
-                    message: 'Payment was not successful.',
-                });
-                return;
-            }
-            const tx = yield transaction_model_1.default.findOne({ reference });
-            if (!tx || (tx.status !== 'pending' && tx.status !== 'initialized')) {
-                res.status(400).json({
-                    code: 'InvalidTx',
-                    message: 'Transaction not found or already processed.',
-                });
-                return;
-            }
-            yield transaction_model_1.default.updateOne({ id: tx.id }, {
-                status: 'paid',
-                paystack_data: paystackData.data,
-            });
-            winston_1.logger.info('Payment verified - Dispatch crypto:', {
-                txId: tx.id,
-                coin: tx.coin,
-                amount: tx.crypto_amount,
-                to: tx.receive_address,
-            });
-            winston_1.logger.info('Buy crypto payment completed', { reference });
-            res.json({
-                message: 'Payment verified successfully. Crypto dispatch initiated.',
-                data: paystackData.data,
-            });
-        }
-        catch (error) {
-            winston_1.logger.error('Verify failed:', error);
-            res
-                .status(500)
-                .json({ code: 'ServerError', message: 'Verification failed.' });
-        }
+        res.status(400).json({ message: 'Deprecated for Monnify flow. Use /transactions/:reference/verify' });
     }),
 ];
 //# sourceMappingURL=fiat.controller.js.map

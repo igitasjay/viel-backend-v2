@@ -11,7 +11,7 @@ const TransactionSchema = new mongoose_1.Schema({
     },
     type: {
         type: String,
-        enum: ['buy_crypto', 'deposit_crypto', 'withdraw_fiat'],
+        enum: ['buy_crypto', 'deposit_crypto', 'withdraw_fiat', 'buy_giftcard'],
         required: true,
     },
     coin: { type: String },
@@ -34,6 +34,8 @@ const TransactionSchema = new mongoose_1.Schema({
         default: 'pending',
     },
     paystack_data: { type: mongoose_1.Schema.Types.Mixed },
+    monnify_data: { type: mongoose_1.Schema.Types.Mixed },
+    giftcard_data: { type: mongoose_1.Schema.Types.Mixed },
     metadata: { type: mongoose_1.Schema.Types.Mixed, default: {} },
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 exports.default = (0, mongoose_1.model)('Transaction', TransactionSchema);
