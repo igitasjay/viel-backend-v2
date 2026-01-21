@@ -63,7 +63,7 @@ router.use(authenticate);
 
 router.use('/infra/admin', adminRoutes);
 router.use('/infra/wallets', walletRoutes); // Add userAuth middleware here
-router.use('/infra/trade', tradeRoutes); // Add userAuth middleware here
+// router.use('/infra/trade', tradeRoutes); // Add userAuth middleware here
 router.use('/infra/webhooks', webhookRoutes);
 router.use('/infra/crypto', userCryptoRoute);
 

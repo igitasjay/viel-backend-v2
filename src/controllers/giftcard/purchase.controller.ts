@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '@/models/user.model';
 import * as purchaseService from '@/services/giftcard.service';
+import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/services/monnify.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { ApiError } from '@/utils/api-error.util';
 import { purchaseEmailHtml } from '@/lib/email-temeplate';
@@ -26,13 +27,14 @@ export const initiateGiftCardPurchase = asyncHandler(
     // Generate reference
     const reference = `gift_${req.userId}_${Date.now()}`;
     const txId = await getNextSequence('transactionId');
+    const totalAmount = Number(amount) * Number(quantity);
 
     // Create pending transaction
     await Transaction.create({
       id: txId,
       userId: user._id,
       type: 'buy_giftcard',
-      fiat_amount: (Number(amount) * Number(quantity)).toFixed(2),
+      fiat_amount: totalAmount.toFixed(2),
       reference,
       status: 'pending',
       monnify_data: {
@@ -49,15 +51,43 @@ export const initiateGiftCardPurchase = asyncHandler(
     logger.info('Gift card purchase initialized (pending payment)', {
       txId,
       reference,
-      amount: amount * quantity,
+      amount: totalAmount,
+    });
+
+    // Initialize Monnify Payment
+    // 1. Init Transaction to get Monnify Reference
+    const initTxResponse = await initMonnifyTransaction({
+      amount: totalAmount,
+      customerName: `${user.firstname} ${user.lastname}`,
+      customerEmail: user.email,
+      paymentReference: reference,
+      paymentDescription: `Gift Card Purchase - ${reference}`,
+      currencyCode: 'NGN',
+      contractCode: process.env.MONNIFY_CONTRACT_CODE!,
+      redirectUrl: 'http://localhost:3000', // Placeholder or frontend URL
+      paymentMethods: ["ACCOUNT_TRANSFER"]
+    });
+
+    const monnifyRef = initTxResponse.responseBody.transactionReference;
+
+    // 2. Initialize Monnify Payment (Bank Transfer) using the Monnify Reference
+    const monnifyResponse = await initMonnifyBankTransfer({
+      transactionReference: monnifyRef,
+      amount: totalAmount,
+      customerName: `${user.firstname} ${user.lastname}`,
+      customerEmail: user.email,
+      paymentDescription: `Gift Card Purchase - ${reference}`,
+      currencyCode: 'NGN',
+      contractCode: process.env.MONNIFY_CONTRACT_CODE!,
     });
 
     res.status(201).json({
       success: true,
       data: {
         reference,
-        amount: Number(amount) * Number(quantity),
+        amount: totalAmount,
         transactionId: txId,
+        paymentDetails: monnifyResponse.responseBody, // Contains account number, bank, etc.
       },
     });
   },

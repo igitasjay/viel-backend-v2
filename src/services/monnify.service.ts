@@ -3,6 +3,8 @@ import {
   MonnifyBankTransferRequest,
   MonnifyBankTransferResponse,
   MonnifyTransactionResponse,
+  MonnifyInitTransactionRequest,
+  MonnifyInitTransactionResponse,
 } from '@/types/monnify.type';
 import axios from 'axios';
 
@@ -151,6 +153,36 @@ export async function getMonnifyTransactionStatus(
     console.error('Monnify Query API error:', error.message);
     
     const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify transaction query failed') as any;
+    safeError.status = error.response?.status;
+    safeError.monnifyResponse = error.response?.data;
+    throw safeError;
+  }
+}
+
+/**
+ * Step 1: Initialize Transaction (Get Transaction Reference)
+ */
+export async function initMonnifyTransaction(
+  payload: MonnifyInitTransactionRequest,
+): Promise<MonnifyInitTransactionResponse> {
+  const accessToken = await getMonnifyAccessToken();
+
+  try {
+    const response = await axios.post<MonnifyInitTransactionResponse>(
+      `https://${MONNIFY_BASE_URL}/api/v1/merchant/transactions/init-transaction`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Monnify Init Transaction API error:', error.message);
+    
+    const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify init transaction failed') as any;
     safeError.status = error.response?.status;
     safeError.monnifyResponse = error.response?.data;
     throw safeError;

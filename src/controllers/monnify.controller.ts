@@ -47,10 +47,28 @@ export const initBankTransfer = [
       return;
     }
 
-    const { transactionReference, bankCode } = req.body;
+    const { 
+      transactionReference, 
+      bankCode, 
+      amount, 
+      customerName, 
+      customerEmail, 
+      paymentDescription, 
+      currencyCode, 
+      contractCode 
+    } = req.body;
 
     try {
-      const details = await initMonnifyBankTransfer({ transactionReference, bankCode });
+      const details = await initMonnifyBankTransfer({ 
+        transactionReference, 
+        bankCode,
+        amount,
+        customerName,
+        customerEmail,
+        paymentDescription,
+        currencyCode,
+        contractCode
+      });
       
       res.status(200).json({
         message: 'Bank transfer initialized successfully',
