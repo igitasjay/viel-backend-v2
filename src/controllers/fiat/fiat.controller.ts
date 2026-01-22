@@ -8,12 +8,14 @@ import { logger } from '@/lib/winston';
 import { getNextSequence } from '@/lib/sequence';
 // import { initializeTransaction, verifyTransaction } from '@/lib/paystack';
 import config from '@/config/config';
+import User from '@/models/user.model';
+import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/services/monnify.service';
 
 const buyValidation = [
   body('coin').trim().notEmpty().toUpperCase(),
   body('network').trim().notEmpty().toUpperCase(),
   body('amount').isFloat({ min: 0 }),
-  body('receiveAddress').trim().notEmpty(),
+  // body('receiveAddress').trim().notEmpty(), // Made optional/checked manually
 ];
 
 export const initializeBuyCrypto = [
@@ -54,8 +56,17 @@ export const initializeBuyCrypto = [
       }
 
       // Validate receive address
+      const finalAddress = req.body.walletAddress || receiveAddress;
+      if (!finalAddress) {
+        res.status(400).json({
+           code: 'ValidationError',
+           message: 'walletAddress or receiveAddress is required'
+        });
+        return;
+      }
+
       const addressRegex = new RegExp(net.addressRegex);
-      if (!addressRegex.test(receiveAddress)) {
+      if (!addressRegex.test(finalAddress)) {
         res.status(400).json({
           code: 'InvalidAddress',
           message: 'Invalid receive address format.',
@@ -70,6 +81,12 @@ export const initializeBuyCrypto = [
           message: `Minimum buy amount: ${net.minimum} ${coin}`,
         });
         return;
+      }
+
+      const user = await User.findById(req.userId);
+      if (!user) {
+         res.status(404).json({ code: 'UserNotFound', message: 'User not found' });
+         return;
       }
 
       // Live rate
@@ -90,7 +107,7 @@ export const initializeBuyCrypto = [
         network,
         crypto_amount: cryptoAmount.toFixed(asset.maximumDecimalPlaces),
         fiat_amount: nairaAmount.toFixed(2),
-        receive_address: receiveAddress,
+        receive_address: finalAddress,
         reference,
         status: 'pending',
         monnify_data: {
@@ -104,12 +121,39 @@ export const initializeBuyCrypto = [
         nairaAmount,
       });
 
+      // 1. Init Transaction to get Monnify Reference
+      const initTxResponse = await initMonnifyTransaction({
+        amount: nairaAmount,
+        customerName: `${user.firstname} ${user.lastname}`,
+        customerEmail: user.email,
+        paymentReference: reference,
+        paymentDescription: `Buy Crypto - ${reference}`,
+        currencyCode: 'NGN',
+        contractCode: process.env.MONNIFY_CONTRACT_CODE!,
+        redirectUrl: 'http://localhost:3000', 
+        paymentMethods: ["ACCOUNT_TRANSFER"]
+      });
+
+      const monnifyRef = initTxResponse.responseBody.transactionReference;
+
+      // 2. Initialize Monnify Payment (Bank Transfer) using the Monnify Reference
+      const monnifyResponse = await initMonnifyBankTransfer({
+        transactionReference: monnifyRef,
+        amount: nairaAmount,
+        customerName: `${user.firstname} ${user.lastname}`,
+        customerEmail: user.email,
+        paymentDescription: `Buy Crypto - ${reference}`,
+        currencyCode: 'NGN',
+        contractCode: process.env.MONNIFY_CONTRACT_CODE!,
+      });
+
       res.status(201).json({
         message: 'Transaction initialized. Please proceed to payment.',
         data: {
           reference,
           naira_amount: nairaAmount.toFixed(2),
           transactionId: txId,
+          paymentDetails: monnifyResponse.responseBody,
         },
       });
     } catch (error) {

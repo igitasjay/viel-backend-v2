@@ -1,6 +1,6 @@
-# Gift Card Purchase API Flow
+# Payment API Flows
 
-This guide details the step-by-step HTTP requests required to purchase a gift card.
+This guide details the step-by-step HTTP requests for purchasing Gift Cards and Crypto.
 
 ## Prerequisites
 - **Base URL**: `http://localhost:1200/api/v1`
@@ -27,26 +27,37 @@ Copy the `accessToken` from the response. Use it in the `Authorization` header f
 
 ---
 
-## 2. Browse Gift Cards
-Find the `giftCardId` you want to purchase.
+## 2. Buy Gift Card Flow
 
-**Request:**
-`GET /giftcard/countries`
-*Response: List of countries with codes (e.g., "NG", "US").*
+### Step A: Browse
+`GET /giftcard/countries` -> `GET /giftcard/giftcards?countryCode=NG`
 
-**Request:**
-`GET /giftcard/giftcards?countryCode=NG`
+### Step B: Initiate Purchase
+**Request:** `POST /giftcard/buy`
+**Body:**
+```json
+{
+  "giftCardId": "64f1...",
+  "amount": 5000,
+  "quantity": 1,
+  "email": "recipient@email.com"
+}
+```
+**Response:** Includes `reference` and `paymentDetails`.
 
-**Response Action:**
-Select a gift card and copy its `_id` (e.g., `64f1b2c...`).
+### Step C: Verify
+**Request:** `POST /transactions/:reference/verify`
+**Body:** `{}`
 
 ---
 
-## 3. Initiate Purchase
+## 3. Buy Crypto Flow
+
+### Step A: Initiate Purchase
 Create a pending transaction AND get payment details.
 
 **Request:**
-`POST /giftcard/buy`
+`POST /fiat/buy-crypto`
 
 **Headers:**
 `Authorization: Bearer <accessToken>`
@@ -54,41 +65,37 @@ Create a pending transaction AND get payment details.
 **Body:**
 ```json
 {
-  "giftCardId": "64f1b2c...",
-  "amount": 5000,
-  "quantity": 1,
-  "email": "recipient@email.com"
+  "coin": "USDT",
+  "network": "TRC20",
+  "amount": 20,              // Amount in Crypto (e.g., 20 USDT)
+  "walletAddress": "TVk..."  // The user's wallet address
 }
 ```
 
 **Response:**
 ```json
 {
-  "success": true,
+  "message": "Transaction initialized. Please proceed to payment.",
   "data": {
-    "reference": "gift_65a123...", 
-    "amount": 5000,
+    "reference": "buy_65a...", 
+    "naira_amount": "30000.00",
     "transactionId": "TRX_...",
     "paymentDetails": {
        "accountNumber": "1234567890",
        "bankName": "Wema Bank",
-       "accountName": "Monnify Test"
+       "accountName": "Monnify Test",
+       ...
     }
   }
 }
 ```
-**Action**: 
-1. Save the `reference`.
-2. Use the `paymentDetails` (Account Number & Bank) to make the transfer.
 
----
-
-## 4. Payment & Verification
-After the user pays (using the account details from Step 3), verify the payment to trigger true fulfillment.
+### Step B: Payment & Verification
+After the user pays (using the account details from Step A), verify the payment.
 
 **Request:**
 `POST /transactions/:reference/verify`
-*Replace `:reference` with the `reference` obtained in Step 3.*
+*Replace `:reference` with the `reference` obtained in Step A.*
 
 **Body:** `{}` (Empty)
 
@@ -102,5 +109,4 @@ After the user pays (using the account details from Step 3), verify the payment 
 
 **Outcome**: The system checks Monnify. If paid, it automatically:
 1. Marks transaction as `paid`.
-2. Purchases the gift card from the provider.
-3. Sends the code to the recipient.
+2. Triggers the crypto dispatch logic (currently a placeholder in `monnify.webhook.ts` until dispatch logic is connected).
