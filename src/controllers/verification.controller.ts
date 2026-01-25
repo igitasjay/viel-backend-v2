@@ -4,6 +4,7 @@ import Transaction from '@/models/transaction.model';
 import { getMonnifyTransactionStatus } from '@/services/monnify.service';
 import { fulfillGiftCardPurchase } from '@/controllers/giftcard/purchase.controller';
 import { logger } from '@/lib/winston';
+import { UserService, VolumeType } from '@/services/user.service';
 // import { sendCrypto } from '@/lib/crypto-dispatch';
 
 export const verifyTransactionStatus = [
@@ -52,6 +53,15 @@ export const verifyTransactionStatus = [
            // await sendCrypto(...)
            // tx.status = 'completed';
            // await tx.save();
+
+           // Update User Trading Volume
+           if (tx.fiat_amount) {
+             await UserService.updateUserVolume(
+               tx.userId.toString(),
+               Number(tx.fiat_amount),
+               VolumeType.BUY,
+             );
+           }
         } else if (tx.type === 'buy_giftcard') {
            logger.info(`Manual Verify: Triggering GiftCard Fulfillment for TX ${tx.id}`);
            try {

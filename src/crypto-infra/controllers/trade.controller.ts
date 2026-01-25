@@ -95,6 +95,7 @@ export const buyCrypto = async (req: Request, res: Response) => {
         monnify_data: {
           initiation_source: 'frontend_bank_transfer',
         },
+        image: coin.imageUrl,
     });
 
     logger.info('Buy crypto transaction initialized (pending payment)', {

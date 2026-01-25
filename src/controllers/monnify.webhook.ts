@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import Transaction from '@/models/transaction.model';
 import { fulfillGiftCardPurchase } from '@/controllers/giftcard/purchase.controller';
 import { logger } from '@/lib/winston';
+import { UserService, VolumeType } from '@/services/user.service';
 // import { sendCrypto } from '@/lib/crypto-dispatch'; // Placeholder for crypto dispatch logic
 
 export const handleMonnifyWebhook = async (req: Request, res: Response) => {
@@ -59,6 +60,15 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
         // await sendCrypto(tx.coin!, tx.network!, tx.crypto_amount!, tx.receive_address!);
         // tx.status = 'completed'; // Update status after successful dispatch
         // await tx.save();
+
+        // Update User Trading Volume
+        if (tx.fiat_amount) {
+          await UserService.updateUserVolume(
+            tx.userId.toString(),
+            Number(tx.fiat_amount),
+            VolumeType.BUY,
+          );
+        }
     } else if (tx.type === 'buy_giftcard') {
       logger.info(`Triggering GiftCard Fulfillment for TX ${tx.id}`);
       try {

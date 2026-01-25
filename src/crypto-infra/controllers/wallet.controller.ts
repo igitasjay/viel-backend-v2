@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { Ledger, LedgerCategory, TransactionAction } from '../models/Ledger';
 import { Wallet } from '../models/Wallet';
+import { Currency } from '../models/Currency';
 import { WalletService } from '../services/wallet.service';
 import { LedgerService } from '../services/ledger.service';
 import { LedgerType } from '../models/Ledger';
@@ -78,6 +79,8 @@ export const withdrawCrypto = async (req: Request, res: Response) => {
 
     // 2. Debit User Internal Ledger
     const withdrawalRef = `WD-${Date.now()}`;
+    const coin = await Currency.findOne({ symbol: asset });
+
     await LedgerService.creditUser(
       userId!,
       asset,
@@ -86,6 +89,7 @@ export const withdrawCrypto = async (req: Request, res: Response) => {
       withdrawalRef,
       LedgerCategory.CRYPTO,
       TransactionAction.SELL,
+      coin?.imageUrl,
     );
 
     // 3. Trigger Async Withdrawal Job

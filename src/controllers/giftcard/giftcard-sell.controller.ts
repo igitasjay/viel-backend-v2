@@ -8,6 +8,7 @@ import {
   LedgerCategory,
   TransactionAction,
 } from '@/crypto-infra/models/Ledger';
+import { UserService, VolumeType } from '@/services/user.service';
 
 export const getSellBrands = asyncHandler(async (req: Request, res: Response) => {
   const brands = await sellService.getAllBrands();
@@ -74,6 +75,14 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
     `GCS-${sale._id}`,
     LedgerCategory.GIFTCARD,
     TransactionAction.SELL,
+    brand.logoUrl,
+  );
+
+  // Update User Trading Volume
+  await UserService.updateUserVolume(
+    req.userId!.toString(),
+    totalInNaira,
+    VolumeType.SELL,
   );
 
   res.status(201).json({

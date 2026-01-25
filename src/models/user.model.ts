@@ -10,6 +10,8 @@ export interface IUser {
   isEmailVerified: boolean;
   verifiedUser: boolean;
   netTradingVolumn?: number;
+  totalBuyVolume?: number;
+  totalSellVolume?: number;
   passcode?: string;
   nin?: string;
   bvn?: string;
@@ -56,6 +58,14 @@ const UserSchema = new Schema<IUser>(
       default: false,
     },
     netTradingVolumn: {
+      type: Number,
+      default: 0,
+    },
+    totalBuyVolume: {
+      type: Number,
+      default: 0,
+    },
+    totalSellVolume: {
       type: Number,
       default: 0,
     },

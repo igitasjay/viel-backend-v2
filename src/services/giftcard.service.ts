@@ -95,6 +95,7 @@ export const purchaseGiftCard = async (
       `GCP-${purchase[0]._id}`,
       LedgerCategory.GIFTCARD,
       TransactionAction.BUY,
+      card.imageUrl,
     );
 
     // decrement stock atomically

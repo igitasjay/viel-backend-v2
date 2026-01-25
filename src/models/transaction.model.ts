@@ -25,6 +25,7 @@ export interface ITransaction extends Document {
   monnify_data?: any;
   giftcard_data?: any;
   metadata?: Record<string, any>;
+  image?: string;
 }
 
 const TransactionSchema = new Schema<ITransaction>(
@@ -64,6 +65,7 @@ const TransactionSchema = new Schema<ITransaction>(
     monnify_data: { type: Schema.Types.Mixed },
     giftcard_data: { type: Schema.Types.Mixed },
     metadata: { type: Schema.Types.Mixed, default: {} },
+    image: { type: String },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );

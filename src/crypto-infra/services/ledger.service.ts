@@ -18,6 +18,7 @@ export class LedgerService {
     refId: string,
     category: LedgerCategory,
     action: TransactionAction,
+    image?: string,
   ) {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -45,6 +46,7 @@ export class LedgerService {
             transactionType: action,
             referenceId: refId,
             description: `Credit ${amount} ${asset} via ${type}`,
+            image,
           },
         ],
         { session },

@@ -9,6 +9,7 @@ import { purchaseEmailHtml } from '@/lib/email-temeplate';
 import { getNextSequence } from '@/lib/sequence';
 import Transaction from '@/models/transaction.model';
 import { logger } from '@/lib/winston';
+import { UserService, VolumeType } from '@/services/user.service';
 
 export const initiateGiftCardPurchase = asyncHandler(
   async (req: Request, res: Response) => {
@@ -112,6 +113,13 @@ export const fulfillGiftCardPurchase = async (transaction: any) => {
     Number(amount),
     Number(quantity),
     recipientEmail,
+  );
+
+  // Update User Trading Volume
+  await UserService.updateUserVolume(
+    user._id.toString(),
+    purchase.totalInNaira,
+    VolumeType.BUY,
   );
 
   // Update transaction metadata with purchase result

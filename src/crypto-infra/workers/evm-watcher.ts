@@ -1,9 +1,11 @@
 import { ethers } from "ethers";
 import dotenv from "dotenv";
 import { Wallet } from "../models/Wallet.js";
+import { Currency } from "../models/Currency.js";
 import { LedgerService } from "../services/ledger.service.js";
 import { LedgerType, LedgerCategory, TransactionAction } from "../models/Ledger.js";
 import { connectToDatabase } from "@/lib/mongoose.js";
+import { UserService, VolumeType } from "../../services/user.service.js";
 
 dotenv.config();
 
@@ -54,6 +56,10 @@ async function startWatcher() {
 
           // 4. Credit User (Idempotent via TxHash)
           try {
+            const coin = await Currency.findOne({
+              symbol: targetWallet.currency,
+            });
+
             await LedgerService.creditUser(
               targetWallet.userId.toString(),
               targetWallet.currency,
@@ -62,8 +68,20 @@ async function startWatcher() {
               tx.hash, // Uses TxHash as Idempotency Key
               LedgerCategory.CRYPTO,
               TransactionAction.SELL,
+              coin?.imageUrl,
             );
             console.log(`✅ User Credited: ${amount} ${targetWallet.currency}`);
+
+            // Update User Trading Volume
+            if (coin) {
+              const nairaValue = amount * coin.naira_rate;
+              await UserService.updateUserVolume(
+                targetWallet.userId.toString(),
+                nairaValue,
+                VolumeType.SELL,
+              );
+              console.log(`📈 User Volume Updated: ${nairaValue} NGN`);
+            }
           } catch (err) {
             console.error("Credit failed (likely duplicate)", err);
           }
