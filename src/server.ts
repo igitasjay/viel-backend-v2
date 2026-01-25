@@ -19,6 +19,7 @@ import type { CorsOptions } from 'cors';
 // import { startScanner } from './crypto/service/deposit-scanner.service';
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(morgan('dev'));
 
 const corsOptions: CorsOptions = {
