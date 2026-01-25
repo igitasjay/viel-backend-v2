@@ -29,6 +29,7 @@ export interface ILedger extends Document {
   referenceId: string; // TxHash or Internal Trade ID
   description: string;
   image?: string;
+  status: string;
 }
 
 const LedgerSchema = new Schema(
@@ -55,6 +56,7 @@ const LedgerSchema = new Schema(
     referenceId: { type: String, required: true, unique: true }, // Idempotency Key
     description: { type: String },
     image: { type: String },
+    status: { type: String, default: 'completed' },
   },
   { timestamps: true }
 );

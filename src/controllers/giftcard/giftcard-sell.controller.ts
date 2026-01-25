@@ -76,6 +76,7 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
     LedgerCategory.GIFTCARD,
     TransactionAction.SELL,
     brand.logoUrl,
+    'pending',
   );
 
   // Update User Trading Volume

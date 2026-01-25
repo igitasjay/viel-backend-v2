@@ -19,6 +19,7 @@ export class LedgerService {
     category: LedgerCategory,
     action: TransactionAction,
     image?: string,
+    status: string = 'completed',
   ) {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -47,6 +48,7 @@ export class LedgerService {
             referenceId: refId,
             description: `Credit ${amount} ${asset} via ${type}`,
             image,
+            status,
           },
         ],
         { session },
@@ -61,5 +63,16 @@ export class LedgerService {
     } finally {
       session.endSession();
     }
+  }
+
+  /**
+   * Update the status of a ledger entry
+   */
+  static async updateLedgerStatus(refId: string, status: string) {
+    return await Ledger.findOneAndUpdate(
+      { referenceId: refId },
+      { status },
+      { new: true }
+    );
   }
 }

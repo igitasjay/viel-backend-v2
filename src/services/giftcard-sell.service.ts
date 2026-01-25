@@ -1,5 +1,6 @@
 import GiftCardBrand from '@/models/giftcard-brand.model';
 import GiftCardSale from '@/models/giftcard-sale.model';
+import { LedgerService } from '@/crypto-infra/services/ledger.service';
 
 // --- BRAND SERVICES ---
 export const createBrand = (data: any) => GiftCardBrand.create(data);
@@ -37,5 +38,10 @@ export const getSalesByStatus = (status?: string) => {
   const query = status ? { status } : {};
   return GiftCardSale.find(query).populate('userId brandId').sort({ createdAt: -1 });
 };
-export const updateSaleStatus = (id: string, status: string, adminComment?: string) => 
-  GiftCardSale.findByIdAndUpdate(id, { status, adminComment }, { new: true });
+export const updateSaleStatus = async (id: string, status: string, adminComment?: string) => {
+  const sale = await GiftCardSale.findByIdAndUpdate(id, { status, adminComment }, { new: true });
+  if (sale) {
+    await LedgerService.updateLedgerStatus(`GCS-${sale._id}`, status);
+  }
+  return sale;
+};
