@@ -19,11 +19,12 @@ const transaction_model_1 = __importDefault(require("../../models/transaction.mo
 const twelve_data_1 = require("../../lib/twelve-data");
 const winston_1 = require("../../lib/winston");
 const sequence_1 = require("../../lib/sequence");
+const user_model_1 = __importDefault(require("../../models/user.model"));
+const monnify_service_1 = require("../../services/monnify.service");
 const buyValidation = [
     (0, express_validator_1.body)('coin').trim().notEmpty().toUpperCase(),
     (0, express_validator_1.body)('network').trim().notEmpty().toUpperCase(),
     (0, express_validator_1.body)('amount').isFloat({ min: 0 }),
-    (0, express_validator_1.body)('receiveAddress').trim().notEmpty(),
 ];
 exports.initializeBuyCrypto = [
     ...buyValidation,
@@ -57,8 +58,16 @@ exports.initializeBuyCrypto = [
                     .json({ code: 'NotFound', message: 'Network not enabled.' });
                 return;
             }
+            const finalAddress = req.body.walletAddress || receiveAddress;
+            if (!finalAddress) {
+                res.status(400).json({
+                    code: 'ValidationError',
+                    message: 'walletAddress or receiveAddress is required'
+                });
+                return;
+            }
             const addressRegex = new RegExp(net.addressRegex);
-            if (!addressRegex.test(receiveAddress)) {
+            if (!addressRegex.test(finalAddress)) {
                 res.status(400).json({
                     code: 'InvalidAddress',
                     message: 'Invalid receive address format.',
@@ -70,6 +79,11 @@ exports.initializeBuyCrypto = [
                     code: 'BelowMinimum',
                     message: `Minimum buy amount: ${net.minimum} ${coin}`,
                 });
+                return;
+            }
+            const user = yield user_model_1.default.findById(req.userId);
+            if (!user) {
+                res.status(404).json({ code: 'UserNotFound', message: 'User not found' });
                 return;
             }
             const live = yield (0, twelve_data_1.fetchLiveRate)(asset.code);
@@ -85,7 +99,7 @@ exports.initializeBuyCrypto = [
                 network,
                 crypto_amount: cryptoAmount.toFixed(asset.maximumDecimalPlaces),
                 fiat_amount: nairaAmount.toFixed(2),
-                receive_address: receiveAddress,
+                receive_address: finalAddress,
                 reference,
                 status: 'pending',
                 monnify_data: {
@@ -97,12 +111,34 @@ exports.initializeBuyCrypto = [
                 reference,
                 nairaAmount,
             });
+            const initTxResponse = yield (0, monnify_service_1.initMonnifyTransaction)({
+                amount: nairaAmount,
+                customerName: `${user.firstname} ${user.lastname}`,
+                customerEmail: user.email,
+                paymentReference: reference,
+                paymentDescription: `Buy Crypto - ${reference}`,
+                currencyCode: 'NGN',
+                contractCode: process.env.MONNIFY_CONTRACT_CODE,
+                redirectUrl: 'http://localhost:3000',
+                paymentMethods: ["ACCOUNT_TRANSFER"]
+            });
+            const monnifyRef = initTxResponse.responseBody.transactionReference;
+            const monnifyResponse = yield (0, monnify_service_1.initMonnifyBankTransfer)({
+                transactionReference: monnifyRef,
+                amount: nairaAmount,
+                customerName: `${user.firstname} ${user.lastname}`,
+                customerEmail: user.email,
+                paymentDescription: `Buy Crypto - ${reference}`,
+                currencyCode: 'NGN',
+                contractCode: process.env.MONNIFY_CONTRACT_CODE,
+            });
             res.status(201).json({
                 message: 'Transaction initialized. Please proceed to payment.',
                 data: {
                     reference,
                     naira_amount: nairaAmount.toFixed(2),
                     transactionId: txId,
+                    paymentDetails: monnifyResponse.responseBody,
                 },
             });
         }

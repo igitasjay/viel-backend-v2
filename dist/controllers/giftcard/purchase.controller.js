@@ -48,6 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.fulfillGiftCardPurchase = exports.initiateGiftCardPurchase = void 0;
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const purchaseService = __importStar(require("../../services/giftcard.service"));
+const monnify_service_1 = require("../../services/monnify.service");
 const async_handler_util_1 = require("../../utils/async-handler.util");
 const api_error_util_1 = require("../../utils/api-error.util");
 const email_temeplate_1 = require("../../lib/email-temeplate");
@@ -67,11 +68,12 @@ exports.initiateGiftCardPurchase = (0, async_handler_util_1.asyncHandler)((req, 
     }
     const reference = `gift_${req.userId}_${Date.now()}`;
     const txId = yield (0, sequence_1.getNextSequence)('transactionId');
+    const totalAmount = Number(amount) * Number(quantity);
     yield transaction_model_1.default.create({
         id: txId,
         userId: user._id,
         type: 'buy_giftcard',
-        fiat_amount: (Number(amount) * Number(quantity)).toFixed(2),
+        fiat_amount: totalAmount.toFixed(2),
         reference,
         status: 'pending',
         monnify_data: {
@@ -87,14 +89,36 @@ exports.initiateGiftCardPurchase = (0, async_handler_util_1.asyncHandler)((req, 
     winston_1.logger.info('Gift card purchase initialized (pending payment)', {
         txId,
         reference,
-        amount: amount * quantity,
+        amount: totalAmount,
+    });
+    const initTxResponse = yield (0, monnify_service_1.initMonnifyTransaction)({
+        amount: totalAmount,
+        customerName: `${user.firstname} ${user.lastname}`,
+        customerEmail: user.email,
+        paymentReference: reference,
+        paymentDescription: `Gift Card Purchase - ${reference}`,
+        currencyCode: 'NGN',
+        contractCode: process.env.MONNIFY_CONTRACT_CODE,
+        redirectUrl: 'http://localhost:3000',
+        paymentMethods: ["ACCOUNT_TRANSFER"]
+    });
+    const monnifyRef = initTxResponse.responseBody.transactionReference;
+    const monnifyResponse = yield (0, monnify_service_1.initMonnifyBankTransfer)({
+        transactionReference: monnifyRef,
+        amount: totalAmount,
+        customerName: `${user.firstname} ${user.lastname}`,
+        customerEmail: user.email,
+        paymentDescription: `Gift Card Purchase - ${reference}`,
+        currencyCode: 'NGN',
+        contractCode: process.env.MONNIFY_CONTRACT_CODE,
     });
     res.status(201).json({
         success: true,
         data: {
             reference,
-            amount: Number(amount) * Number(quantity),
+            amount: totalAmount,
             transactionId: txId,
+            paymentDetails: monnifyResponse.responseBody,
         },
     });
 }));

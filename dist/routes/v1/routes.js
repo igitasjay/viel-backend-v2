@@ -21,7 +21,6 @@ const admin_routes_1 = __importDefault(require("./admin.routes"));
 const authorisation_route_1 = __importDefault(require("./authorisation.route"));
 const redis_config_1 = __importDefault(require("../../config/redis.config"));
 const wallet_routes_1 = __importDefault(require("../../crypto-infra/routes/wallet.routes"));
-const trade_routes_1 = __importDefault(require("../../crypto-infra/routes/trade.routes"));
 const webhook_routes_1 = __importDefault(require("../../crypto-infra/routes/webhook.routes"));
 const admin_routes_2 = __importDefault(require("../../crypto-infra/routes/admin.routes"));
 const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
@@ -60,7 +59,6 @@ router.post('/transactions/:reference/verify', verification_controller_1.verifyT
 router.use(authenticate_middleware_1.default);
 router.use('/infra/admin', admin_routes_2.default);
 router.use('/infra/wallets', wallet_routes_1.default);
-router.use('/infra/trade', trade_routes_1.default);
 router.use('/infra/webhooks', webhook_routes_1.default);
 router.use('/infra/crypto', crypto_routes_1.default);
 exports.default = router;
