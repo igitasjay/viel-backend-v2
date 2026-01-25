@@ -13,16 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const register_controller_1 = __importDefault(require("../../controllers/auth/register.controller"));
-const login_comtroller_1 = __importDefault(require("../../controllers/auth/login.comtroller"));
+const register_controller_1 = __importDefault(require("@/controllers/auth/register.controller"));
+const login_comtroller_1 = __importDefault(require("@/controllers/auth/login.comtroller"));
 const express_validator_1 = require("express-validator");
-const validation_error_middleware_1 = __importDefault(require("../../middlewares/validation-error.middleware"));
-const user_model_1 = __importDefault(require("../../models/user.model"));
-const refresh_token_controller_1 = __importDefault(require("../../controllers/auth/refresh-token.controller"));
-const logout_controller_1 = __importDefault(require("../../controllers/auth/logout.controller"));
-const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
-const verify_otp_controller_1 = __importDefault(require("../../controllers/auth/verify-otp.controller"));
-const resend_otp_controller_1 = __importDefault(require("../../controllers/auth/resend-otp.controller"));
+const validation_error_middleware_1 = __importDefault(require("@/middlewares/validation-error.middleware"));
+const user_model_1 = __importDefault(require("@/models/user.model"));
+const refresh_token_controller_1 = __importDefault(require("@/controllers/auth/refresh-token.controller"));
+const logout_controller_1 = __importDefault(require("@/controllers/auth/logout.controller"));
+const authenticate_middleware_1 = __importDefault(require("@/middlewares/authenticate.middleware"));
+const verify_otp_controller_1 = __importDefault(require("@/controllers/auth/verify-otp.controller"));
+const resend_otp_controller_1 = __importDefault(require("@/controllers/auth/resend-otp.controller"));
 const router = (0, express_1.default)();
 router.post('/register', (0, express_validator_1.body)('email')
     .trim()

@@ -46,15 +46,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fulfillGiftCardPurchase = exports.initiateGiftCardPurchase = void 0;
-const user_model_1 = __importDefault(require("../../models/user.model"));
-const purchaseService = __importStar(require("../../services/giftcard.service"));
-const monnify_service_1 = require("../../services/monnify.service");
-const async_handler_util_1 = require("../../utils/async-handler.util");
-const api_error_util_1 = require("../../utils/api-error.util");
-const email_temeplate_1 = require("../../lib/email-temeplate");
-const sequence_1 = require("../../lib/sequence");
-const transaction_model_1 = __importDefault(require("../../models/transaction.model"));
-const winston_1 = require("../../lib/winston");
+const user_model_1 = __importDefault(require("@/models/user.model"));
+const purchaseService = __importStar(require("@/services/giftcard.service"));
+const monnify_service_1 = require("@/services/monnify.service");
+const async_handler_util_1 = require("@/utils/async-handler.util");
+const api_error_util_1 = require("@/utils/api-error.util");
+const email_temeplate_1 = require("@/lib/email-temeplate");
+const sequence_1 = require("@/lib/sequence");
+const transaction_model_1 = __importDefault(require("@/models/transaction.model"));
+const winston_1 = require("@/lib/winston");
+const user_service_1 = require("@/services/user.service");
 exports.initiateGiftCardPurchase = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { giftCardId, amount, quantity, email } = req.body;
@@ -130,6 +131,7 @@ const fulfillGiftCardPurchase = (transaction) => __awaiter(void 0, void 0, void 
     }
     const fullName = `${user.firstname} ${user.lastname}`;
     const purchase = yield purchaseService.purchaseGiftCard(user._id.toString(), fullName, user.email, giftCardId, Number(amount), Number(quantity), recipientEmail);
+    yield user_service_1.UserService.updateUserVolume(user._id.toString(), purchase.totalInNaira, user_service_1.VolumeType.BUY);
     transaction.giftcard_data.purchase_result = purchase;
     transaction.status = 'completed';
     yield transaction.save();

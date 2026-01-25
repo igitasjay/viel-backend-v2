@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendVerificationEmail = void 0;
-const config_1 = __importDefault(require("../config/config"));
+const config_1 = __importDefault(require("@/config/config"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const resend_1 = require("resend");

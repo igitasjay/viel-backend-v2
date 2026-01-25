@@ -46,11 +46,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buyGiftCard = exports.listGiftCardsByCountry = exports.listCountries = void 0;
-const giftService = __importStar(require("../../services/giftcard.service"));
-const countryService = __importStar(require("../../services/country.service"));
-const async_handler_util_1 = require("../../utils/async-handler.util");
-const user_model_1 = __importDefault(require("../../models/user.model"));
-const api_error_util_1 = require("../../utils/api-error.util");
+const giftService = __importStar(require("@/services/giftcard.service"));
+const countryService = __importStar(require("@/services/country.service"));
+const async_handler_util_1 = require("@/utils/async-handler.util");
+const user_model_1 = __importDefault(require("@/models/user.model"));
+const api_error_util_1 = require("@/utils/api-error.util");
 exports.listCountries = (0, async_handler_util_1.asyncHandler)((_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const countries = yield countryService.getAllCountriesWithGiftCards();
     res.json({ success: true, data: countries });

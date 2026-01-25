@@ -12,11 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = __importDefault(require("../../config/config"));
-const user_model_1 = __importDefault(require("../../models/user.model"));
-const winston_1 = require("../../lib/winston");
-const otp_mode_1 = __importDefault(require("../../models/otp.mode"));
-const email_1 = require("../../lib/email");
+const config_1 = __importDefault(require("@/config/config"));
+const user_model_1 = __importDefault(require("@/models/user.model"));
+const winston_1 = require("@/lib/winston");
+const otp_mode_1 = __importDefault(require("@/models/otp.mode"));
+const email_1 = require("@/lib/email");
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };

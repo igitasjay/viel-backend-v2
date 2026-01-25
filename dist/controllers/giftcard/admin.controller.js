@@ -46,10 +46,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateGiftCard = exports.createGiftCard = exports.createCountry = void 0;
-const countryService = __importStar(require("../../services/country.service"));
-const giftService = __importStar(require("../../services/giftcard.service"));
-const async_handler_util_1 = require("../../utils/async-handler.util");
-const winston_1 = require("../../lib/winston");
+const countryService = __importStar(require("@/services/country.service"));
+const giftService = __importStar(require("@/services/giftcard.service"));
+const async_handler_util_1 = require("@/utils/async-handler.util");
+const winston_1 = require("@/lib/winston");
 const mongoose_1 = __importDefault(require("mongoose"));
 exports.createCountry = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const country = yield countryService.createCountry(req.body);

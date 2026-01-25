@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isAdmin = void 0;
-const winston_1 = require("../lib/winston");
+const winston_1 = require("@/lib/winston");
 const isAdmin = (req, res, next) => {
     var _a;
     if (!req.userId) {

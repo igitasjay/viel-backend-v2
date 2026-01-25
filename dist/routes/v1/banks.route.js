@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
-const validation_error_middleware_1 = __importDefault(require("../../middlewares/validation-error.middleware"));
-const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
-const banks_service_1 = __importDefault(require("../../services/banks.service"));
-const bank_controller_1 = __importDefault(require("../../controllers/user/bank.controller"));
-const my_bank_controller_1 = __importDefault(require("../../controllers/user/my-bank.controller"));
+const validation_error_middleware_1 = __importDefault(require("@/middlewares/validation-error.middleware"));
+const authenticate_middleware_1 = __importDefault(require("@/middlewares/authenticate.middleware"));
+const banks_service_1 = __importDefault(require("@/services/banks.service"));
+const bank_controller_1 = __importDefault(require("@/controllers/user/bank.controller"));
+const my_bank_controller_1 = __importDefault(require("@/controllers/user/my-bank.controller"));
 const router = (0, express_1.default)();
 router.use(authenticate_middleware_1.default);
 router.get('/list', banks_service_1.default);

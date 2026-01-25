@@ -12,8 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const winston_1 = require("../lib/winston");
-const user_model_1 = __importDefault(require("../models/user.model"));
+const winston_1 = require("@/lib/winston");
+const user_model_1 = __importDefault(require("@/models/user.model"));
 const authorize = (roles) => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const userId = req.userId;

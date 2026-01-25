@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.disconnectFromDatabase = exports.connectToDatabase = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const config_1 = __importDefault(require("../config/config"));
-const winston_1 = require("./winston");
+const config_1 = __importDefault(require("@/config/config"));
+const winston_1 = require("@/lib/winston");
 const clientOptions = {
     dbName: 'blog-ts',
     appName: 'Blog TS',

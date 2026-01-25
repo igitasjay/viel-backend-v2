@@ -14,11 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.purchaseGiftCard = exports.getGiftCardById = exports.getGiftCardsByCountry = exports.updateGiftCard = exports.createGiftCard = void 0;
 const giftcard_model_1 = __importDefault(require("../models/giftcard.model"));
-const giftcard_purchase_model_1 = __importDefault(require("../models/giftcard-purchase.model"));
-const api_error_util_1 = require("../utils/api-error.util");
+const giftcard_purchase_model_1 = __importDefault(require("@/models/giftcard-purchase.model"));
+const api_error_util_1 = require("@/utils/api-error.util");
 const mongoose_1 = __importDefault(require("mongoose"));
-const ledger_service_1 = require("../crypto-infra/services/ledger.service");
-const Ledger_1 = require("../crypto-infra/models/Ledger");
+const ledger_service_1 = require("@/crypto-infra/services/ledger.service");
+const Ledger_1 = require("@/crypto-infra/models/Ledger");
 const createGiftCard = (payload) => {
     console.log('payload →', {
         minAmount: typeof payload.minAmount,
@@ -76,7 +76,7 @@ const purchaseGiftCard = (userId, fullName, userEmail, giftCardId, amount, quant
                 },
             },
         ], { session });
-        yield ledger_service_1.LedgerService.creditUser(userId, 'NGN', -totalInNaira, Ledger_1.LedgerType.GIFTCARD_BUY, `GCP-${purchase[0]._id}`, Ledger_1.LedgerCategory.GIFTCARD, Ledger_1.TransactionAction.BUY);
+        yield ledger_service_1.LedgerService.creditUser(userId, 'NGN', -totalInNaira, Ledger_1.LedgerType.GIFTCARD_BUY, `GCP-${purchase[0]._id}`, Ledger_1.LedgerCategory.GIFTCARD, Ledger_1.TransactionAction.BUY, card.imageUrl);
         card.availableQty -= quantity;
         if (card.availableQty <= 0) {
             card.availableQty = 0;

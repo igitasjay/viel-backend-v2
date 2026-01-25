@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNextSequence = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const mongoose_2 = require("./mongoose");
+const mongoose_2 = require("@/lib/mongoose");
 const CounterSchema = new mongoose_1.default.Schema({
     _id: { type: String, required: true },
     seq: { type: Number, default: 0 },

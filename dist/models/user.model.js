@@ -55,6 +55,14 @@ const UserSchema = new mongoose_1.Schema({
         type: Number,
         default: 0,
     },
+    totalBuyVolume: {
+        type: Number,
+        default: 0,
+    },
+    totalSellVolume: {
+        type: Number,
+        default: 0,
+    },
     passcode: {
         type: String,
         select: false,

@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchLiveRate = void 0;
 const axios_1 = __importDefault(require("axios"));
-const config_1 = __importDefault(require("../config/config"));
-const winston_1 = require("./winston");
+const config_1 = __importDefault(require("@/config/config"));
+const winston_1 = require("@/lib/winston");
 const API_KEY = config_1.default.TWELVE_DATA_API_KEY;
 const BASE_URL = 'https://api.twelvedata.com';
 const fetchLiveRate = (symbol) => __awaiter(void 0, void 0, void 0, function* () {

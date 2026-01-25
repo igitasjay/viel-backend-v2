@@ -37,11 +37,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const gc = __importStar(require("../../controllers/giftcard/giftcard.controller"));
-const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
-const sellGc = __importStar(require("../../controllers/giftcard/giftcard-sell.controller"));
-const upload_1 = require("../../middlewares/upload");
-const purchase_controller_1 = require("../../controllers/giftcard/purchase.controller");
+const gc = __importStar(require("@/controllers/giftcard/giftcard.controller"));
+const authenticate_middleware_1 = __importDefault(require("@/middlewares/authenticate.middleware"));
+const sellGc = __importStar(require("@/controllers/giftcard/giftcard-sell.controller"));
+const upload_1 = require("@/middlewares/upload");
+const purchase_controller_1 = require("@/controllers/giftcard/purchase.controller");
 const router = (0, express_1.Router)();
 router.get('/countries', gc.listCountries);
 router.get('/giftcards', gc.listGiftCardsByCountry);

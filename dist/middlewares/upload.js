@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.upload = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_storage_cloudinary_1 = require("multer-storage-cloudinary");
-const cloudinary_config_1 = __importDefault(require("../config/cloudinary.config"));
+const cloudinary_config_1 = __importDefault(require("@/config/cloudinary.config"));
 const storage = new multer_storage_cloudinary_1.CloudinaryStorage({
     cloudinary: cloudinary_config_1.default,
     params: (req, file) => __awaiter(void 0, void 0, void 0, function* () {

@@ -13,23 +13,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const auth_route_1 = __importDefault(require("./auth.route"));
-const user_route_1 = __importDefault(require("./user.route"));
-const banks_route_1 = __importDefault(require("./banks.route"));
-const charge_route_1 = __importDefault(require("./charge.route"));
-const admin_routes_1 = __importDefault(require("./admin.routes"));
-const authorisation_route_1 = __importDefault(require("./authorisation.route"));
-const redis_config_1 = __importDefault(require("../../config/redis.config"));
+const auth_route_1 = __importDefault(require("@/routes/v1/auth.route"));
+const user_route_1 = __importDefault(require("@/routes/v1/user.route"));
+const banks_route_1 = __importDefault(require("@/routes/v1/banks.route"));
+const charge_route_1 = __importDefault(require("@/routes/v1/charge.route"));
+const admin_routes_1 = __importDefault(require("@/routes/v1/admin.routes"));
+const authorisation_route_1 = __importDefault(require("@/routes/v1/authorisation.route"));
+const redis_config_1 = __importDefault(require("@/config/redis.config"));
 const wallet_routes_1 = __importDefault(require("../../crypto-infra/routes/wallet.routes"));
 const webhook_routes_1 = __importDefault(require("../../crypto-infra/routes/webhook.routes"));
 const admin_routes_2 = __importDefault(require("../../crypto-infra/routes/admin.routes"));
-const authenticate_middleware_1 = __importDefault(require("../../middlewares/authenticate.middleware"));
+const authenticate_middleware_1 = __importDefault(require("@/middlewares/authenticate.middleware"));
 const crypto_routes_1 = __importDefault(require("../../crypto-infra/routes/crypto.routes"));
-const giftcard_route_1 = __importDefault(require("./giftcard.route"));
-const transaction_route_1 = __importDefault(require("./transaction.route"));
-const monnify_route_1 = __importDefault(require("./monnify.route"));
-const monnify_webhook_1 = require("../../controllers/monnify.webhook");
-const verification_controller_1 = require("../../controllers/verification.controller");
+const giftcard_route_1 = __importDefault(require("@/routes/v1/giftcard.route"));
+const transaction_route_1 = __importDefault(require("@/routes/v1/transaction.route"));
+const monnify_route_1 = __importDefault(require("@/routes/v1/monnify.route"));
+const monnify_webhook_1 = require("@/controllers/monnify.webhook");
+const verification_controller_1 = require("@/controllers/verification.controller");
 const router = (0, express_1.Router)();
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({

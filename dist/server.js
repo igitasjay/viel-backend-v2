@@ -18,13 +18,14 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const compression_1 = __importDefault(require("compression"));
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
-const express_rate_limit_1 = __importDefault(require("./lib/express_rate_limit"));
-const config_1 = __importDefault(require("./config/config"));
-const mongoose_1 = require("./lib/mongoose");
-const winston_1 = require("./lib/winston");
-const routes_1 = __importDefault(require("./routes/v1/routes"));
-const error_middleware_1 = require("./middlewares/error.middleware");
+const express_rate_limit_1 = __importDefault(require("@/lib/express_rate_limit"));
+const config_1 = __importDefault(require("@/config/config"));
+const mongoose_1 = require("@/lib/mongoose");
+const winston_1 = require("@/lib/winston");
+const routes_1 = __importDefault(require("@/routes/v1/routes"));
+const error_middleware_1 = require("@/middlewares/error.middleware");
 const app = (0, express_1.default)();
+app.set('trust proxy', 1);
 app.use((0, morgan_1.default)('dev'));
 const corsOptions = {
     origin(origin, callback) {

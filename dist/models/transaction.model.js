@@ -37,6 +37,7 @@ const TransactionSchema = new mongoose_1.Schema({
     monnify_data: { type: mongoose_1.Schema.Types.Mixed },
     giftcard_data: { type: mongoose_1.Schema.Types.Mixed },
     metadata: { type: mongoose_1.Schema.Types.Mixed, default: {} },
+    image: { type: String },
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 exports.default = (0, mongoose_1.model)('Transaction', TransactionSchema);
 //# sourceMappingURL=transaction.model.js.map
