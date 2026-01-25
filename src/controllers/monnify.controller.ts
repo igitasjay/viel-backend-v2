@@ -12,7 +12,7 @@ export const getBankTransferDetails = [
       return;
     }
 
-    const { reference } = req.params;
+    const reference = req.params.reference as string;
 
     try {
       const details = await getMonnifyTransactionDetails(reference);
@@ -103,7 +103,7 @@ export const queryTransactionStatus = [
       return;
     }
 
-    const { reference } = req.params;
+    const reference = req.params.reference as string;
     const { type } = req.query;
     const isPaymentReference = type === 'payment';
 

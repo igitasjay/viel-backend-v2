@@ -112,7 +112,7 @@ export const createGiftCard = asyncHandler(
 
 export const updateGiftCard = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res

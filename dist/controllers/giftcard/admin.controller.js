@@ -132,7 +132,7 @@ exports.createGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => __
 }));
 exports.updateGiftCard = (0, async_handler_util_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
-    const { id } = req.params;
+    const id = req.params.id;
     if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
         return res
             .status(400)

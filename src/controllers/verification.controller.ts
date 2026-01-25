@@ -16,7 +16,7 @@ export const verifyTransactionStatus = [
       return;
     }
 
-    const { reference } = req.params;
+    const reference = req.params.reference as string;
 
     try {
       const tx = await Transaction.findOne({ reference });

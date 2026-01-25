@@ -43,7 +43,7 @@ export const addBrand = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const addCountry = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const { name, iso, currencySymbol, ranges } = req.body;
 
   if (!name || !iso || !currencySymbol) {
@@ -65,7 +65,8 @@ export const addCountry = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const addRange = asyncHandler(async (req: Request, res: Response) => {
-  const { id, iso } = req.params;
+  const id = req.params.id as string;
+  const iso = req.params.iso as string;
   const { range, types } = req.body;
 
   if (!range || !types || !Array.isArray(types) || types.length === 0) {
@@ -77,7 +78,7 @@ export const addRange = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const addType = asyncHandler(async (req: Request, res: Response) => {
-  const { id, iso, range } = req.params;
+  const { id, iso, range } = req.params as { id: string; iso: string; range: string };
   const updated = await sellService.pushType(id, iso, range, req.body);
   res.json({ success: true, data: updated });
 });
@@ -88,7 +89,7 @@ export const listBrands = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const updateSale = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const { status, adminComment } = req.body;
   const updated = await sellService.updateSaleStatus(id, status, adminComment);
   res.json({ success: true, data: updated });
