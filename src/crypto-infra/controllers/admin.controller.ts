@@ -130,3 +130,86 @@ export const auditLedger = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const updateCurrency = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const {
+      symbol,
+      name,
+      network,
+      contractAddress,
+      buySpread,
+      sellSpread,
+      addressRegex,
+      memoRegex,
+      fee,
+      feeType,
+      minimum,
+      explorerLink,
+      is_stable,
+      color,
+      minimumDeposit,
+      maximumDecimalPlaces,
+      naira_rate,
+      usd_rate,
+      status,
+      decimals
+    } = req.body;
+
+    const file = (req as any).file;
+
+    const currency = await Currency.findById(id);
+    if (!currency) {
+      return res.status(404).json({ error: 'Currency not found' });
+    }
+
+    // Check for duplicates if symbol or network is changing
+    if ((symbol && symbol !== currency.symbol) || (network && network !== currency.network)) {
+      const existing = await Currency.findOne({
+        symbol: symbol || currency.symbol,
+        network: network || currency.network,
+        _id: { $ne: id }
+      });
+      if (existing) {
+        return res.status(409).json({ error: `Currency ${symbol || currency.symbol} on ${network || currency.network} already exists` });
+      }
+    }
+
+    // Update fields
+    if (symbol) currency.symbol = symbol;
+    if (name) currency.name = name;
+    if (network) currency.network = network;
+    if (contractAddress !== undefined) currency.contractAddress = contractAddress;
+    if (buySpread !== undefined) currency.buySpread = Number(buySpread);
+    if (sellSpread !== undefined) currency.sellSpread = Number(sellSpread);
+    if (addressRegex !== undefined) currency.addressRegex = addressRegex;
+    if (memoRegex !== undefined) currency.memoRegex = memoRegex;
+    if (fee !== undefined) currency.fee = Number(fee);
+    if (feeType) currency.feeType = feeType;
+    if (minimum !== undefined) currency.minimum = Number(minimum);
+    if (explorerLink !== undefined) currency.explorerLink = explorerLink;
+    if (is_stable !== undefined) currency.is_stable = is_stable === 'true' || is_stable === true || is_stable === 1 || is_stable === '1';
+    if (color) currency.color = color;
+    if (minimumDeposit !== undefined) currency.minimumDeposit = Number(minimumDeposit);
+    if (maximumDecimalPlaces !== undefined) currency.maximumDecimalPlaces = Number(maximumDecimalPlaces);
+    if (naira_rate !== undefined) currency.naira_rate = Number(naira_rate);
+    if (usd_rate !== undefined) currency.usd_rate = Number(usd_rate);
+    if (status !== undefined) currency.status = Number(status);
+    if (decimals !== undefined) currency.decimals = Number(decimals);
+
+    if (file) {
+      currency.imageUrl = file.path;
+    }
+
+    await currency.save();
+
+    return res.json({ success: true, data: currency });
+
+  } catch (error: any) {
+    if (error.code === 11000) {
+      return res.status(409).json({ error: 'Currency pair already exists' });
+    }
+    return res.status(500).json({ error: error.message });
+  }
+};

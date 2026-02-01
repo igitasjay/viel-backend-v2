@@ -1,10 +1,15 @@
 import type { Request, Response } from 'express';
 import { Currency } from '../models/Currency';
+import { PriceService } from '../services/price.service';
 
 export const fetchAllCurrencies = async (req: Request, res: Response) => {
   try {
     const rawCurrencies = await Currency.find();
     
+    // Fetch live rates for all symbols
+    const symbols = Array.from(new Set(rawCurrencies.map((c: any) => c.symbol)));
+    const liveRates = await PriceService.getLiveRates(symbols); // Returns Map<Symbol, Price>
+
     // Group by symbol to form the nested structure
     const groupedMap = new Map();
 
@@ -22,7 +27,7 @@ export const fetchAllCurrencies = async (req: Request, res: Response) => {
                 minimumDeposit: curr.minimumDeposit?.toFixed(10), // Formatting to string as per JSON
                 maximumDecimalPlaces: curr.maximumDecimalPlaces,
                 naira_rate: curr.naira_rate?.toString(),
-                usd_rate: curr.usd_rate?.toFixed(10),
+                usd_rate: (liveRates.get(curr.symbol) ?? curr.usd_rate)?.toFixed(10),
                 created_at: curr.createdAt,
                 updated_at: curr.updatedAt,
                 networks: []
