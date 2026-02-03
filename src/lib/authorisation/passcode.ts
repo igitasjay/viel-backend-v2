@@ -6,7 +6,7 @@ export const createPasscode = async (req: Request, res: Response) => {
     const { passcode } = req.body;
     const userId = req.userId;
 
-    // 1. Validation: Ensure it's a 6-digit numeric string
+    // 1. Validation: Ensure it's a 4-digit numeric string
     const passcodeRegex = /^\d{4}$/;
     if (!passcodeRegex.test(passcode)) {
       return res.status(400).json({
