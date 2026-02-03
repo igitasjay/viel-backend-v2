@@ -9,6 +9,9 @@ import logout from '@/controllers/auth/logout.controller';
 import authenticate from '@/middlewares/authenticate.middleware';
 import verifyOTP from '@/controllers/auth/verify-otp.controller';
 import resendOTP from '@/controllers/auth/resend-otp.controller';
+import forgotPassword from '@/controllers/auth/forgot-password.controller';
+import verifyResetOTP from '@/controllers/auth/verify-reset-otp.controller';
+import resetPassword from '@/controllers/auth/reset-password.controller';
 const router = Router();
 
 router.post(
@@ -88,6 +91,31 @@ router.post(
     .withMessage('OTP must be 6 digits.'),
   validationError,
   verifyOTP,
+);
+
+router.post(
+  '/forgot-password',
+  body('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'),
+  validationError,
+  forgotPassword,
+);
+
+router.post(
+  '/verify-reset-otp',
+  body('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'),
+  body('otp').trim().notEmpty().withMessage('OTP is required.').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits.'),
+  validationError,
+  verifyResetOTP,
+);
+
+router.post(
+  '/reset-password',
+  body('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'),
+  body('otp').trim().notEmpty().withMessage('OTP is required.').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits.'),
+  body('password').notEmpty().withMessage('Password is required.').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long.'),
+  body('confirmPassword').notEmpty().withMessage('Confirm password is required.'),
+  validationError,
+  resetPassword,
 );
 
 router.post(

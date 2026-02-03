@@ -63,8 +63,31 @@ export const sendVerificationEmail = async (
     console.log('Email sent:', info.data);
     return;
   } catch (error: any) {
-    console.error('Error sending email:', error.response.data);
-    console.error('Error sending email:', error.message);
+    console.error('Error sending email:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const sendForgotPasswordEmail = async (
+  email: string,
+  firstname: string,
+  otp: string,
+) => {
+  try {
+    const info = await resend.emails.send({
+      from: 'VIEL Auth <info@myviel.com>',
+      to: email,
+      subject: 'Reset Your Password',
+      html: `
+        <p>Hello ${firstname},</p>
+        <p>You requested to reset your password. Your OTP is: <strong>${otp}</strong></p>
+        <p>This OTP will expire in 10 minutes. If you did not request this, please ignore this email.</p>
+      `,
+    });
+    console.log('Forgot password email sent:', info.data);
+    return;
+  } catch (error: any) {
+    console.error('Error sending forgot password email:', error);
     throw error;
   }
 };
