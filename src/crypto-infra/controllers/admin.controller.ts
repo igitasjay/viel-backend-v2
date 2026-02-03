@@ -10,8 +10,8 @@ export const addCurrency = async (req: Request, res: Response) => {
       name,
       network,
       contractAddress,
-      buySpread,
-      sellSpread,
+      buyRate,
+      sellRate,
       addressRegex,
       memoRegex,
       fee,
@@ -45,8 +45,8 @@ export const addCurrency = async (req: Request, res: Response) => {
       network,
       contractAddress,
       imageUrl: file.path, // Use Cloudinary URL
-      buySpread: Number(buySpread || 0),
-      sellSpread: Number(sellSpread || 0),
+      buyRate: Number(buyRate || 0),
+      sellRate: Number(sellRate || 0),
       
       // New Fields conversion
       addressRegex,
@@ -77,17 +77,16 @@ export const addCurrency = async (req: Request, res: Response) => {
 
 export const updateRates = async (req: Request, res: Response) => {
   try {
-    const { symbol, buySpread, sellSpread } = req.body;
+    const { symbol, buyRate, sellRate } = req.body;
 
-    const currency = await Currency.findOneAndUpdate(
+    const result = await Currency.updateMany(
       { symbol },
-      { buySpread, sellSpread },
-      { new: true },
+      { buyRate, sellRate }
     );
 
-    if (!currency) return res.status(404).json({ error: 'Currency not found' });
+    if (result.matchedCount === 0) return res.status(404).json({ error: 'Currency not found' });
 
-    return res.json({ success: true, data: currency });
+    return res.json({ success: true, message: `Updated ${result.modifiedCount} networks for ${symbol}` });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
@@ -139,8 +138,8 @@ export const updateCurrency = async (req: Request, res: Response) => {
       name,
       network,
       contractAddress,
-      buySpread,
-      sellSpread,
+      buyRate,
+      sellRate,
       addressRegex,
       memoRegex,
       fee,
@@ -181,8 +180,8 @@ export const updateCurrency = async (req: Request, res: Response) => {
     if (name) currency.name = name;
     if (network) currency.network = network;
     if (contractAddress !== undefined) currency.contractAddress = contractAddress;
-    if (buySpread !== undefined) currency.buySpread = Number(buySpread);
-    if (sellSpread !== undefined) currency.sellSpread = Number(sellSpread);
+    if (buyRate !== undefined) currency.buyRate = Number(buyRate);
+    if (sellRate !== undefined) currency.sellRate = Number(sellRate);
     if (addressRegex !== undefined) currency.addressRegex = addressRegex;
     if (memoRegex !== undefined) currency.memoRegex = memoRegex;
     if (fee !== undefined) currency.fee = Number(fee);

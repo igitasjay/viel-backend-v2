@@ -27,8 +27,8 @@ export interface ICurrency extends Document {
   usd_rate: number;
   status: number; // 0 or 1
   
-  buySpread: number; // e.g., 2.5%
-  sellSpread: number; // e.g., 2.0%
+  buyRate: number; // explicit rate in Naira
+  sellRate: number; // explicit rate in Naira
   isActive: boolean;
 }
 
@@ -59,8 +59,8 @@ const CurrencySchema = new Schema(
     usd_rate: { type: Number, default: 0 },
     status: { type: Number, default: 1 }, // 1 = active, 0 = inactive
 
-    buySpread: { type: Number, default: 0 },
-    sellSpread: { type: Number, default: 0 },
+    buyRate: { type: Number, default: 0 },
+    sellRate: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true }

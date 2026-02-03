@@ -74,7 +74,7 @@ async function startWatcher() {
 
             // Update User Trading Volume
             if (coin) {
-              const nairaValue = amount * coin.naira_rate;
+            const nairaValue = amount * (coin.sellRate || 0);
               await UserService.updateUserVolume(
                 targetWallet.userId.toString(),
                 nairaValue,

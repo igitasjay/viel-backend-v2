@@ -9,11 +9,6 @@ import { getNextSequence } from '@/lib/sequence';
 import { logger } from '@/lib/winston';
 import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/services/monnify.service';
 
-// Mock Oracle Price
-const getMarketPrice = async (symbol: string) => {
-  // Call Twelve Data / CoinGecko here
-  return 1500; // e.g. 1 USDT = 1500 NGN
-};
 
 /**
  * GET /rates
@@ -24,11 +19,10 @@ export const getRates = async (req: Request, res: Response) => {
     const rates = [];
 
     for (const coin of currencies) {
-      const marketPrice = await getMarketPrice(coin.symbol);
       rates.push({
         pair: `${coin.symbol}/NGN`,
-        buy: marketPrice * (1 + coin.buySpread / 100),
-        sell: marketPrice * (1 - coin.sellSpread / 100),
+        buy: coin.buyRate,
+        sell: coin.sellRate,
       });
     }
 
@@ -66,10 +60,17 @@ export const buyCrypto = async (req: Request, res: Response) => {
     const coin = await Currency.findOne({ symbol });
     if (!coin) throw new Error('Invalid Coin: ' + symbol);
 
-    const marketPrice = await getMarketPrice(symbol);
-    const buyRate = marketPrice * (1 + coin.buySpread / 100);
+    const buyRate = coin.buyRate;
+    const minLimit = coin.minimum || 0;
 
     const cryptoAmount = Number(amount);
+
+    // 2. Enforce Minimum Buy Limit
+    if (cryptoAmount < minLimit) {
+        return res.status(400).json({ 
+            message: `Minimum purchase amount is ${minLimit} ${symbol}` 
+        });
+    }
     const nairaAmount = cryptoAmount * buyRate; 
     
     if (isNaN(nairaAmount)) {
@@ -99,9 +100,7 @@ export const buyCrypto = async (req: Request, res: Response) => {
     });
 
     logger.info('Buy crypto transaction initialized (pending payment)', {
-        txId,
-        reference,
-        nairaAmount,
+          nairaAmount,
     });
 
     // 3. Init Monnify Flow

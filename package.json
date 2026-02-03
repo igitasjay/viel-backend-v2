@@ -61,6 +61,6 @@
     "zod": "^4.1.13"
   },
   "_moduleAliases": {
-  "@": "dist"
-}
+    "@": "src"
+  }
 }
