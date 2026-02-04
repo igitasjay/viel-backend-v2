@@ -30,6 +30,8 @@ const transaction_route_1 = __importDefault(require("@/routes/v1/transaction.rou
 const monnify_route_1 = __importDefault(require("@/routes/v1/monnify.route"));
 const monnify_webhook_1 = require("@/controllers/monnify.webhook");
 const verification_controller_1 = require("@/controllers/verification.controller");
+const banner_routes_1 = __importDefault(require("@/routes/v1/banner.routes"));
+const admin_banner_routes_1 = __importDefault(require("@/routes/v1/admin-banner.routes"));
 const router = (0, express_1.Router)();
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({
@@ -54,6 +56,8 @@ router.use('/admin/giftcard', admin_routes_1.default);
 router.use('/authorisation', authorisation_route_1.default);
 router.use('/transactions', transaction_route_1.default);
 router.use('/monnify', monnify_route_1.default);
+router.use('/banners', banner_routes_1.default);
+router.use('/admin/banners', admin_banner_routes_1.default);
 router.post('/monnify/webhook', monnify_webhook_1.handleMonnifyWebhook);
 router.post('/transactions/:reference/verify', verification_controller_1.verifyTransactionStatus);
 router.use(authenticate_middleware_1.default);

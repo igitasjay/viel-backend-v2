@@ -23,6 +23,9 @@ const logout_controller_1 = __importDefault(require("@/controllers/auth/logout.c
 const authenticate_middleware_1 = __importDefault(require("@/middlewares/authenticate.middleware"));
 const verify_otp_controller_1 = __importDefault(require("@/controllers/auth/verify-otp.controller"));
 const resend_otp_controller_1 = __importDefault(require("@/controllers/auth/resend-otp.controller"));
+const forgot_password_controller_1 = __importDefault(require("@/controllers/auth/forgot-password.controller"));
+const verify_reset_otp_controller_1 = __importDefault(require("@/controllers/auth/verify-reset-otp.controller"));
+const reset_password_controller_1 = __importDefault(require("@/controllers/auth/reset-password.controller"));
 const router = (0, express_1.default)();
 router.post('/register', (0, express_validator_1.body)('email')
     .trim()
@@ -73,6 +76,9 @@ router.post('/verify-otp', (0, express_validator_1.body)('email')
     .withMessage('OTP is required.')
     .isLength({ min: 6, max: 6 })
     .withMessage('OTP must be 6 digits.'), validation_error_middleware_1.default, verify_otp_controller_1.default);
+router.post('/forgot-password', (0, express_validator_1.body)('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'), validation_error_middleware_1.default, forgot_password_controller_1.default);
+router.post('/verify-reset-otp', (0, express_validator_1.body)('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'), (0, express_validator_1.body)('otp').trim().notEmpty().withMessage('OTP is required.').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits.'), validation_error_middleware_1.default, verify_reset_otp_controller_1.default);
+router.post('/reset-password', (0, express_validator_1.body)('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'), (0, express_validator_1.body)('otp').trim().notEmpty().withMessage('OTP is required.').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits.'), (0, express_validator_1.body)('password').notEmpty().withMessage('Password is required.').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long.'), (0, express_validator_1.body)('confirmPassword').notEmpty().withMessage('Confirm password is required.'), validation_error_middleware_1.default, reset_password_controller_1.default);
 router.post('/refresh-token', (0, express_validator_1.cookie)('refreshToken')
     .notEmpty()
     .withMessage('Refresh token is required.')
