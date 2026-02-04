@@ -1,11 +1,11 @@
 import 'module-alias/register';
-
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import helmet from 'helmet';
 import morgan from 'morgan';
+
 // custom module import
 import limiter from '@/lib/express_rate_limit';
 import config from '@/config/config';
