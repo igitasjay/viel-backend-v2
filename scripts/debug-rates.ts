@@ -1,4 +1,4 @@
-import 'module-alias/register';
+// import 'module-alias/register';
 import { connectToDatabase, disconnectFromDatabase } from '../src/lib/mongoose';
 import { Currency } from '../src/crypto-infra/models/Currency';
 import { PriceService } from '../src/crypto-infra/services/price.service';
