@@ -3,3 +3,5 @@ package-lock.json
 .env
 dist
 pnpm-lock.yaml
+uploads
+markdowns
