@@ -46,21 +46,21 @@ export interface IGiftCardType {
 
 export interface IGiftCardRange {
   range: string; // e.g. "100-500"
-  types: IGiftCardType[];
+  types?: IGiftCardType[];
 }
 
 export interface IGiftCardCountry {
   name: string;
   iso: string;
   currencySymbol: string; // Moved here
-  ranges: IGiftCardRange[];
+  ranges?: IGiftCardRange[];
 }
 
 export interface IGiftCardBrand {
   _id?: string;
   name: string;
   logoUrl: string;
-  countries: IGiftCardCountry[];
+  countries?: IGiftCardCountry[];
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;

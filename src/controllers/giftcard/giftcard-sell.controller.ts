@@ -11,7 +11,7 @@ import {
 import { UserService, VolumeType } from '@/services/user.service';
 
 export const getSellBrands = asyncHandler(async (req: Request, res: Response) => {
-  const brands = await sellService.getAllBrands();
+  const brands = await sellService.getSellableBrands();
   res.json({ success: true, data: brands });
 });
 
@@ -33,13 +33,13 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
   }
 
   // Deep validation
-  const countryData = brand.countries.find(c => c.name === country);
+  const countryData = (brand.countries || []).find(c => c.name === country);
   if (!countryData) throw new ApiError(400, 'Invalid country for this brand');
 
-  const rangeData = countryData.ranges.find(r => r.range === range);
+  const rangeData = (countryData.ranges || []).find(r => r.range === range);
   if (!rangeData) throw new ApiError(400, 'Invalid range for this country');
 
-  const typeData = rangeData.types.find(t => t.name === type);
+  const typeData = (rangeData.types || []).find(t => t.name === type);
   if (!typeData) throw new ApiError(400, 'Invalid type for this range');
 
   if (!typeData.denominations.includes(Number(amount))) {

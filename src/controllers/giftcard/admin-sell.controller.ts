@@ -20,16 +20,8 @@ export const addBrand = asyncHandler(async (req: Request, res: Response) => {
 
   // Final validation if countries are provided
   if (countries && Array.isArray(countries)) {
-    for (const c of countries) {
-      if (!c.ranges || !Array.isArray(c.ranges) || c.ranges.length === 0) {
-        return res.status(400).json({ success: false, message: `Country ${c.name} must have at least one range.` });
-      }
-      for (const r of c.ranges) {
-        if (!r.types || !Array.isArray(r.types) || r.types.length === 0) {
-          return res.status(400).json({ success: false, message: `Range ${r.range} in ${c.name} must have at least one type.` });
-        }
-      }
-    }
+    // We allow countries without ranges, and ranges without types now.
+    // So no strict validation here for nested children emptiness.
   }
 
   const brand = await sellService.createBrand({
@@ -50,13 +42,17 @@ export const addCountry = asyncHandler(async (req: Request, res: Response) => {
     return res.status(400).json({ success: false, message: 'name, iso, and currencySymbol are required' });
   }
 
-  if (!ranges || !Array.isArray(ranges) || ranges.length === 0) {
-    return res.status(400).json({ success: false, message: 'At least one range is required when adding a country.' });
-  }
+  // Ranges are now optional during creation
+  // if (!ranges || !Array.isArray(ranges) || ranges.length === 0) {
+  //   return res.status(400).json({ success: false, message: 'At least one range is required when adding a country.' });
+  // }
 
-  for (const r of ranges) {
-    if (!r.range || !r.types || !Array.isArray(r.types) || r.types.length === 0) {
-      return res.status(400).json({ success: false, message: 'Each range must have a name (range) and at least one type.' });
+  if (ranges && Array.isArray(ranges)) {
+    for (const r of ranges) {
+      // If ranges are provided, they must have a name, but types can be empty
+      if (!r.range) {
+         return res.status(400).json({ success: false, message: 'Each range must have a name (range).' });
+      }
     }
   }
 
@@ -69,9 +65,14 @@ export const addRange = asyncHandler(async (req: Request, res: Response) => {
   const iso = req.params.iso as string;
   const { range, types } = req.body;
 
-  if (!range || !types || !Array.isArray(types) || types.length === 0) {
-    return res.status(400).json({ success: false, message: 'Range and at least one type are required.' });
+  if (!range) {
+    return res.status(400).json({ success: false, message: 'Range name is required.' });
   }
+
+  // Types are now optional
+  // if (!types || !Array.isArray(types) || types.length === 0) {
+  //   return res.status(400).json({ success: false, message: 'Range and at least one type are required.' });
+  // }
 
   const updated = await sellService.pushRange(id, iso, req.body);
   res.json({ success: true, data: updated });
