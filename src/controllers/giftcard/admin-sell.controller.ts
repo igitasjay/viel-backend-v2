@@ -35,7 +35,7 @@ export const addBrand = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const addCountry = asyncHandler(async (req: Request, res: Response) => {
-  const id = req.query.id as string;
+  const id = req.query.brandId as string;
   const { name, iso, currencySymbol, ranges } = req.body;
 
   if (!name || !iso || !currencySymbol) {
@@ -57,12 +57,15 @@ export const addCountry = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const updated = await sellService.pushCountry(id, req.body);
+  if (!updated) {
+    return res.status(404).json({ success: false, message: 'Brand not found' });
+  }
   res.json({ success: true, data: updated });
 });
 
 export const addRange = asyncHandler(async (req: Request, res: Response) => {
-  const id = req.query.id as string;
-  const iso = req.query.iso as string;
+  const id = req.query.brandId as string;
+  const iso = req.query.countryIso as string;
   const { range, types } = req.body;
 
   if (!range) {
@@ -75,12 +78,18 @@ export const addRange = asyncHandler(async (req: Request, res: Response) => {
   // }
 
   const updated = await sellService.pushRange(id, iso, req.body);
+  if (!updated) {
+    return res.status(404).json({ success: false, message: 'Brand or country not found' });
+  }
   res.json({ success: true, data: updated });
 });
 
 export const addType = asyncHandler(async (req: Request, res: Response) => {
-  const { id, iso, range } = req.query as { id: string; iso: string; range: string };
-  const updated = await sellService.pushType(id, iso, range, req.body);
+  const { brandId, countryIso, rangeId } = req.query as { brandId: string; countryIso: string; rangeId: string };
+  const updated = await sellService.pushType(brandId, countryIso, rangeId, req.body);
+  if (!updated) {
+    return res.status(404).json({ success: false, message: 'Brand, country, or range not found' });
+  }
   res.json({ success: true, data: updated });
 });
 
@@ -90,9 +99,12 @@ export const listBrands = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const updateSale = asyncHandler(async (req: Request, res: Response) => {
-  const id = req.query.id as string;
+  const id = req.query.saleId as string;
   const { status, adminComment } = req.body;
   const updated = await sellService.updateSaleStatus(id, status, adminComment);
+  if (!updated) {
+    return res.status(404).json({ success: false, message: 'Sale not found' });
+  }
   res.json({ success: true, data: updated });
 });
 
