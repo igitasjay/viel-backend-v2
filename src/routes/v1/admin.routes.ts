@@ -9,15 +9,15 @@ const router = Router();
 // --- Buy Flow Admin Routes ---
 router.post('/create', upload.single('image'), adminCtrl.createGiftCard);
 router.post('/countries', adminCtrl.createCountry);
-router.put('/giftcards/:id', adminCtrl.updateGiftCard);
+router.put('/giftcards', adminCtrl.updateGiftCard);
 
 // --- Sell Flow Admin Routes ---
 router.post('/sell/brands', upload.single('logo'), sellAdminCtrl.addBrand);
 router.get('/sell/brands', sellAdminCtrl.listBrands);
-router.post('/sell/brands/:id/countries', sellAdminCtrl.addCountry);
-router.post('/sell/brands/:id/countries/:iso/ranges', sellAdminCtrl.addRange);
-router.post('/sell/brands/:id/countries/:iso/ranges/:range/types', sellAdminCtrl.addType);
+router.post('/sell/brands/countries', sellAdminCtrl.addCountry);
+router.post('/sell/brands/countries/ranges', sellAdminCtrl.addRange);
+router.post('/sell/brands/countries/ranges/types', sellAdminCtrl.addType);
 router.get('/sell/requests', sellAdminCtrl.listSales);
-router.patch('/sell/requests/:id', sellAdminCtrl.updateSale);
+router.patch('/sell/requests', sellAdminCtrl.updateSale);
 
 export default router;
