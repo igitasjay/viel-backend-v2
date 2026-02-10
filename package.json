@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/server.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "start": "node dist/server.js",
     "dev": "nodemon",
     "seed:crypto": "ts-node -r tsconfig-paths/register src/seed/crypto-seeds.ts",
