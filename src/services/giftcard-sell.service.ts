@@ -6,28 +6,6 @@ import { LedgerService } from '@/crypto-infra/services/ledger.service';
 export const createBrand = (data: any) => GiftCardBrand.create(data);
 export const getAllBrands = () => GiftCardBrand.find().sort({ name: 1 });
 
-export const getSellableBrands = async () => {
-  const brands = await GiftCardBrand.find({ isActive: true }).sort({ name: 1 });
-  
-  // Filter out empty countries, ranges, and types
-  const validBrands = brands.map(brand => {
-    const brandObj = brand.toObject({ virtuals: true });
-    
-    const validCountries = (brandObj.countries || [])
-      .map((country: any) => {
-        const validRanges = (country.ranges || [])
-          .filter((range: any) => range.types && range.types.length > 0);
-        
-        return { ...country, ranges: validRanges };
-      })
-      .filter((country: any) => country.ranges.length > 0);
-      
-    return { ...brandObj, countries: validCountries };
-  }).filter(brand => brand.countries.length > 0);
-
-  return validBrands;
-};
-
 export const updateBrand = (id: string, data: any) => GiftCardBrand.findByIdAndUpdate(id, data, { new: true });
 export const getBrandById = (id: string) => GiftCardBrand.findById(id);
 

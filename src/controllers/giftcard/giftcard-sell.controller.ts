@@ -11,7 +11,7 @@ import {
 import { UserService, VolumeType } from '@/services/user.service';
 
 export const getSellBrands = asyncHandler(async (req: Request, res: Response) => {
-  const brands = await sellService.getSellableBrands();
+  const brands = await sellService.getAllBrands();
   res.json({ success: true, data: brands });
 });
 
