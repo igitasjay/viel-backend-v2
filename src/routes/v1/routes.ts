@@ -23,6 +23,7 @@ import { handleMonnifyWebhook } from '@/controllers/monnify.webhook';
 import { verifyTransactionStatus } from '@/controllers/verification.controller';
 import bannerRouter from '@/routes/v1/banner.routes';
 import adminBannerRouter from '@/routes/v1/admin-banner.routes';
+import adminUserRouter from '@/routes/v1/admin-user.routes';
 
 const router = Router();
 
@@ -57,6 +58,7 @@ router.use('/transactions', transactionRouter);
 router.use('/monnify', monnifyRoute);
 router.use('/banners', bannerRouter);
 router.use('/admin/banners', adminBannerRouter);
+router.use('/admin/users', adminUserRouter);
 
 router.post('/monnify/webhook', handleMonnifyWebhook);
 router.post('/transactions/:reference/verify', verifyTransactionStatus);

@@ -17,6 +17,7 @@ export interface IUser {
   bvn?: string;
   myReferralCode?: string;
   referredBy?: string;
+  accountStatus: 'active' | 'suspended' | 'deleted';
 }
 
 const UserSchema = new Schema<IUser>(
@@ -87,6 +88,11 @@ const UserSchema = new Schema<IUser>(
     referredBy: {
       type: String,
       required: false,
+    },
+    accountStatus: {
+      type: String,
+      enum: ['active', 'suspended', 'deleted'],
+      default: 'active',
     },
   },
   {

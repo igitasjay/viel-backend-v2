@@ -20,13 +20,21 @@ const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body as UserData;
     const user = await User.findOne({ email })
-      .select('firstname lastname email phone password role isEmailVerified')
+      .select('firstname lastname email phone password role isEmailVerified accountStatus')
       .lean()
       .exec();
     if (!user) {
       res.status(401).json({
         code: 'INVLIDCREDENTIALS',
         message: 'Invalid credentials',
+      });
+      return;
+    }
+
+    if (user.accountStatus === 'deleted') {
+      res.status(403).json({
+        code: 'AccountDeletedError',
+        message: 'Your account has been deleted.',
       });
       return;
     }

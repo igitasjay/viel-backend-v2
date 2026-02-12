@@ -1,4 +1,5 @@
 import { logger } from '@/lib/winston';
+import User from '@/models/user.model';
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import type { Request, Response, NextFunction } from 'express';
 import type { Types } from 'mongoose';
@@ -27,8 +28,29 @@ const authenticate = async (
     const jwtPayload = verifyAccessToken(token) as {
       userId: Types.ObjectId;
     };
+
+    // fetch user from database
+    const user = await User.findById(jwtPayload.userId);
+
+    if (!user) {
+      res.status(401).json({
+        code: 'AuthenticationError',
+        message: 'Access denied: user not found.',
+      });
+      return;
+    }
+
+    if (user.accountStatus === 'deleted') {
+      res.status(403).json({
+        code: 'AccountDeletedError',
+        message: 'Access denied: your account has been deleted.',
+      });
+      return;
+    }
+
     // attach user info to request object
     req.userId = jwtPayload.userId;
+    req.user = user;
     return next();
   } catch (error) {
     if (error instanceof TokenExpiredError) {
