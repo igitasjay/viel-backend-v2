@@ -4,6 +4,7 @@ import authorize from '@/middlewares/authorize.middleware';
 import getCurrentUser from '@/controllers/user/get-current-user';
 import updateCurrentUser from '@/controllers/user/update-current-user';
 import editProfile from '@/controllers/user/edit-profile';
+import verifyIdentity from '@/controllers/user/identity-verification.controller';
 const router = Router();
 
 router.get(
@@ -25,6 +26,12 @@ router.put(
   authenticate,
   authorize(['user']),
   editProfile,
+);
+
+router.post(
+  '/verify-identity',
+  authenticate,
+  verifyIdentity,
 );
 
 export default router;

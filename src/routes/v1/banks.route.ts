@@ -4,12 +4,8 @@ import { body } from 'express-validator';
 import validationError from '@/middlewares/validation-error.middleware';
 import authenticate from '@/middlewares/authenticate.middleware';
 import getBanks from '@/services/banks.service';
-import addBankAccount from '@/controllers/user/bank.controller';
+import { addBankAccount, updateBankAccount } from '@/controllers/user/bank.controller';
 import getCurrentUserBank from '@/controllers/user/my-bank.controller';
-// import {
-//   verifyBankDetails,
-//   verifyBankValidation,
-// } from '@/controllers/user/verify-bank.controller';
 
 const router = Router();
 
@@ -32,6 +28,8 @@ router.post(
   validationError,
   addBankAccount,
 );
+
+router.put('/update', updateBankAccount);
 
 router.get('/my-bank', getCurrentUserBank);
 

@@ -83,7 +83,7 @@ const UserSchema = new Schema<IUser>(
     myReferralCode: {
       type: String,
       unique: true,
-      default: () => Math.random().toString(36).substring(2, 10).toUpperCase(),
+      sparse: true,
     },
     referredBy: {
       type: String,

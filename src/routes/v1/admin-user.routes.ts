@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as adminUserCtrl from '@/controllers/admin-user.controller';
+import * as adminReferralCtrl from '@/controllers/admin-referral.controller';
 import authenticate from '@/middlewares/authenticate.middleware';
 import authorize from '@/middlewares/authorize.middleware';
 
@@ -15,5 +16,6 @@ router.patch('/suspend', adminUserCtrl.suspendUserAccount);
 router.patch('/activate', adminUserCtrl.activateUserAccount);
 router.delete('/', adminUserCtrl.deleteUserAccount);
 router.get('/transactions', adminUserCtrl.getUserTransactionHistory);
+router.get('/referrals/rewards', adminReferralCtrl.getPayoutHistory);
 
 export default router;

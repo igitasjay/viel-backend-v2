@@ -5,6 +5,7 @@ import authenticate from '@/middlewares/authenticate.middleware';
 import * as sellGc from '@/controllers/giftcard/giftcard-sell.controller';
 import { upload } from '@/middlewares/upload';
 import restrictSuspended from '@/middlewares/restrict-suspended.middleware';
+import verifyUser from '@/middlewares/verify-user.middleware';
 
 import { initiateGiftCardPurchase } from '@/controllers/giftcard/purchase.controller';
 
@@ -13,7 +14,7 @@ const router = Router();
 // --- Buy Flow ---
 router.get('/countries', gc.listCountries);
 router.get('/giftcards', gc.listGiftCardsByCountry);
-router.post('/buy', authenticate, restrictSuspended, initiateGiftCardPurchase);
+router.post('/buy', authenticate, restrictSuspended, verifyUser, initiateGiftCardPurchase);
 
 // --- Sell Flow ---
 router.get('/sell/brands', sellGc.getSellBrands);

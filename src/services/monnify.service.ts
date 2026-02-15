@@ -188,3 +188,37 @@ export async function initMonnifyTransaction(
     throw safeError;
   }
 }
+
+/**
+ * Disburse funds to a local bank account
+ */
+export async function disburseFunds(payload: {
+  amount: number;
+  reference: string;
+  narration: string;
+  destinationBankCode: string;
+  destinationAccountNumber: string;
+  currency: string;
+}): Promise<any> {
+  const accessToken = await getMonnifyAccessToken();
+
+  try {
+    const response = await axios.post(
+      `https://${MONNIFY_BASE_URL}/api/v1/disbursements/single`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Monnify Disbursement API error:', error.message);
+    const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify disbursement failed') as any;
+    safeError.status = error.response?.status;
+    safeError.monnifyResponse = error.response?.data;
+    throw safeError;
+  }
+}
