@@ -222,3 +222,59 @@ export async function disburseFunds(payload: {
     throw safeError;
   }
 }
+
+/**
+ * Fetch list of supported banks from Monnify
+ */
+export async function getMonnifyBanks(): Promise<any> {
+  const accessToken = await getMonnifyAccessToken();
+
+  try {
+    const response = await axios.get(
+      `https://${MONNIFY_BASE_URL}/api/v1/banks`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Monnify Banks API error:', error.message);
+    const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify bank list fetch failed') as any;
+    safeError.status = error.response?.status;
+    safeError.monnifyResponse = error.response?.data;
+    throw safeError;
+  }
+}
+
+/**
+ * Resolve bank account details (Verify Account Name)
+ */
+export async function resolveMonnifyBankAccount(
+  accountNumber: string,
+  bankCode: string,
+): Promise<any> {
+  const accessToken = await getMonnifyAccessToken();
+
+  try {
+    const response = await axios.get(
+      `https://${MONNIFY_BASE_URL}/api/v1/disbursements/account/validate`,
+      {
+        params: { accountNumber, bankCode },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Monnify Account Resolution API error:', error.message);
+    const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify account resolution failed') as any;
+    safeError.status = error.response?.status;
+    safeError.monnifyResponse = error.response?.data;
+    throw safeError;
+  }
+}
