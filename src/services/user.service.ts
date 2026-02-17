@@ -2,6 +2,7 @@ import User from '@/models/user.model';
 import mongoose from 'mongoose';
 import AppSetting from '@/models/app-setting.model';
 import BankAccount from '@/models/bank.model';
+import Referral from '@/models/referral.model';
 import { disburseFunds } from './monnify.service';
 import { Ledger } from '@/crypto-infra/models/Ledger';
 import { logger } from '@/lib/winston';
@@ -61,45 +62,25 @@ export class UserService {
 
   private static async triggerReferralReward(referrerId: string, referredUserId: string) {
     try {
+      const referral = await Referral.findOne({
+        referrerId: new mongoose.Types.ObjectId(referrerId),
+        referredUserId: new mongoose.Types.ObjectId(referredUserId),
+        status: 'pending_eligibility',
+      }).exec();
+
+      if (!referral) return;
+
       const settings = await AppSetting.findOne().exec();
       const rewardAmount = settings?.referralRewardAmount || 0;
 
-      if (rewardAmount <= 0) return;
+      referral.status = 'eligible';
+      referral.rewardAmount = rewardAmount;
+      referral.eligibleAt = new Date();
+      await referral.save();
 
-      const referrerBank = await BankAccount.findOne({ userId: referrerId }).exec();
-      if (!referrerBank) {
-        logger.warn(`Referrer ${referrerId} has no bank account. Reward ${rewardAmount} not disbursed.`);
-        return;
-      }
-
-      const reference = `ref_reward_${referredUserId}_${Date.now()}`;
-      
-      // Automatic Payout via Monnify
-      await disburseFunds({
-        amount: rewardAmount,
-        reference,
-        narration: `Referral reward for referring user ${referredUserId}`,
-        destinationBankCode: referrerBank.bankCode,
-        destinationAccountNumber: referrerBank.accountNumber,
-        currency: 'NGN',
-      });
-
-      // Record in Ledger
-      await Ledger.create({
-        userId: new mongoose.Types.ObjectId(referrerId),
-        asset: 'NGN',
-        amount: rewardAmount,
-        type: LedgerType.GIFTCARD_SELL, // Reusing existing type or we should have added REFERRAL_REWARD
-        transactionCategory: LedgerCategory.GIFTCARD,
-        transactionType: TransactionAction.SELL,
-        referenceId: reference,
-        description: `Referral reward for user ${referredUserId}`,
-        status: 'completed',
-      });
-
-      logger.info(`Referral reward of ${rewardAmount} sent to referrer ${referrerId}`);
+      logger.info(`Referral for User ${referredUserId} (Referrer: ${referrerId}) now ELIGIBLE for reward of ${rewardAmount}`);
     } catch (error) {
-      throw error;
+      logger.error('Error updating referral eligibility', { referrerId, referredUserId, error });
     }
   }
 }

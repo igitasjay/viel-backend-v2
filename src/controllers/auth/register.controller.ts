@@ -4,6 +4,7 @@ import { IUser } from '@/models/user.model';
 import { logger } from '@/lib/winston';
 import { Request, Response } from 'express';
 import OTP from '@/models/otp.mode';
+import Referral from '@/models/referral.model';
 import { sendVerificationEmail } from '@/lib/email';
 
 type UserData = Pick<
@@ -16,7 +17,7 @@ const generateOTP = (): string => {
 };
 
 const register = async (req: Request, res: Response): Promise<void> => {
-  const { firstname, lastname, email, password, role } = req.body as UserData;
+  const { firstname, lastname, email, password, role, referredBy } = req.body;
 
   if (role === 'admin' && !config.WHITELIST_ADMINS_EMAIL.includes(email)) {
     res.status(403).json({
@@ -47,7 +48,20 @@ const register = async (req: Request, res: Response): Promise<void> => {
       passcode: '',
       nin: '',
       bvn: '',
+      referredBy: referredBy || '',
     });
+
+    if (referredBy) {
+      const referrer = await User.findOne({ myReferralCode: referredBy }).exec();
+      if (referrer) {
+        await Referral.create({
+          referrerId: referrer._id,
+          referredUserId: newUser._id,
+          status: 'pending_eligibility',
+        });
+        logger.info(`Referral link created: User ${newUser._id} referred by ${referrer._id}`);
+      }
+    }
 
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now

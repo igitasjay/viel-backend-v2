@@ -17,5 +17,7 @@ router.patch('/activate', adminUserCtrl.activateUserAccount);
 router.delete('/', adminUserCtrl.deleteUserAccount);
 router.get('/transactions', adminUserCtrl.getUserTransactionHistory);
 router.get('/referrals/rewards', adminReferralCtrl.getPayoutHistory);
+router.get('/referrals', adminReferralCtrl.getReferrals);
+router.post('/referrals/approve', adminReferralCtrl.approveReferral);
 
 export default router;
