@@ -37,27 +37,8 @@ const verifyOTP = async (req: Request, res: Response) => {
       return;
     }
 
-    if (!user.myReferralCode) {
-      let referralCode: string;
-      let codeExists: boolean;
-
-      do {
-        referralCode = crypto.randomBytes(5).toString('hex').toUpperCase();
-        codeExists =
-          (await User.exists({ myReferralCode: referralCode })) !== null;
-      } while (codeExists);
-
-      await User.updateOne(
-        { _id: user._id },
-        {
-          isEmailVerified: true,
-          myReferralCode: referralCode,
-        },
-      );
-    } else {
-      // Existing user already has a code – just verify email
-      await User.updateOne({ _id: user._id }, { isEmailVerified: true });
-    }
+    // Verify email status
+    await User.updateOne({ _id: user._id }, { isEmailVerified: true });
 
     // Delete the used OTP
     await OTP.deleteOne({ _id: otpRecord._id });
