@@ -3,7 +3,7 @@ import Router from 'express';
 import { body } from 'express-validator';
 import validationError from '@/middlewares/validation-error.middleware';
 import authenticate from '@/middlewares/authenticate.middleware';
-import getBanks from '@/services/banks.service';
+import getBanks, { resolveBankAccount } from '@/services/banks.service';
 import { addBankAccount, updateBankAccount } from '@/controllers/user/bank.controller';
 import getCurrentUserBank from '@/controllers/user/my-bank.controller';
 
@@ -13,6 +13,8 @@ router.use(authenticate);
 
 // Public endpoint to get bank list (or protect if preferred)
 router.get('/list', getBanks);
+
+router.get('/resolve', resolveBankAccount);
 
 // Protected endpoint to add bank account
 router.post(

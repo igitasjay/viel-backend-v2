@@ -36,4 +36,42 @@ const getBanks = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const resolveBankAccount = async (req: Request, res: Response): Promise<void> => {
+  const secretKey = config.PAYSTACK_SECRET_KEY;
+  const { accountNumber, bankCode } = req.query;
+
+  if (!accountNumber || !bankCode) {
+    res.status(400).json({
+      success: false,
+      message: 'Account number and bank code are required.',
+    });
+    return;
+  }
+
+  try {
+    const response = await axios.get('https://api.paystack.co/bank/resolve', {
+      headers: {
+        Authorization: `Bearer ${secretKey}`,
+      },
+      params: {
+        account_number: accountNumber,
+        bank_code: bankCode,
+      },
+    });
+
+    res.json({
+      success: true,
+      data: response.data.data,
+    });
+  } catch (error: any) {
+    console.error('Resolve bank account failed:', error.message);
+    const message = error.response?.data?.message || 'Failed to resolve bank account';
+    res.status(error.response?.status || 500).json({
+      success: false,
+      message,
+    });
+  }
+};
+
+export { getBanks, resolveBankAccount };
 export default getBanks;
