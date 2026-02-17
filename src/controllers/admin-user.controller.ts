@@ -99,7 +99,8 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
 
   // Optionally filter out deleted users unless requested
   const includeDeleted = req.query.includeDeleted === 'true';
-  const filter = includeDeleted ? {} : { accountStatus: { $ne: 'deleted' } };
+  const filter: any = includeDeleted ? {} : { accountStatus: { $ne: 'deleted' } };
+  filter.role = { $ne: 'admin' };
 
   const users = await User.find(filter)
     .sort({ createdAt: -1 })
