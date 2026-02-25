@@ -6,24 +6,20 @@ export const fetchAllCurrencies = async (req: Request, res: Response) => {
   try {
     const rawCurrencies = await Currency.find();
     
-    // Fetch live rates for all symbols using price_symbol from DB
-    const priceRequests = rawCurrencies
-        .filter((c: any) => c.price_symbol)
-        .map((c: any) => ({
-            symbol: c.symbol,
-            priceSymbol: c.price_symbol
-        }));
-    
-    const uniqueRequests = Array.from(
-        new Map(priceRequests.map(item => [item.priceSymbol, item])).values()
-    );
+    // Auto-derive TwelveData symbols as SYMBOL/USD for each unique coin
+    const uniqueSymbols = Array.from(new Set(rawCurrencies.map((c: any) => c.symbol)));
+    const priceRequests = uniqueSymbols.map(symbol => ({
+        symbol,
+        priceSymbol: `${symbol}/USD`,
+    }));
 
-    const liveRates = await PriceService.getLiveRates(uniqueRequests); 
+    const liveRates = await PriceService.getLiveRates(priceRequests); // Returns Map<Symbol, USD price>
 
     const groupedMap = new Map();
 
     rawCurrencies.forEach((curr: any) => {
         if (!groupedMap.has(curr.symbol)) {
+            const liveUsdRate = liveRates.get(curr.symbol);
             groupedMap.set(curr.symbol, {
                 id: curr._id,
                 name: curr.name,
@@ -37,7 +33,7 @@ export const fetchAllCurrencies = async (req: Request, res: Response) => {
                 naira_rate: curr.buyRate?.toString(),
                 buyRate: curr.buyRate,
                 sellRate: curr.sellRate,
-                usd_rate: (liveRates.get(curr.symbol) ?? curr.usd_rate)?.toFixed(10),
+                usd_rate: liveUsdRate != null ? liveUsdRate.toFixed(10) : (curr.usd_rate ?? 0).toFixed(10),
                 created_at: curr.createdAt,
                 updated_at: curr.updatedAt,
                 networks: []
@@ -47,10 +43,10 @@ export const fetchAllCurrencies = async (req: Request, res: Response) => {
         // Add Network
         const group = groupedMap.get(curr.symbol);
         group.networks.push({
-            id: curr._id, // Using the doc ID as network ID
+            id: curr._id,
             addressRegex: curr.addressRegex,
             memoRegex: curr.memoRegex,
-            name: `${curr.name}`, // e.g. Ethereum (ERC20) - approximating naming convention
+            name: `${curr.name}`,
             code: curr.network,
             fee: curr.fee?.toFixed(10),
             feeType: curr.feeType,
