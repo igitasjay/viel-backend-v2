@@ -1,70 +1,76 @@
 import axios from 'axios';
 import { logger } from '../../lib/winston';
+import config from '../../config/config';
 
-const SYMBOL_TO_ID: Record<string, string> = {
-  BTC: 'bitcoin',
-  ETH: 'ethereum',
-  USDT: 'tether',
-  BNB: 'binancecoin',
-  USDC: 'usd-coin',
-  XRP: 'ripple',
-  ADA: 'cardano',
-  DOGE: 'dogecoin',
-  SOL: 'solana',
-  TRX: 'tron',
-  LTC: 'litecoin',
-  // Add more as needed
-};
+export interface PriceRequest {
+  symbol: string;       // app symbol (e.g. BTC)
+  priceSymbol: string;  // TwelveData symbol (e.g. BTC/USD)
+}
 
 export class PriceService {
   /**
-   * Fetches live rates for a list of symbols
+   * Fetches live rates for a list of symbols using TwelveData
    * Returns a map of Symbol -> Price (USD)
    */
-  static async getLiveRates(symbols: string[]): Promise<Map<string, number>> {
+  static async getLiveRates(requests: PriceRequest[]): Promise<Map<string, number>> {
     try {
-      // 1. Map symbols to CoinGecko IDs
-      const ids: string[] = [];
-      const idToSymbolMap: Record<string, string> = {};
+      if (requests.length === 0) return new Map();
 
-      symbols.forEach((sym) => {
-        const id = SYMBOL_TO_ID[sym.toUpperCase()];
-        if (id) {
-          ids.push(id);
-          idToSymbolMap[id] = sym; // Keep track to map back later
+      const priceSymbolToAppSymbol: Record<string, string> = {};
+      const symbolsToFetch: string[] = [];
+
+      requests.forEach((req) => {
+        if (req.priceSymbol) {
+          symbolsToFetch.push(req.priceSymbol);
+          priceSymbolToAppSymbol[req.priceSymbol] = req.symbol;
         }
       });
 
-      if (ids.length === 0) return new Map();
+      if (symbolsToFetch.length === 0) return new Map();
 
-      // 2. Call CoinGecko API
-      // Using public API (Rate limited: ~10-30 calls/min)
-      const url = `https://api.coingecko.com/api/v3/simple/price`;
+      const apiKey = config.TWELVE_DATA_API_KEY;
+      if (!apiKey) {
+        logger.error('TWELVE_DATA_API_KEY is missing in config');
+        return new Map();
+      }
+
+      const url = `https://api.twelvedata.com/price`;
       const response = await axios.get(url, {
         params: {
-          ids: ids.join(','),
-          vs_currencies: 'usd',
+          symbol: symbolsToFetch.join(','),
+          apikey: apiKey,
         },
-        timeout: 5000,
+        timeout: 10000,
       });
 
-      // 3. Process Response
       const rates = new Map<string, number>();
+
+      // TwelveData Response Format for multiple symbols:
+      // { "BTC/USD": { "price": "50000.00" }, "ETH/USD": { "price": "2500.00" } }
+      // OR for single symbol: { "price": "50000.00" }
       
-      // Response format: { "bitcoin": { "usd": 50000 }, ... }
-      for (const [id, data] of Object.entries(response.data)) {
-        const price = (data as any).usd;
-        const symbol = idToSymbolMap[id];
-        if (symbol && price) {
-          rates.set(symbol, price);
+      const data = response.data;
+
+      if (symbolsToFetch.length === 1) {
+        const priceSymbol = symbolsToFetch[0];
+        const price = parseFloat(data.price);
+        const appSymbol = priceSymbolToAppSymbol[priceSymbol];
+        if (appSymbol && !isNaN(price)) {
+          rates.set(appSymbol, price);
+        }
+      } else {
+        for (const [priceSymbol, details] of Object.entries(data)) {
+          const price = parseFloat((details as any).price);
+          const appSymbol = priceSymbolToAppSymbol[priceSymbol];
+          if (appSymbol && !isNaN(price)) {
+            rates.set(appSymbol, price);
+          }
         }
       }
 
       return rates;
     } catch (error) {
-        // Fallback to empty map or log error
-        // Don't crash the entire request if price fetch fails
-        console.error('Failed to fetch live rates:', error);
+        logger.error('Failed to fetch live rates from TwelveData:', error);
         return new Map();
     }
   }

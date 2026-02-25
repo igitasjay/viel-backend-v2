@@ -30,6 +30,7 @@ export interface ICurrency extends Document {
   buyRate: number; // explicit rate in Naira
   sellRate: number; // explicit rate in Naira
   isActive: boolean;
+  price_symbol?: string; // e.g. BTC/USD for TwelveData
 }
 
 const CurrencySchema = new Schema(
@@ -62,6 +63,7 @@ const CurrencySchema = new Schema(
     buyRate: { type: Number, default: 0 },
     sellRate: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
+    price_symbol: { type: String, default: null },
   },
   { timestamps: true }
 );

@@ -25,6 +25,7 @@ export const addCurrency = async (req: Request, res: Response) => {
       naira_rate,
       usd_rate,
       status, // optional, defaults to 1
+      price_symbol,
     } = req.body;
 
     // Check if file exists (Multer)
@@ -63,6 +64,7 @@ export const addCurrency = async (req: Request, res: Response) => {
       naira_rate: Number(naira_rate || 0),
       usd_rate: Number(usd_rate || 0),
       status: Number(status || 1),
+      price_symbol: price_symbol || null,
     });
 
     return res.status(201).json({ success: true, data: newCurrency });
@@ -153,7 +155,8 @@ export const updateCurrency = async (req: Request, res: Response) => {
       naira_rate,
       usd_rate,
       status,
-      decimals
+      decimals,
+      price_symbol
     } = req.body;
 
     const file = (req as any).file;
@@ -196,6 +199,7 @@ export const updateCurrency = async (req: Request, res: Response) => {
     if (usd_rate !== undefined) currency.usd_rate = Number(usd_rate);
     if (status !== undefined) currency.status = Number(status);
     if (decimals !== undefined) currency.decimals = Number(decimals);
+    if (price_symbol !== undefined) currency.price_symbol = price_symbol;
 
     if (file) {
       currency.imageUrl = file.path;

@@ -6,9 +6,20 @@ export const fetchAllCurrencies = async (req: Request, res: Response) => {
   try {
     const rawCurrencies = await Currency.find();
     
-    // Fetch live rates for all symbols
-    const symbols = Array.from(new Set(rawCurrencies.map((c: any) => c.symbol)));
-    const liveRates = await PriceService.getLiveRates(symbols); // Returns Map<Symbol, Price>
+    // Fetch live rates for all symbols using price_symbol from DB
+    const priceRequests = rawCurrencies
+        .filter((c: any) => c.price_symbol)
+        .map((c: any) => ({
+            symbol: c.symbol,
+            priceSymbol: c.price_symbol
+        }));
+    
+    // De-dupe based on priceSymbol to avoid redundant API weight
+    const uniqueRequests = Array.from(
+        new Map(priceRequests.map(item => [item.priceSymbol, item])).values()
+    );
+
+    const liveRates = await PriceService.getLiveRates(uniqueRequests); // Returns Map<Symbol, Price>
 
     // Group by symbol to form the nested structure
     const groupedMap = new Map();

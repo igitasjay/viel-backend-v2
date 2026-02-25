@@ -101,6 +101,7 @@ const seedData = [
     maximumDecimalPlaces: 8,
     naira_rate: '0',
     usd_rate: '92822.0000000000',
+    price_symbol: 'BTC/USD',
   },
   {
     name: 'Ethereum',
@@ -157,6 +158,7 @@ const seedData = [
     maximumDecimalPlaces: 8,
     naira_rate: '0',
     usd_rate: '2450.1800000000',
+    price_symbol: 'ETH/USD',
   },
   {
     name: 'Tether',
@@ -269,6 +271,7 @@ const seedData = [
     maximumDecimalPlaces: 4,
     naira_rate: '0',
     usd_rate: '0.9996890000',
+    price_symbol: 'USDT/USD',
   },
   {
     name: 'USD Coin',
@@ -381,6 +384,7 @@ const seedData = [
     maximumDecimalPlaces: 4,
     naira_rate: '0',
     usd_rate: '0.9998810000',
+    price_symbol: 'USDC/USD',
   },
   {
     name: 'Binance Coin',
@@ -409,6 +413,7 @@ const seedData = [
     maximumDecimalPlaces: 8,
     naira_rate: '0',
     usd_rate: '612.2200000000',
+    price_symbol: 'BNB/USD',
   },
   {
     name: 'Tron',
@@ -437,6 +442,7 @@ const seedData = [
     maximumDecimalPlaces: 6,
     naira_rate: '0',
     usd_rate: '0.2422950000',
+    price_symbol: 'TRX/USD',
   },
   {
     name: 'Shiba Inu',
@@ -479,6 +485,7 @@ const seedData = [
     maximumDecimalPlaces: 2,
     naira_rate: '0',
     usd_rate: '0.0000145300',
+    price_symbol: 'SHIB/USD',
   },
   {
     name: 'Solana',
@@ -507,6 +514,7 @@ const seedData = [
     maximumDecimalPlaces: 8,
     naira_rate: '0',
     usd_rate: '169.5000000000',
+    price_symbol: 'SOL/USD',
   },
   {
     name: 'Polygon',
@@ -549,6 +557,7 @@ const seedData = [
     maximumDecimalPlaces: 8,
     naira_rate: '0',
     usd_rate: '0.2917740000',
+    price_symbol: 'POL/USD',
   },
   {
     name: 'Dogecoin',
@@ -577,6 +586,7 @@ const seedData = [
     maximumDecimalPlaces: 8,
     naira_rate: '0',
     usd_rate: '0.2285290000',
+    price_symbol: 'DOGE/USD',
   },
   {
     name: 'Bitcoin Cash',
@@ -605,6 +615,7 @@ const seedData = [
     maximumDecimalPlaces: 8,
     naira_rate: '0',
     usd_rate: '325.8700000000',
+    price_symbol: 'BCH/USD',
   },
   {
     name: 'Litecoin',
@@ -633,6 +644,36 @@ const seedData = [
     maximumDecimalPlaces: 8,
     naira_rate: '0',
     usd_rate: '122.9700000000',
+    price_symbol: 'LTC/USD',
+  },
+  {
+    name: 'Sui',
+    code: 'SUI',
+    icon: 'https://res.cloudinary.com/dhxukz6em/image/upload/v1737075761/crypto_icons/qfuhnqnttq4fhtrv54nj.png', // Placeholder icon
+    networks: [
+      {
+        id: 30, // Assuming next ID
+        name: 'Sui',
+        code: 'SUI',
+        addressRegex: '^0x[0-9a-fA-F]{64}$',
+        memoRegex: null,
+        fee: '0.1',
+        feeType: 'FLAT',
+        minimum: '1',
+        contractAddress: null,
+        explorerLink: null,
+        walletAddress: '0x' + '0'.repeat(64), // placeholder
+        enabled: true,
+      }
+    ],
+    status: 1,
+    is_stable: 0,
+    color: '6FBEDF',
+    minimumDeposit: '1',
+    maximumDecimalPlaces: 8,
+    naira_rate: '0',
+    usd_rate: '3.50',
+    price_symbol: 'SUI/USD',
   },
 ];
 
