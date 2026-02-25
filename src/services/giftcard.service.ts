@@ -96,6 +96,8 @@ export const purchaseGiftCard = async (
       LedgerCategory.GIFTCARD,
       TransactionAction.BUY,
       card.imageUrl,
+      'completed',
+      card.name,
     );
 
     // decrement stock atomically

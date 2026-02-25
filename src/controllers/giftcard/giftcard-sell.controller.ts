@@ -69,7 +69,7 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
   // Log to Ledger (Credit Naira - user receives money for selling)
   await LedgerService.creditUser(
     req.userId!.toString(),
-    'NGN',
+    brand.name,
     totalInNaira,
     LedgerType.GIFTCARD_SELL,
     `GCS-${sale._id}`,
@@ -77,6 +77,7 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
     TransactionAction.SELL,
     brand.logoUrl,
     'pending',
+    brand.name,
   );
 
   // Update User Trading Volume

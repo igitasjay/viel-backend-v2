@@ -90,6 +90,8 @@ export const withdrawCrypto = async (req: Request, res: Response) => {
       LedgerCategory.CRYPTO,
       TransactionAction.SELL,
       coin?.imageUrl,
+      'completed',
+      asset,
     );
 
     // 3. Trigger Async Withdrawal Job

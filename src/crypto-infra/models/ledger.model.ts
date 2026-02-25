@@ -21,13 +21,14 @@ export enum TransactionAction {
 
 export interface ILedger extends Document {
   userId: mongoose.Types.ObjectId;
-  asset: string; // NGN, USDT, ETH
+  asset: string; // Bitcoin, Ethereum, Amazon, Steam, iTunes etc
   amount: number; // Positive for credit, Negative for debit
   type: LedgerType;
   transactionCategory: LedgerCategory;
   transactionType: TransactionAction;
   referenceId: string; // TxHash or Internal Trade ID
   description: string;
+  tradedAsset?: string;
   image?: string;
   status: string;
 }
@@ -40,7 +41,7 @@ const LedgerSchema = new Schema(
       required: true,
       index: true,
     },
-    asset: { type: String, required: true }, // 'NGN' or 'USDT'
+    asset: { type: String, required: true }, // Bitcoin, Ethereum, Amazon, Steam, iTunes etc
     amount: { type: Number, required: true },
     type: { type: String, enum: Object.values(LedgerType), required: true },
     transactionCategory: {
@@ -55,6 +56,7 @@ const LedgerSchema = new Schema(
     },
     referenceId: { type: String, required: true, unique: true }, // Idempotency Key
     description: { type: String },
+    tradedAsset: { type: String },
     image: { type: String },
     status: { type: String, default: 'completed' },
   },

@@ -69,6 +69,8 @@ async function startWatcher() {
               LedgerCategory.CRYPTO,
               TransactionAction.SELL,
               coin?.imageUrl,
+              'completed',
+              targetWallet.currency,
             );
             console.log(`✅ User Credited: ${amount} ${targetWallet.currency}`);
 

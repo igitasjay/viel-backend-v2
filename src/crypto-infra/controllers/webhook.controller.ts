@@ -41,6 +41,9 @@ export const paystackWebhook = async (req: Request, res: Response) => {
           `PAYSTACK-${reference}`,
           LedgerCategory.CRYPTO,
           TransactionAction.SELL,
+          undefined,
+          'completed',
+          'NGN',
         );
       } catch (e) {
         console.log('Duplicate Paystack Event:', reference);

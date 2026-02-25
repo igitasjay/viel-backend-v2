@@ -20,6 +20,7 @@ export class LedgerService {
     action: TransactionAction,
     image?: string,
     status: string = 'completed',
+    tradedAsset?: string,
   ) {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -49,6 +50,7 @@ export class LedgerService {
             description: `Credit ${amount} ${asset} via ${type}`,
             image,
             status,
+            tradedAsset: tradedAsset || asset,
           },
         ],
         { session },
