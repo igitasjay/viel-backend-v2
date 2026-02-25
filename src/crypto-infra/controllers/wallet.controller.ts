@@ -1,10 +1,10 @@
 import type { Request, Response } from 'express';
-import { Ledger, LedgerCategory, TransactionAction } from '../models/Ledger';
-import { Wallet } from '../models/Wallet';
-import { Currency } from '../models/Currency';
+import { Ledger, LedgerCategory, TransactionAction } from '../models/ledger.model';
+import { Wallet } from '../models/wallet.model';
+import { Currency } from '../models/currency.model';
 import { WalletService } from '../services/wallet.service';
 import { LedgerService } from '../services/ledger.service';
-import { LedgerType } from '../models/Ledger';
+import { LedgerType } from '../models/ledger.model';
 import { ethers } from 'ethers';
 
 /**

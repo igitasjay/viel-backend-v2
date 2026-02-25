@@ -7,7 +7,7 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
-} from '@/crypto-infra/models/Ledger';
+} from '@/crypto-infra/models/ledger.model';
 import { UserService, VolumeType } from '@/services/user.service';
 
 export const getSellBrands = asyncHandler(async (req: Request, res: Response) => {

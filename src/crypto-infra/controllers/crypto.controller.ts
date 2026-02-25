@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { Currency } from '../models/Currency';
+import { Currency } from '../models/currency.model';
 import { PriceService } from '../services/price.service';
 
 export const fetchAllCurrencies = async (req: Request, res: Response) => {
@@ -14,28 +14,25 @@ export const fetchAllCurrencies = async (req: Request, res: Response) => {
             priceSymbol: c.price_symbol
         }));
     
-    // De-dupe based on priceSymbol to avoid redundant API weight
     const uniqueRequests = Array.from(
         new Map(priceRequests.map(item => [item.priceSymbol, item])).values()
     );
 
-    const liveRates = await PriceService.getLiveRates(uniqueRequests); // Returns Map<Symbol, Price>
+    const liveRates = await PriceService.getLiveRates(uniqueRequests); 
 
-    // Group by symbol to form the nested structure
     const groupedMap = new Map();
 
     rawCurrencies.forEach((curr: any) => {
         if (!groupedMap.has(curr.symbol)) {
-            // Initialize Group
             groupedMap.set(curr.symbol, {
-                id: curr._id, // Using first ID encountered or could be generated
+                id: curr._id,
                 name: curr.name,
                 code: curr.symbol,
-                icon: curr.imageUrl, // Assuming icon is same for all networks of a coin
+                icon: curr.imageUrl,
                 status: curr.status,
                 is_stable: curr.is_stable ? 1 : 0,
                 color: curr.color,
-                minimumDeposit: curr.minimumDeposit?.toFixed(10), // Formatting to string as per JSON
+                minimumDeposit: curr.minimumDeposit?.toFixed(10),
                 maximumDecimalPlaces: curr.maximumDecimalPlaces,
                 naira_rate: curr.buyRate?.toString(),
                 buyRate: curr.buyRate,
@@ -53,7 +50,7 @@ export const fetchAllCurrencies = async (req: Request, res: Response) => {
             id: curr._id, // Using the doc ID as network ID
             addressRegex: curr.addressRegex,
             memoRegex: curr.memoRegex,
-            name: `${curr.name} (${curr.network})`, // e.g. Ethereum (ERC20) - approximating naming convention
+            name: `${curr.name}`, // e.g. Ethereum (ERC20) - approximating naming convention
             code: curr.network,
             fee: curr.fee?.toFixed(10),
             feeType: curr.feeType,

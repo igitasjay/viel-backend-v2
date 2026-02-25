@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { Wallet } from '../models/Wallet';
+import { Wallet } from '../models/wallet.model';
 
 // WARNING: In production, load this from AWS Secrets Manager / Vault
 const MASTER_MNEMONIC = process.env.MASTER_MNEMONIC!;

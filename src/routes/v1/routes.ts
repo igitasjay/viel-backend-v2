@@ -11,7 +11,7 @@ import authorisationRoute from '@/routes/v1/authorisation.route';
 import initializeRedisClient from '@/config/redis.config';
 
 import walletRoutes from '../../crypto-infra/routes/wallet.routes';
-import tradeRoutes from '../../crypto-infra/routes/trade.routes';
+// import tradeRoutes from '../../crypto-infra/routes/trade.routes';
 import webhookRoutes from '../../crypto-infra/routes/webhook.routes';
 import adminRoutes from '../../crypto-infra/routes/admin.routes';
 import authenticate from '@/middlewares/authenticate.middleware';
@@ -70,8 +70,8 @@ router.post('/transactions/:reference/verify', verifyTransactionStatus);
 router.use(authenticate);
 
 router.use('/infra/admin', adminRoutes);
-router.use('/infra/wallets', walletRoutes); // Add userAuth middleware here
-// router.use('/infra/trade', tradeRoutes); // Add userAuth middleware here
+router.use('/infra/wallets', walletRoutes);  
+// router.use('/infra/trade', tradeRoutes); 
 router.use('/infra/webhooks', webhookRoutes);
 router.use('/infra/crypto', userCryptoRoute);
 

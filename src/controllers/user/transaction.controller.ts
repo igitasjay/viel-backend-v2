@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { asyncHandler } from '@/utils/async-handler.util';
-import { Ledger } from '@/crypto-infra/models/Ledger';
+import { Ledger } from '@/crypto-infra/models/ledger.model';
 import mongoose from 'mongoose';
 
 export const getTransactionHistory = asyncHandler(

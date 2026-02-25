@@ -4,7 +4,7 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
-} from '../models/Ledger';
+} from '../models/ledger.model';
 
 export class LedgerService {
   /**

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import { Currency } from '../models/Currency';
-import { Ledger } from '../models/Ledger';
-import { Wallet } from '../models/Wallet';
+import { Currency } from '../models/currency.model';
+import { Ledger } from '../models/ledger.model';
+import { Wallet } from '../models/wallet.model';
 
 export const addCurrency = async (req: Request, res: Response) => {
   try {

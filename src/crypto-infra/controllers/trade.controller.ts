@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { Currency } from '../models/Currency';
+import { Currency } from '../models/currency.model';
 // import { LedgerService } from '../services/ledger.service';
 // import { LedgerType, LedgerCategory, TransactionAction } from '../models/Ledger';
 import axios from 'axios';

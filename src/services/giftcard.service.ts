@@ -7,7 +7,7 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
-} from '@/crypto-infra/models/Ledger';
+} from '@/crypto-infra/models/ledger.model';
 
 export const createGiftCard = (payload: any) => {
   console.log('payload →', {

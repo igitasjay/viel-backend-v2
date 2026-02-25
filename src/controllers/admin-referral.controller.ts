@@ -1,4 +1,4 @@
-import { Ledger } from '@/crypto-infra/models/Ledger';
+import { Ledger } from '@/crypto-infra/models/ledger.model';
 import AppSetting from '@/models/app-setting.model';
 import BankAccount from '@/models/bank.model';
 import Referral from '@/models/referral.model';
@@ -10,7 +10,7 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
-} from '@/crypto-infra/models/Ledger';
+} from '@/crypto-infra/models/ledger.model';
 
 const getPayoutHistory = async (req: Request, res: Response): Promise<void> => {
   try {

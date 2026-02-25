@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
 import dotenv from "dotenv";
-import { Wallet } from "../models/Wallet.js";
-import { Currency } from "../models/Currency.js";
+import { Wallet } from "../models/wallet.model.js";
+import { Currency } from "../models/currency.model.js";
 import { LedgerService } from "../services/ledger.service.js";
-import { LedgerType, LedgerCategory, TransactionAction } from "../models/Ledger.js";
+import { LedgerType, LedgerCategory, TransactionAction } from "../models/ledger.model.js";
 import { connectToDatabase } from "@/lib/mongoose.js";
 import { UserService, VolumeType } from "../../services/user.service.js";
 

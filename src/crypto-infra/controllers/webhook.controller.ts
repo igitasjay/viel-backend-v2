@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import crypto from 'crypto';
 import { LedgerService } from '../services/ledger.service';
-import { LedgerCategory, LedgerType, TransactionAction } from '../models/Ledger';
+import { LedgerCategory, LedgerType, TransactionAction } from '../models/ledger.model';
 import config from '@/config/config';
 
 const PAYSTACK_SECRET = config.PAYSTACK_SECRET_KEY;

@@ -1,5 +1,5 @@
 import { connectToDatabase, disconnectFromDatabase } from '@/lib/mongoose';
-import { Currency } from '@/crypto-infra/models/Currency';
+import { Currency } from '@/crypto-infra/models/currency.model';
 
 (async () => {
   try {
