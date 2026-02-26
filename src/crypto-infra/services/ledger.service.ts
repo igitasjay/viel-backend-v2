@@ -4,12 +4,10 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
-} from '../models/ledger.model';
+} from '@/crypto-infra/models/ledger.model';
 
 export class LedgerService {
-  /**
-   * Atomic Credit: Ensures balance is updated exactly once.
-   */
+  // Atomic Credit: Ensures balance is updated exactly once.
   static async creditUser(
     userId: string,
     asset: string,
@@ -69,9 +67,7 @@ export class LedgerService {
     }
   }
 
-  /**
-   * Update the status of a ledger entry
-   */
+  // Update the status of a ledger entry
   static async updateLedgerStatus(refId: string, status: string) {
     return await Ledger.findOneAndUpdate(
       { referenceId: refId },
