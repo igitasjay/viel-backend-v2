@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import * as gc from '@/controllers/giftcard/giftcard.controller';
+import * as gc from '@/giftcard-infra/controllers/giftcard.controller';
 
 import authenticate from '@/middlewares/authenticate.middleware';
-import * as sellGc from '@/controllers/giftcard/giftcard-sell.controller';
+import * as sellGc from '@/giftcard-infra/controllers/giftcard-sell.controller';
 import { upload } from '@/middlewares/upload';
 import restrictSuspended from '@/middlewares/restrict-suspended.middleware';
 import verifyUser from '@/middlewares/verify-user.middleware';
 
-import { initiateGiftCardPurchase } from '@/controllers/giftcard/purchase.controller';
+import { initiateGiftCardPurchase } from '@/giftcard-infra/controllers/purchase.controller';
 
 const router = Router();
 

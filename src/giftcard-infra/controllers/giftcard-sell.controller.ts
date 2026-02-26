@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as sellService from '@/services/giftcard-sell.service';
+import * as sellService from '@/giftcard-infra/services/giftcard-sell.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { ApiError } from '@/utils/api-error.util';
 import { LedgerService } from '@/crypto-infra/services/ledger.service';

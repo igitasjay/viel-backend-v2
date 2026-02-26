@@ -1,5 +1,5 @@
-import GiftCard from '../models/giftcard.model';
-import GiftCardPurchase from '@/models/giftcard-purchase.model';
+import GiftCard from '@/giftcard-infra/models/giftcard.model';
+import GiftCardPurchase from '@/giftcard-infra/models/giftcard-purchase.model';
 import { ApiError } from '@/utils/api-error.util';
 import mongoose from 'mongoose';
 import { LedgerService } from '@/crypto-infra/services/ledger.service';
@@ -84,20 +84,6 @@ export const purchaseGiftCard = async (
         },
       ],
       { session },
-    );
-
-    // 2. Log to Ledger (Debit Naira)
-    await LedgerService.creditUser(
-      userId,
-      'NGN',
-      -totalInNaira,
-      LedgerType.GIFTCARD_BUY,
-      `GCP-${purchase[0]._id}`,
-      LedgerCategory.GIFTCARD,
-      TransactionAction.BUY,
-      card.imageUrl,
-      'completed',
-      card.name,
     );
 
     // decrement stock atomically

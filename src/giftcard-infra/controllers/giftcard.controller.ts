@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as giftService from '@/services/giftcard.service';
+import * as giftService from '@/giftcard-infra/services/giftcard.service';
 import * as countryService from '@/services/country.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 

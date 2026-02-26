@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { upload } from '@/middlewares/upload';
-import * as adminCtrl from '@/controllers/giftcard/admin.controller';
+import * as adminCtrl from '@/giftcard-infra/controllers/admin.controller';
 
-import * as sellAdminCtrl from '@/controllers/giftcard/admin-sell.controller';
+import * as sellAdminCtrl from '@/giftcard-infra/controllers/sell.controller.admin';
+import * as purchaseAdminCtrl from '@/giftcard-infra/controllers/purchase.controller.admin';
 
 const router = Router();
 
@@ -10,6 +11,9 @@ const router = Router();
 router.post('/create', upload.single('image'), adminCtrl.createGiftCard);
 router.post('/countries', adminCtrl.createCountry);
 router.put('/giftcards', adminCtrl.updateGiftCard);
+router.get('/giftcards/purchases', purchaseAdminCtrl.listGiftCardPurchases);
+router.post('/giftcards/purchases/approve', purchaseAdminCtrl.approveGiftCardPurchase);
+router.post('/giftcards/purchases/decline', purchaseAdminCtrl.declineGiftCardPurchase);
 
 // --- Sell Flow Admin Routes ---
 router.post('/sell/brands', upload.single('logo'), sellAdminCtrl.addBrand);

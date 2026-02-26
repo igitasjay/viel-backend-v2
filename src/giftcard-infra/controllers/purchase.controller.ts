@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import User from '@/models/user.model';
-import * as purchaseService from '@/services/giftcard.service';
+import * as purchaseService from '@/giftcard-infra/services/giftcard.service';
 import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/services/monnify.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { ApiError } from '@/utils/api-error.util';

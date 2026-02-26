@@ -1,5 +1,5 @@
-import GiftCardBrand from '@/models/giftcard-brand.model';
-import GiftCardSale from '@/models/giftcard-sale.model';
+import GiftCardBrand from '@/giftcard-infra/models/giftcard-brand.model';
+import GiftCardSale from '@/giftcard-infra/models/giftcard-sale.model';
 import { LedgerService } from '@/crypto-infra/services/ledger.service';
 
 // --- BRAND SERVICES ---

@@ -5,7 +5,7 @@ import {
   updateRates,
   auditLedger,
   updateCurrency,
-} from '../controllers/admin.controller';
+} from '@/crypto-infra/controllers/controller.admin';
 
 const router = Router();
 router.post('/coins/add-new', upload.single('image'), addCurrency);

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import Transaction from '@/models/transaction.model';
-import { fulfillGiftCardPurchase } from '@/controllers/giftcard/purchase.controller';
+import { fulfillGiftCardPurchase } from '@/giftcard-infra/controllers/purchase.controller';
 import { logger } from '@/lib/winston';
 import { UserService, VolumeType } from '@/services/user.service';
 // import { sendCrypto } from '@/lib/crypto-dispatch'; // Placeholder for crypto dispatch logic
@@ -70,13 +70,8 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
           );
         }
     } else if (tx.type === 'buy_giftcard') {
-      logger.info(`Triggering GiftCard Fulfillment for TX ${tx.id}`);
-      try {
-        await fulfillGiftCardPurchase(tx);
-      } catch (err) {
-        logger.error(`Failed to fulfill giftcard purchase for TX ${tx.id}`, err);
-        // Maybe mark as 'processing' or 'failed' depending on error type
-      }
+      logger.info(`GiftCard Purchase for TX ${tx.id} is now PAID. Awaiting Admin Approval.`);
+      // Manual approval required - fulfilling happens via admin API
     }
 
     res.status(200).send('Webhook processed');

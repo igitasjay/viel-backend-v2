@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import * as countryService from '@/services/country.service';
-import * as giftService from '@/services/giftcard.service';
+import * as giftService from '@/giftcard-infra/services/giftcard.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { logger } from '@/lib/winston';
 import mongoose from 'mongoose';

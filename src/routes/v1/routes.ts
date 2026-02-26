@@ -16,7 +16,7 @@ import webhookRoutes from '../../crypto-infra/routes/webhook.routes';
 import adminRoutes from '../../crypto-infra/routes/admin.routes';
 import authenticate from '@/middlewares/authenticate.middleware';
 import userCryptoRoute from '../../crypto-infra/routes/crypto.routes';
-import giftcardRoute from '@/routes/v1/giftcard.route';
+import giftcardRoute from '@/giftcard-infra/routes/giftcard.route';
 import transactionRouter from '@/routes/v1/transaction.route';
 import monnifyRoute from '@/routes/v1/monnify.route';
 import { handleMonnifyWebhook } from '@/controllers/monnify.webhook';
