@@ -4,7 +4,8 @@ import User from '@/models/user.model';
 import redisClient from '@/config/redis.config';
 
 export const authorizeTransaction = async (req: Request, res: Response) => {
-  const { userId, passcode } = req.body;
+  const userId = req.userId;
+  const { passcode } = req.body;
 
   try {
     // 1. Fetch from MONGODB
@@ -24,6 +25,8 @@ export const authorizeTransaction = async (req: Request, res: Response) => {
     if (!isValid) {
       return res.status(401).json({ error: 'Invalid passcode' });
     }
+
+    return res.status(200).json({ success: true, message: 'Transaction authorized' });
 
   } catch (error: any) {
     return res.status(500).json({ error: 'Internal Server Error' });
