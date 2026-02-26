@@ -14,7 +14,7 @@ const WalletSchema = new Schema(
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     currency: { type: String, required: true },
     network: { type: String, required: true },
-    address: { type: String, required: true , index: true},
+    address: { type: String, required: true, index: true },
     derivationPath: { type: String, required: true },
   },
   { timestamps: true }
