@@ -51,7 +51,6 @@
     "mongoose": "^8.19.2",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
-    "nodemailer": "^7.0.10",
     "redis": "^5.10.0",
     "resend": "^6.6.0",
     "winston": "^3.18.3",
