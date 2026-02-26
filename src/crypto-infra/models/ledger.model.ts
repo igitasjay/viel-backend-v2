@@ -31,6 +31,7 @@ export interface ILedger extends Document {
   tradedAsset?: string;
   image?: string;
   status: string;
+  affectsBalance?: boolean;
 }
 
 const LedgerSchema = new Schema(
@@ -59,6 +60,7 @@ const LedgerSchema = new Schema(
     tradedAsset: { type: String },
     image: { type: String },
     status: { type: String, default: 'completed' },
+    affectsBalance: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

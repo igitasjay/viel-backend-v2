@@ -105,7 +105,7 @@ export const auditLedger = async (req: Request, res: Response) => {
 
     // 1. Calculate Internal Liability (Sum of all user balances in DB)
     const liabilityResult = await Ledger.aggregate([
-      { $match: { asset: currency } },
+      { $match: { asset: currency, affectsBalance: true } },
       { $group: { _id: null, total: { $sum: '$amount' } } },
     ]);
     const totalLiability = liabilityResult[0]?.total || 0;

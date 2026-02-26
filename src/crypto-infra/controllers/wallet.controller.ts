@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import { Ledger, LedgerCategory, TransactionAction } from '../models/ledger.model';
 import { Wallet } from '../models/wallet.model';
 import { Currency } from '../models/currency.model';
@@ -16,7 +17,7 @@ export const getBalances = async (req: Request, res: Response) => {
     const userId = req.userId;
 
     const balances = await Ledger.aggregate([
-      { $match: { userId: new Object(userId) } }, // Ensure ObjectId
+      { $match: { userId: new mongoose.Types.ObjectId(userId), affectsBalance: true } },
       { $group: { _id: '$asset', balance: { $sum: '$amount' } } },
     ]);
 

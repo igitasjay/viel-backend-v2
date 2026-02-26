@@ -10,6 +10,12 @@ import { getNextSequence } from '@/lib/sequence';
 import Transaction from '@/models/transaction.model';
 import { logger } from '@/lib/winston';
 import { UserService, VolumeType } from '@/services/user.service';
+import { LedgerService } from '@/crypto-infra/services/ledger.service';
+import {
+  LedgerType,
+  LedgerCategory,
+  TransactionAction,
+} from '@/crypto-infra/models/ledger.model';
 
 export const initiateGiftCardPurchase = asyncHandler(
   async (req: Request, res: Response) => {
@@ -113,6 +119,21 @@ export const fulfillGiftCardPurchase = async (transaction: any) => {
     Number(amount),
     Number(quantity),
     recipientEmail,
+  );
+
+  // Log to Ledger (History only, no balance affect)
+  await LedgerService.creditUser(
+    user._id.toString(),
+    purchase.detailsSnapshot.brandName,
+    purchase.totalInNaira,
+    LedgerType.GIFTCARD_BUY,
+    `GCB-${purchase._id}`,
+    LedgerCategory.GIFTCARD,
+    TransactionAction.BUY,
+    purchase.detailsSnapshot.image,
+    'completed',
+    purchase.detailsSnapshot.brandName,
+    false, // affectsBalance = false
   );
 
   // Update User Trading Volume
