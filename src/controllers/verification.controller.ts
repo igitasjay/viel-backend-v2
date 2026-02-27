@@ -7,6 +7,8 @@ import { logger } from '@/lib/winston';
 import { UserService, VolumeType } from '@/services/user.service';
 // import { sendCrypto } from '@/lib/crypto-dispatch';
 
+import { fulfillBuyCrypto } from '@/crypto-infra/controllers/trade.controller';
+
 export const verifyTransactionStatus = [
   param('reference').trim().notEmpty().withMessage('Reference is required'),
   async (req: Request, res: Response): Promise<void> => {
@@ -67,19 +69,8 @@ export const verifyTransactionStatus = [
 
          // Trigger Fulfillment
         if (tx.type === 'buy_crypto') {
-           logger.info(`Manual Verify: Triggering Crypto Dispatch for TX ${tx.id}`);
-           // await sendCrypto(...)
-           // tx.status = 'completed';
-           // await tx.save();
-
-           // Update User Trading Volume
-           if (tx.fiat_amount) {
-             await UserService.updateUserVolume(
-               tx.userId.toString(),
-               Number(tx.fiat_amount),
-               VolumeType.BUY,
-             );
-           }
+           logger.info(`Manual Verify: Triggering Buy Crypto Fulfillment for TX ${tx.id}`);
+           await fulfillBuyCrypto(tx);
         } else if (tx.type === 'buy_giftcard') {
            logger.info(`Manual Verify: Triggering GiftCard Fulfillment for TX ${tx.id}`);
            try {

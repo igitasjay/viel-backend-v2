@@ -1,13 +1,14 @@
 import type { Request, Response } from 'express';
 import { Currency } from '../models/currency.model';
-// import { LedgerService } from '../services/ledger.service';
-// import { LedgerType, LedgerCategory, TransactionAction } from '../models/Ledger';
+import { LedgerService } from '../services/ledger.service';
+import { LedgerType, LedgerCategory, TransactionAction } from '../models/ledger.model';
 import axios from 'axios';
 import User from '@/models/user.model';
 import Transaction from '@/models/transaction.model';
 import { getNextSequence } from '@/lib/sequence';
 import { logger } from '@/lib/winston';
 import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/monnify-infra/services/monnify.service';
+import { UserService, VolumeType } from '@/services/user.service';
 
 
 /**
@@ -145,4 +146,48 @@ export const buyCrypto = async (req: Request, res: Response) => {
     logger.error('Buy Crypto Init Failed:', error);
     return res.status(500).json({ error: error.message });
   }
+};
+
+/**
+ * Shared fulfillment function for buy crypto
+ * Called after successful payment (webhook or manual verification)
+ */
+export const fulfillBuyCrypto = async (transaction: any) => {
+    try {
+        const userId = transaction.userId.toString();
+        
+        // 1. Update User Trading Volume
+        if (transaction.fiat_amount) {
+            await UserService.updateUserVolume(
+                userId,
+                Number(transaction.fiat_amount),
+                VolumeType.BUY,
+            );
+        }
+
+        // 2. Create Ledger Entry (History)
+        await LedgerService.creditUser(
+            userId,
+            transaction.coin || 'Unknown',
+            Number(transaction.crypto_amount || 0),
+            LedgerType.TRADE_BUY,
+            `BUY-${transaction.id}-${transaction.reference}`,
+            LedgerCategory.CRYPTO,
+            TransactionAction.BUY,
+            transaction.image,
+            'completed',
+            'NGN', // Traded against Naira
+            false, // affectsBalance = false (for now, as per user's observation of volume vs history)
+        );
+
+        // 3. Update Transaction Status
+        transaction.status = 'completed';
+        await transaction.save();
+
+        logger.info(`Buy Crypto Fulfillment Successful for TX ${transaction.id}`);
+        return true;
+    } catch (error) {
+        logger.error(`Buy Crypto Fulfillment Failed for TX ${transaction.id}:`, error);
+        throw error;
+    }
 };
