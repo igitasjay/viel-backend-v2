@@ -16,6 +16,7 @@ import {
   LedgerCategory,
   TransactionAction,
 } from '@/crypto-infra/models/ledger.model';
+import config from '@/config/config';
 
 export const initiateGiftCardPurchase = asyncHandler(
   async (req: Request, res: Response) => {
@@ -34,7 +35,9 @@ export const initiateGiftCardPurchase = asyncHandler(
     // Generate reference
     const reference = `gift_${req.userId}_${Date.now()}`;
     const txId = await getNextSequence('transactionId');
-    const totalAmount = Number(amount) * Number(quantity);
+    /// FIX: Trying to resolve the issue of over charging users
+    // const totalAmount = Number(amount) * Number(quantity); :: BEFORE
+    const totalAmount = Number(amount); // AFTER
 
     // Create pending transaction
     const tx = await Transaction.create({
@@ -70,8 +73,8 @@ export const initiateGiftCardPurchase = asyncHandler(
       paymentReference: reference,
       paymentDescription: `Gift Card Purchase - ${reference}`,
       currencyCode: 'NGN',
-      contractCode: process.env.MONNIFY_CONTRACT_CODE!,
-      redirectUrl: 'http://localhost:3000', // Placeholder or frontend URL
+      contractCode: config.MONNIFY_CONTRACT_CODE!,
+      redirectUrl: config.FRONTEND_URL,
       paymentMethods: ["ACCOUNT_TRANSFER"]
     });
 
@@ -89,7 +92,7 @@ export const initiateGiftCardPurchase = asyncHandler(
       customerEmail: user.email,
       paymentDescription: `Gift Card Purchase - ${reference}`,
       currencyCode: 'NGN',
-      contractCode: process.env.MONNIFY_CONTRACT_CODE!,
+      contractCode: config.MONNIFY_CONTRACT_CODE!,
     });
 
     res.status(201).json({
