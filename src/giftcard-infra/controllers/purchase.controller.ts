@@ -33,7 +33,7 @@ export const initiateGiftCardPurchase = asyncHandler(
     }
 
     // Generate reference
-    const reference = `BGC_${req.userId}_${Date.now()}`;
+    const reference = `BGCTX_${req.userId}_${Date.now()}`;
     const txId = await getNextSequence('transactionId');
     /// FIX: Trying to resolve the issue of over charging users
     // const totalAmount = Number(amount) * Number(quantity); :: BEFORE
