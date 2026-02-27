@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body, query, param, validationResult } from 'express-validator';
-import { getMonnifyTransactionDetails, initMonnifyBankTransfer, getMonnifyTransactionStatus } from '@/services/monnify.service';
+import { getMonnifyTransactionDetails, initMonnifyBankTransfer, getMonnifyTransactionStatus } from '@/monnify-infra/services/monnify.service';
 import { logger } from '@/lib/winston';
 
 export const getBankTransferDetails = [

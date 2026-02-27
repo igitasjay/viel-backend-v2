@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getMonnifyBanks, resolveMonnifyBankAccount } from '@/services/monnify.service';
+import { getMonnifyBanks, resolveMonnifyBankAccount } from '@/monnify-infra/services/monnify.service';
 
 const getBanks = async (req: Request, res: Response): Promise<void> => {
   const { search } = req.query;

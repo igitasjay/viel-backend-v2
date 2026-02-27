@@ -18,7 +18,7 @@ import authenticate from '@/middlewares/authenticate.middleware';
 import userCryptoRoute from '../../crypto-infra/routes/crypto.routes';
 import giftcardRoute from '@/giftcard-infra/routes/giftcard.route';
 import transactionRouter from '@/routes/v1/transaction.route';
-import monnifyRoute from '@/routes/v1/monnify.route';
+import monnifyRoute from '@/monnify-infra/routes/monnify.route';
 import { handleMonnifyWebhook } from '@/controllers/monnify.webhook';
 import { verifyTransactionStatus } from '@/controllers/verification.controller';
 import bannerRouter from '@/routes/v1/banner.routes';

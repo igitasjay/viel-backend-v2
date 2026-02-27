@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { param, validationResult } from 'express-validator';
 import Transaction from '@/models/transaction.model';
-import { getMonnifyTransactionStatus } from '@/services/monnify.service';
+import { getMonnifyTransactionStatus } from '@/monnify-infra/services/monnify.service';
 import { fulfillGiftCardPurchase } from '@/giftcard-infra/controllers/purchase.controller';
 import { logger } from '@/lib/winston';
 import { UserService, VolumeType } from '@/services/user.service';

@@ -7,7 +7,7 @@ import User from '@/models/user.model';
 import Transaction from '@/models/transaction.model';
 import { getNextSequence } from '@/lib/sequence';
 import { logger } from '@/lib/winston';
-import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/services/monnify.service';
+import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/monnify-infra/services/monnify.service';
 
 
 /**

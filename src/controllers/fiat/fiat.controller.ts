@@ -9,7 +9,7 @@ import { getNextSequence } from '@/lib/sequence';
 // import { initializeTransaction, verifyTransaction } from '@/lib/paystack';
 import config from '@/config/config';
 import User from '@/models/user.model';
-import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/services/monnify.service';
+import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/monnify-infra/services/monnify.service';
 
 const buyValidation = [
   body('coin').trim().notEmpty().toUpperCase(),

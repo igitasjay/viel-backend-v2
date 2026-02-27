@@ -4,7 +4,7 @@ import BankAccount from '@/models/bank.model';
 import Referral from '@/models/referral.model';
 import type { Request, Response } from 'express';
 import { logger } from '@/lib/winston';
-import { disburseFunds } from '@/services/monnify.service';
+import { disburseFunds } from '@/monnify-infra/services/monnify.service';
 import mongoose from 'mongoose';
 import {
   LedgerType,

@@ -2,12 +2,6 @@ import GiftCard from '@/giftcard-infra/models/giftcard.model';
 import GiftCardPurchase from '@/giftcard-infra/models/giftcard-purchase.model';
 import { ApiError } from '@/utils/api-error.util';
 import mongoose from 'mongoose';
-import { LedgerService } from '@/crypto-infra/services/ledger.service';
-import {
-  LedgerType,
-  LedgerCategory,
-  TransactionAction,
-} from '@/crypto-infra/models/ledger.model';
 
 export const createGiftCard = (payload: any) => {
   console.log('payload →', {

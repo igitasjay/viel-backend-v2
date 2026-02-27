@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import AppSetting from '@/models/app-setting.model';
 import BankAccount from '@/models/bank.model';
 import Referral from '@/models/referral.model';
-import { disburseFunds } from './monnify.service';
+import { disburseFunds } from '../monnify-infra/services/monnify.service';
 import { Ledger } from '@/crypto-infra/models/ledger.model';
 import { logger } from '@/lib/winston';
 import {

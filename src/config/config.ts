@@ -22,9 +22,16 @@ const config = {
   TWELVE_DATA_API_KEY: process.env.TWELVE_DATA_API_KEY!,
   ALCHEMY_API_KEY: process.env.ALCHEMY_API_KEY!,
   TENDERLY_RPC_URL: process.env.TENDERLY_RPC_URL!,
-  FRONTEND_URL: 'https://myviel.ng',
+  FRONTEND_URL: process.env.FRONTEND_URL!,
   RPC_URL: process.env.RPC_URL,
   RESEND_API_KEY: process.env.RESEND_API_KEY!,
+  MONNIFY_API_KEY: process.env.MONNIFY_API_KEY!,
+  MONNIFY_SECRET_KEY: process.env.MONNIFY_SECRET_KEY!,
+  MONNIFY_CONTRACT_CODE: process.env.MONNIFY_CONTRACT_CODE!,
+  MONNIFY_BASE_URL: process.env.MONNIFY_BASE_URL!,
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME!,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY!,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET!,
 };
 
 export default config;

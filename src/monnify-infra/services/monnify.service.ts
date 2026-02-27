@@ -7,19 +7,16 @@ import {
   MonnifyInitTransactionResponse,
 } from '@/types/monnify.type';
 import axios from 'axios';
+import config from '@/config/config';
 
-const MONNIFY_API_KEY = process.env.MONNIFY_API_KEY;
-const MONNIFY_SECRET_KEY = process.env.MONNIFY_SECRET_KEY;
-const MONNIFY_BASE_URL = process.env.MONNIFY_API_URL || 'sandbox.monnify.com';
+const MONNIFY_API_KEY = config.MONNIFY_API_KEY;
+const MONNIFY_SECRET_KEY = config.MONNIFY_SECRET_KEY;
+const MONNIFY_BASE_URL = config.MONNIFY_BASE_URL;
 
-/**
- * Access token memory cache to avoid spamming login
- */
+// Access token memory cache to avoid spamming login
 let accessTokenCache: { token: string; expiresAt: number } | null = null;
 
-/**
- * Obtain an access token from Monnify
- */
+// Obtain an access token from Monnify
 export async function getMonnifyAccessToken(): Promise<string> {
   // Return cached token if valid (buffer 60s)
   if (accessTokenCache && accessTokenCache.expiresAt > Date.now() + 60000) {
@@ -67,9 +64,7 @@ export async function getMonnifyAccessToken(): Promise<string> {
   }
 }
 
-/**
- * Fetch transaction details by transaction reference
- */
+// Fetch transaction details by transaction reference
 export async function getMonnifyTransactionDetails(
   transactionReference: string,
 ): Promise<MonnifyTransactionResponse> {
@@ -97,9 +92,7 @@ export async function getMonnifyTransactionDetails(
   }
 }
 
-/**
- * Initialize a bank transfer to get a dynamic account number
- */
+// Initialize a bank transfer to get a dynamic account number
 export async function initMonnifyBankTransfer(
   payload: MonnifyBankTransferRequest,
 ): Promise<MonnifyBankTransferResponse> {
@@ -127,9 +120,7 @@ export async function initMonnifyBankTransfer(
   }
 }
 
-/**
- * Generic status query by reference (Transaction Ref or Payment Ref)
- */
+// Generic status query by reference (Transaction Ref or Payment Ref)
 export async function getMonnifyTransactionStatus(
   reference: string,
   isPaymentReference: boolean = true,
@@ -159,9 +150,7 @@ export async function getMonnifyTransactionStatus(
   }
 }
 
-/**
- * Step 1: Initialize Transaction (Get Transaction Reference)
- */
+// Step 1: Initialize Transaction (Get Transaction Reference)
 export async function initMonnifyTransaction(
   payload: MonnifyInitTransactionRequest,
 ): Promise<MonnifyInitTransactionResponse> {
@@ -189,9 +178,7 @@ export async function initMonnifyTransaction(
   }
 }
 
-/**
- * Disburse funds to a local bank account
- */
+// Disburse funds to a local bank account
 export async function disburseFunds(payload: {
   amount: number;
   reference: string;
@@ -223,9 +210,7 @@ export async function disburseFunds(payload: {
   }
 }
 
-/**
- * Fetch list of supported banks from Monnify
- */
+// Fetch list of supported banks from Monnify
 export async function getMonnifyBanks(): Promise<any> {
   const accessToken = await getMonnifyAccessToken();
 
@@ -249,9 +234,7 @@ export async function getMonnifyBanks(): Promise<any> {
   }
 }
 
-/**
- * Resolve bank account details (Verify Account Name)
- */
+// Resolve bank account details (Verify Account Name)
 export async function resolveMonnifyBankAccount(
   accountNumber: string,
   bankCode: string,

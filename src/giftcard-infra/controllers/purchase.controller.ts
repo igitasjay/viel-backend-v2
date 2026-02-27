@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import User from '@/models/user.model';
 import * as purchaseService from '@/giftcard-infra/services/giftcard.service';
-import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/services/monnify.service';
+import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/monnify-infra/services/monnify.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { ApiError } from '@/utils/api-error.util';
 import { purchaseEmailHtml } from '@/lib/email-temeplate';
