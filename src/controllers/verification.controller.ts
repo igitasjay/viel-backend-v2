@@ -16,12 +16,22 @@ export const verifyTransactionStatus = [
       return;
     }
 
-    const reference = req.params.reference as string;
+    const encodedReference = req.params.reference as string;
+    const reference = decodeURIComponent(encodedReference);
+
+    logger.info(`Verifying transaction with reference: ${reference} (original: ${encodedReference})`);
 
     try {
-      const tx = await Transaction.findOne({ reference });
+      // Find transaction by internal reference OR Monnify reference
+      const tx = await Transaction.findOne({
+        $or: [
+          { reference: reference },
+          { 'monnify_data.transactionReference': reference }
+        ]
+      });
 
       if (!tx) {
+        logger.warn(`Transaction not found for reference: ${reference}`);
         res.status(404).json({ message: 'Transaction not found' });
         return;
       }
@@ -31,12 +41,20 @@ export const verifyTransactionStatus = [
         return;
       }
 
-      // Check status with Monnify (using payment reference = our transaction reference)
-      const monnifyStatus = await getMonnifyTransactionStatus(reference, true);
+      // Check status with Monnify (using our internal reference)
+      // If the user passed a Monnify reference, 'reference' will be MNFY|..., 
+      // but getMonnifyTransactionStatus expects the paymentReference if isPaymentReference is true.
+      const queryRef = tx.reference;
+      if (!queryRef) {
+         res.status(400).json({ message: 'Transaction has no payment reference' });
+         return;
+      }
+
+      const monnifyStatus = await getMonnifyTransactionStatus(queryRef, true);
 
       if (monnifyStatus.responseBody.paymentStatus === 'PAID') {
         // Double check if already processed to prevent race conditions with webhook
-        const freshTx = await Transaction.findOne({ reference });
+        const freshTx = await Transaction.findOne({ reference: tx.reference });
         if (freshTx && (freshTx.status === 'paid' || freshTx.status === 'completed')) {
              res.status(200).json({ message: 'Transaction confirmed', status: freshTx.status });
              return;

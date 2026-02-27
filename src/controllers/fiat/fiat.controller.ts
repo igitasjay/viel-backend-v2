@@ -136,6 +136,10 @@ export const initializeBuyCrypto = [
 
       const monnifyRef = initTxResponse.responseBody.transactionReference;
 
+      // Update transaction with Monnify reference
+      tx.monnify_data = { ...tx.monnify_data, transactionReference: monnifyRef };
+      await tx.save();
+
       // 2. Initialize Monnify Payment (Bank Transfer) using the Monnify Reference
       const monnifyResponse = await initMonnifyBankTransfer({
         transactionReference: monnifyRef,

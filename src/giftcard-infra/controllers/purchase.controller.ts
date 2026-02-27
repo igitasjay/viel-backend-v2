@@ -37,7 +37,7 @@ export const initiateGiftCardPurchase = asyncHandler(
     const totalAmount = Number(amount) * Number(quantity);
 
     // Create pending transaction
-    await Transaction.create({
+    const tx = await Transaction.create({
       id: txId,
       userId: user._id,
       type: 'buy_giftcard',
@@ -76,6 +76,10 @@ export const initiateGiftCardPurchase = asyncHandler(
     });
 
     const monnifyRef = initTxResponse.responseBody.transactionReference;
+
+    // Update transaction with Monnify reference
+    tx.monnify_data = { ...tx.monnify_data, transactionReference: monnifyRef };
+    await tx.save();
 
     // 2. Initialize Monnify Payment (Bank Transfer) using the Monnify Reference
     const monnifyResponse = await initMonnifyBankTransfer({
