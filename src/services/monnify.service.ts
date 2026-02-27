@@ -139,7 +139,7 @@ export async function getMonnifyTransactionStatus(
 
   try {
     const response = await axios.get<MonnifyTransactionResponse>(
-      `https://${MONNIFY_BASE_URL}/api/v2/transactions/query`,
+      `https://${MONNIFY_BASE_URL}/api/v2/merchant/transactions/query`,
       {
         params: { [queryKey]: reference },
         headers: {
