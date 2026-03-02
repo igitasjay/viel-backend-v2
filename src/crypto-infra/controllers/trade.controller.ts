@@ -168,8 +168,8 @@ export const fulfillBuyCrypto = async (transaction: any) => {
         // 2. Create Ledger Entry (History)
         await LedgerService.creditUser(
             userId,
-            transaction.coin || 'Unknown',
-            Number(transaction.crypto_amount || 0),
+            `${transaction.coin} (${transaction.network})`,
+            Number(transaction.fiat_amount || 0), 
             LedgerType.TRADE_BUY,
             `BUY-${transaction.id}-${transaction.reference}`,
             LedgerCategory.CRYPTO,
