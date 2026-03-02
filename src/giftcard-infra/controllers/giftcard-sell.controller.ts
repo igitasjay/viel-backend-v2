@@ -78,6 +78,8 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
     brand.logoUrl,
     'pending',
     brand.name,
+    true,        // affectsBalance
+    imageUrls,   // proof images uploaded by user
   );
 
   // Update User Trading Volume
