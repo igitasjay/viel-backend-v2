@@ -9,6 +9,7 @@ import { getNextSequence } from '@/lib/sequence';
 import { logger } from '@/lib/winston';
 import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/monnify-infra/services/monnify.service';
 import { UserService, VolumeType } from '@/services/user.service';
+import config from '@/config/config';
 
 
 /**
@@ -114,7 +115,7 @@ export const buyCrypto = async (req: Request, res: Response) => {
       paymentDescription: `Buy Crypto - ${reference}`,
       currencyCode: 'NGN',
       contractCode: process.env.MONNIFY_CONTRACT_CODE!,
-      redirectUrl: 'http://localhost:3000', 
+      redirectUrl: config.FRONTEND_URL!, 
       paymentMethods: ["ACCOUNT_TRANSFER"]
     });
 

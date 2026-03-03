@@ -7,6 +7,7 @@ import { UserService, VolumeType } from '@/services/user.service';
 // import { sendCrypto } from '@/lib/crypto-dispatch'; // Placeholder for crypto dispatch logic
 
 import { fulfillBuyCrypto } from '@/crypto-infra/controllers/trade.controller';
+import config from '@/config/config';
 
 export const handleMonnifyWebhook = async (req: Request, res: Response) => {
   try {
@@ -18,7 +19,7 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
     }
 
     const computedHash = crypto
-      .createHmac('sha512', process.env.MONNIFY_SECRET_KEY!)
+      .createHmac('sha512', config.MONNIFY_SECRET_KEY)
       .update(JSON.stringify(body))
       .digest('hex');
 
