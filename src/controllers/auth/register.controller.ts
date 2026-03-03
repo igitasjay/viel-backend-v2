@@ -88,7 +88,6 @@ const register = async (req: Request, res: Response): Promise<void> => {
       message: 'User registered. Please verify your email with the OTP sent.',
       title: {
         email: newUser.email,
-        otp: otp,
       },
     });
     logger.info('New user registered, OTP sent', {
