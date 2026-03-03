@@ -24,6 +24,8 @@ async function seedTestAssets() {
       maximumDecimalPlaces: 2,
       buyRate: 1500,
       sellRate: 1450,
+      naira_rate: 1500,
+      usd_rate: 1,
       isActive: true,
       status: 1,
     };
@@ -32,6 +34,8 @@ async function seedTestAssets() {
       ...testBuyCrypto,
       name: 'TEST SELL CRYPTO',
       symbol: 'TEST_SELL_CRYPTO',
+      naira_rate: 1450,
+      usd_rate: 0.98,
       color: '#F44336',
     };
 

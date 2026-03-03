@@ -20,7 +20,7 @@ export class PriceService {
       const symbolsToFetch: string[] = [];
 
       requests.forEach((req) => {
-        if (req.priceSymbol) {
+        if (req.priceSymbol && !req.symbol.startsWith('TEST_')) {
           symbolsToFetch.push(req.priceSymbol);
           priceSymbolToAppSymbol[req.priceSymbol] = req.symbol;
         }
