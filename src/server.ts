@@ -22,7 +22,7 @@ import authenticate from './middlewares/authenticate.middleware';
 // import { startScanner } from './crypto/service/deposit-scanner.service';
 
 const app = express();
-app.set('trust proxy', 1);
+app.set('trust proxy', 'loopback');
 app.use(morgan('dev'));
 
 const corsOptions: CorsOptions = {

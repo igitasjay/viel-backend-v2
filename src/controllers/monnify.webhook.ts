@@ -9,13 +9,26 @@ import { UserService, VolumeType } from '@/services/user.service';
 import { fulfillBuyCrypto } from '@/crypto-infra/controllers/trade.controller';
 import config from '@/config/config';
 
+const MONNIFY_IPS = ['35.242.133.146', '34.89.51.11', '::ffff:35.242.133.146', '::ffff:34.89.51.11'];
+
 export const handleMonnifyWebhook = async (req: Request, res: Response) => {
   try {
+    const clientIp = req.ip || req.socket.remoteAddress;
+    if (config.NODE_ENV === 'production' && clientIp && !MONNIFY_IPS.includes(clientIp)) {
+      logger.warn(`Unauthorized IP attempted Monnify webhook access: ${clientIp}`);
+      return res.status(403).json({ message: 'Forbidden IP' });
+    }
+
     const signature = req.headers['monnify-signature'] as string;
     const body = req.body;
 
     if (!signature) {
       return res.status(400).json({ message: 'Missing signature' });
+    }
+
+    if (!body || typeof body.eventType !== 'string' || !body.eventData || typeof body.eventData !== 'object') {
+       logger.warn('Invalid webhook body structure from payload');
+       return res.status(400).json({ message: 'Invalid payload structure' });
     }
 
     const computedHash = crypto

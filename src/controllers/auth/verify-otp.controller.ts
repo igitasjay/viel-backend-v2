@@ -6,6 +6,7 @@ import { logger } from '@/lib/winston';
 import OTP from '@/models/otp.mode';
 import config from '@/config/config';
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 
 const verifyOTP = async (req: Request, res: Response) => {
   try {
@@ -25,7 +26,6 @@ const verifyOTP = async (req: Request, res: Response) => {
     const otpRecord = await OTP.findOne({
       userId: user._id,
       email,
-      otp,
       expiresAt: { $gt: new Date() },
     });
 
@@ -33,6 +33,26 @@ const verifyOTP = async (req: Request, res: Response) => {
       res.status(400).json({
         code: 'InvalidOTP',
         message: 'Invalid or expired OTP',
+      });
+      return;
+    }
+
+    if (otpRecord.attempts >= 5) {
+      await OTP.deleteOne({ _id: otpRecord._id });
+      res.status(429).json({
+        code: 'TooManyAttempts',
+        message: 'Too many failed OTP attempts. Please request a new OTP.',
+      });
+      return;
+    }
+
+    const isValid = await bcrypt.compare(otp, otpRecord.otp);
+    if (!isValid) {
+      otpRecord.attempts += 1;
+      await otpRecord.save();
+      res.status(400).json({
+        code: 'InvalidOTP',
+        message: 'Invalid OTP',
       });
       return;
     }

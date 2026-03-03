@@ -65,8 +65,25 @@ export const initializeBuyCrypto = [
         return;
       }
 
-      const addressRegex = new RegExp(net.addressRegex);
-      if (!addressRegex.test(finalAddress)) {
+      if (finalAddress.length > 256) {
+         res.status(400).json({
+          code: 'InvalidAddress',
+          message: 'Receive address exceeds maximum length.',
+         });
+         return;
+      }
+
+      let isValidAddress = false;
+      try {
+        const addressRegex = new RegExp(net.addressRegex);
+        isValidAddress = addressRegex.test(finalAddress);
+      } catch (e) {
+        logger.error('Invalid regex pattern in DB for network', { network: net.code, error: e });
+        res.status(500).json({ code: 'ServerError', message: 'Internal address verification error.' });
+        return;
+      }
+
+      if (!isValidAddress) {
         res.status(400).json({
           code: 'InvalidAddress',
           message: 'Invalid receive address format.',

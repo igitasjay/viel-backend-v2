@@ -12,10 +12,8 @@ import crypto from 'crypto';
 
 type UserData = Pick<IUser, 'email' | 'password'>;
 
-const otp = crypto.randomInt(100000, 999999).toString();
-
 const generateOTP = (): string => {
-  return otp;
+  return crypto.randomInt(100000, 999999).toString();
 };
 
 const login = async (req: Request, res: Response): Promise<void> => {

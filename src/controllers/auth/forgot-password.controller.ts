@@ -3,6 +3,7 @@ import User from '@/models/user.model';
 import OTP from '@/models/otp.mode';
 import { sendForgotPasswordEmail } from '@/lib/email';
 import { logger } from '@/lib/winston';
+import crypto from 'crypto';
 
 const forgotPassword = async (req: Request, res: Response) => {
   try {
@@ -21,7 +22,7 @@ const forgotPassword = async (req: Request, res: Response) => {
     }
 
     // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = crypto.randomInt(100000, 999999).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await OTP.deleteMany({ userId: user._id, email: user.email });
 
