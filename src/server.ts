@@ -27,11 +27,7 @@ app.use(morgan('dev'));
 
 const corsOptions: CorsOptions = {
   origin(origin, callback) {
-    if (
-      config.NODE_ENV === 'development' ||
-      !config ||
-      config.WHITELISTED_ORIGINS.includes(origin!)
-    ) {
+    if (!origin || config.WHITELISTED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
       callback(
