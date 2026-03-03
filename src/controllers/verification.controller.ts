@@ -43,6 +43,37 @@ export const verifyTransactionStatus = [
         return;
       }
 
+      // --- TEST ASSET SIMULATION BYPASS ---
+      // For App Store tests, we short-circuit verification and force it to success
+      let isTestAsset = tx.coin?.startsWith('TEST_');
+      
+      // If it's a giftcard, we might need a quick lookup if the coin field doesn't have the TEST name
+      if (!isTestAsset && tx.type === 'buy_giftcard') {
+         // We can check if the monnify description or other metadata hints at it, 
+         // but the most reliable is checking the ID if we know it or just allowing the 
+         // user to pass a reference that starts with TEST_. 
+         // Actually, let's just check if the coin/reference starts with TEST (buyCrypto uses symbol).
+         // In my seed script, I used TEST_BUY_CRYPTO etc.
+         isTestAsset = tx.reference?.startsWith('TEST_') || tx.monnify_data?.paymentDescription?.includes('TEST_');
+      }
+
+      if (isTestAsset) {
+        logger.info(`Test Asset Simulation: Bypassing Monnify for ${reference}`);
+        tx.status = 'paid';
+        tx.monnify_data = { ...tx.monnify_data, manual_verification: { mock: true, status: 'PAID' } };
+        await tx.save();
+
+        if (tx.type === 'buy_crypto') {
+           await fulfillBuyCrypto(tx);
+        } else if (tx.type === 'buy_giftcard') {
+           try { await fulfillGiftCardPurchase(tx); } catch(err) { logger.error('Fulfillment error', err); }
+        }
+
+        res.status(200).json({ message: 'Test Payment verified and processed', status: 'paid' });
+        return;
+      }
+      // --- END SIMULATION BYPASS ---
+
       // Check status with Monnify (using payment reference = our transaction reference)
       const monnifyStatus = await getMonnifyTransactionStatus(reference, true);
 

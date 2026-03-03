@@ -1,13 +1,22 @@
 import type { Request, Response } from 'express';
 import { Currency } from '../models/currency.model';
 import { PriceService } from '../services/price.service';
+import config from '@/config/config';
 
 export const fetchAllCurrencies = async (req: Request, res: Response) => {
   try {
     const rawCurrencies = await Currency.find();
     
+    // Filter out test assets in production/non-review modes
+    let filteredCurrencies = rawCurrencies;
+    if (!config.SHOW_TEST_ASSETS) {
+      filteredCurrencies = rawCurrencies.filter(
+        c => !c.symbol.startsWith('TEST_')
+      );
+    }
+    
     // Auto-derive TwelveData symbols as SYMBOL/USD for each unique coin
-    const uniqueSymbols = Array.from(new Set(rawCurrencies.map((c: any) => c.symbol)));
+    const uniqueSymbols = Array.from(new Set(filteredCurrencies.map((c: any) => c.symbol)));
     const priceRequests = uniqueSymbols.map(symbol => ({
         symbol,
         priceSymbol: `${symbol}/USD`,
@@ -17,7 +26,7 @@ export const fetchAllCurrencies = async (req: Request, res: Response) => {
 
     const groupedMap = new Map();
 
-    rawCurrencies.forEach((curr: any) => {
+    filteredCurrencies.forEach((curr: any) => {
         if (!groupedMap.has(curr.symbol)) {
             const liveUsdRate = liveRates.get(curr.symbol);
             groupedMap.set(curr.symbol, {

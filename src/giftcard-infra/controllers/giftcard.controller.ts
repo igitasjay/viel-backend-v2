@@ -6,9 +6,11 @@ import { asyncHandler } from '@/utils/async-handler.util';
 import User from '@/models/user.model';
 import { ApiError } from '@/utils/api-error.util';
 
+import config from '@/config/config';
+
 export const listCountries = asyncHandler(
   async (_req: Request, res: Response) => {
-    const countries = await countryService.getAllCountriesWithGiftCards();
+    let countries = await countryService.getAllCountriesWithGiftCards();
     res.json({ success: true, data: countries });
   },
 );
@@ -16,9 +18,12 @@ export const listCountries = asyncHandler(
 export const listGiftCardsByCountry = asyncHandler(
   async (req: Request, res: Response) => {
     const { country } = req.query;
-    const giftcards = await giftService.getGiftCardsByCountry(
+    let giftcards = await giftService.getGiftCardsByCountry(
       country as string,
     );
+    if (!config.SHOW_TEST_ASSETS) {
+      giftcards = giftcards.filter(g => !g.name.startsWith('TEST_'));
+    }
     res.json({ success: true, data: giftcards });
   },
 );

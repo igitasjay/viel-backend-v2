@@ -7,6 +7,7 @@ dotenv.config();
 const config = {
   PORT: process.env.PORT || 3000,
   NODE_ENV: process.env.NODE_ENV,
+  SHOW_TEST_ASSETS: process.env.SHOW_TEST_ASSETS === 'true',
   WHITELISTED_ORIGINS: process.env.WHITELISTED_ORIGINS!.split(','),
   MONGODB_URI: process.env.MONGODB_URI,
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',

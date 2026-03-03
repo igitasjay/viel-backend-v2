@@ -21,6 +21,7 @@ export const getRates = async (req: Request, res: Response) => {
     const rates = [];
 
     for (const coin of currencies) {
+      if (!config.SHOW_TEST_ASSETS && coin.symbol.startsWith('TEST_')) continue;
       rates.push({
         pair: `${coin.symbol}/NGN`,
         buy: coin.buyRate,
@@ -81,7 +82,8 @@ export const buyCrypto = async (req: Request, res: Response) => {
 
     // 2. Create Transaction (Pending)
     const txId = await getNextSequence('transactionId');
-    const reference = `buy_${req.userId}_${Date.now()}`;
+    const isTest = symbol.startsWith('TEST_');
+    const reference = `${isTest ? 'TEST_' : ''}buy_${req.userId}_${Date.now()}`;
     
     // Note: 'Transaction' model is imported from global models
     const tx = await Transaction.create({

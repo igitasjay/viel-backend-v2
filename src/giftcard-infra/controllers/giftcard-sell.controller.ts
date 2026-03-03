@@ -10,8 +10,13 @@ import {
 } from '@/crypto-infra/models/ledger.model';
 import { UserService, VolumeType } from '@/services/user.service';
 
+import config from '@/config/config';
+
 export const getSellBrands = asyncHandler(async (req: Request, res: Response) => {
-  const brands = await sellService.getAllBrands();
+  let brands = await sellService.getAllBrands();
+  if (!config.SHOW_TEST_ASSETS) {
+      brands = brands.filter(b => !b.name.startsWith('TEST_'));
+  }
   res.json({ success: true, data: brands });
 });
 

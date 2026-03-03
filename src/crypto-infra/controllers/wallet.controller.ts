@@ -7,6 +7,7 @@ import { WalletService } from '../services/wallet.service';
 import { LedgerService } from '../services/ledger.service';
 import { LedgerType } from '../models/ledger.model';
 import { ethers } from 'ethers';
+import { logger } from '@/lib/winston';
 
 /**
  * GET /wallets
@@ -96,8 +97,13 @@ export const withdrawCrypto = async (req: Request, res: Response) => {
     );
 
     // 3. Trigger Async Withdrawal Job
-    // In production: Push to BullMQ. Worker picks up and signs tx with Hot Wallet.
-    console.log(`Create Job: Send ${amount} ${asset} to ${destinationAddress}`);
+    // If it's a test asset, we skip the real queue and just log success
+    if (asset === 'TEST_SELL_CRYPTO') {
+      logger.info(`Test Asset Simulation: Bypassed withdrawal queue for ${withdrawalRef}`);
+    } else {
+      // In production: Push to BullMQ. Worker picks up and signs tx with Hot Wallet.
+      console.log(`Create Job: Send ${amount} ${asset} to ${destinationAddress}`);
+    }
 
     return res.json({
       success: true,

@@ -33,7 +33,9 @@ export const initiateGiftCardPurchase = asyncHandler(
     }
 
     // Generate reference
-    const reference = `BGCTX_${req.userId}_${Date.now()}`;
+    const card = await purchaseService.getGiftCardById(giftCardId);
+    const isTest = card?.name?.startsWith('TEST_');
+    const reference = `${isTest ? 'TEST_' : ''}BGCTX_${req.userId}_${Date.now()}`;
     const txId = await getNextSequence('transactionId');
     /// FIX: Trying to resolve the issue of over charging users
     // const totalAmount = Number(amount) * Number(quantity); :: BEFORE
@@ -44,6 +46,7 @@ export const initiateGiftCardPurchase = asyncHandler(
       id: txId,
       userId: user._id,
       type: 'buy_giftcard',
+      coin: giftCardId, // Use giftCardId to help identification in verification
       fiat_amount: totalAmount.toFixed(2),
       reference,
       status: 'pending',
