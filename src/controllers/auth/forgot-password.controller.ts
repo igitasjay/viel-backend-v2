@@ -13,9 +13,9 @@ const forgotPassword = async (req: Request, res: Response) => {
       // For security reasons, don't reveal if user exists or not
       // But usually in forgot password, it's helpful to tell them if the email is not found
       // I'll stick to a standard response but maybe log it.
-      res.status(404).json({
-        code: 'NotFound',
-        message: 'No account found with this email address.',
+      res.status(200).json({
+        code: 'OTPSENT',
+        message: 'If an account with that email exists, we\'ve sent a password reset OTP.',
       });
       return;
     }

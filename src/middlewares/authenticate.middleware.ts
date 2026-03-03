@@ -57,7 +57,7 @@ const authenticate = async (
       res.status(401).json({
         code: 'TokenExpiredError',
         message: 'Access denied: token has expired.',
-        error: error,
+        // error: error,
       });
       return;
     }

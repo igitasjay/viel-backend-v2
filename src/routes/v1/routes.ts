@@ -63,11 +63,13 @@ router.use('/admin/users', adminUserRouter);
 router.use('/admin/settings', adminSettingRouter);
 
 router.post('/monnify/webhook', handleMonnifyWebhook);
+
+router.use(authenticate);
+
 router.post('/transactions/:reference/verify', verifyTransactionStatus);
 
 // CRYPTO INFRA
 
-router.use(authenticate);
 
 router.use('/infra/admin', adminRoutes);
 router.use('/infra/wallets', walletRoutes);  

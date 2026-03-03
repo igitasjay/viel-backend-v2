@@ -90,7 +90,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
     });
     logger.info('Refresh token stored in database', {
       userId: user._id,
-      token: refreshToken,
     });
 
     res.cookie('refreshToken', refreshToken, {

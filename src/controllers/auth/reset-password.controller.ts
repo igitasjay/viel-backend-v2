@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '@/models/user.model';
 import OTP from '@/models/otp.mode';
+import Token from '@/models/token.model';
 import { logger } from '@/lib/winston';
 
 const resetPassword = async (req: Request, res: Response) => {
@@ -47,6 +48,8 @@ const resetPassword = async (req: Request, res: Response) => {
 
     // Delete the used OTP
     await OTP.deleteOne({ _id: otpRecord._id });
+    await Token.deleteMany({ userId: user._id });
+
 
     res.status(200).json({
       code: 'Success',

@@ -1,6 +1,6 @@
 import Router from 'express';
 import register from '@/controllers/auth/register.controller';
-import login from '@/controllers/auth/login.comtroller';
+import login from '@/controllers/auth/login.controller';
 import { body, cookie } from 'express-validator';
 import validationError from '@/middlewares/validation-error.middleware';
 import User from '@/models/user.model';
@@ -12,10 +12,14 @@ import resendOTP from '@/controllers/auth/resend-otp.controller';
 import forgotPassword from '@/controllers/auth/forgot-password.controller';
 import verifyResetOTP from '@/controllers/auth/verify-reset-otp.controller';
 import resetPassword from '@/controllers/auth/reset-password.controller';
+import rateLimit from 'express-rate-limit';
 const router = Router();
+
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5 });
 
 router.post(
   '/register',
+  authLimiter,
   body('email')
     .trim()
     .notEmpty()
@@ -36,18 +40,17 @@ router.post(
     .withMessage('Password must be at least 6 characters long.'),
   body('firstname').trim().notEmpty().withMessage('First name is required.'),
   body('lastname').trim().notEmpty().withMessage('Last name is required.'),
-  body('role')
+  body('referredBy')
     .optional()
     .isString()
-    .withMessage('Invalid role: must be a string.')
-    .isIn(['user', 'admin'])
-    .withMessage('Invalid role: must be either user or admin.'),
+    .withMessage('Invalid referral code: must be a string.'),
   validationError,
   register,
 );
 
 router.post(
   '/login',
+  authLimiter,
   body('email')
     .trim()
     .notEmpty()
@@ -65,6 +68,7 @@ router.post(
 
 router.post(
   '/resend-otp',
+  authLimiter,
   body('email')
     .trim()
     .notEmpty()
@@ -77,6 +81,7 @@ router.post(
 
 router.post(
   '/verify-otp',
+  authLimiter,
   body('email')
     .trim()
     .notEmpty()
@@ -95,6 +100,7 @@ router.post(
 
 router.post(
   '/forgot-password',
+  authLimiter,
   body('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'),
   validationError,
   forgotPassword,
@@ -102,6 +108,7 @@ router.post(
 
 router.post(
   '/verify-reset-otp',
+  authLimiter,
   body('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'),
   body('otp').trim().notEmpty().withMessage('OTP is required.').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits.'),
   validationError,
@@ -110,6 +117,7 @@ router.post(
 
 router.post(
   '/reset-password',
+  authLimiter,
   body('email').trim().notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'),
   body('otp').trim().notEmpty().withMessage('OTP is required.').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits.'),
   body('password').notEmpty().withMessage('Password is required.').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long.'),
@@ -120,6 +128,7 @@ router.post(
 
 router.post(
   '/refresh-token',
+  authLimiter,
   cookie('refreshToken')
     .notEmpty()
     .withMessage('Refresh token is required.')
@@ -129,6 +138,6 @@ router.post(
   refreshToken,
 );
 
-router.post('/logout', authenticate, logout);
+router.post('/logout', authLimiter, authenticate, logout);
 
 export default router;

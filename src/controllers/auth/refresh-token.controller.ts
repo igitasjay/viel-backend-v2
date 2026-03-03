@@ -43,7 +43,7 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      // error: error,
     });
     logger.error('Error on refresh token', error);
   }
