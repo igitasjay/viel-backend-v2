@@ -23,6 +23,7 @@ const forgotPassword = async (req: Request, res: Response) => {
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    await OTP.deleteMany({ userId: user._id, email: user.email });
 
     // Store OTP in database
     await OTP.create({

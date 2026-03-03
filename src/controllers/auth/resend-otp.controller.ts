@@ -20,6 +20,7 @@ const resendOTP = async (req: Request, res: Response): Promise<void> => {
     const otp = crypto.randomInt(100000, 999999).toString();
 
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    await OTP.deleteMany({ userId: user._id, email: user.email });
 
     await OTP.create({
       userId: user._id,
