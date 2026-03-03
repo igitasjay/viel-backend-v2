@@ -18,6 +18,7 @@ import { globalErrorHandler } from '@/middlewares/error.middleware';
 
 // types
 import type { CorsOptions } from 'cors';
+import authenticate from './middlewares/authenticate.middleware';
 // import { startScanner } from './crypto/service/deposit-scanner.service';
 
 const app = express();
@@ -61,7 +62,7 @@ app.use(limiter);
 
 (async () => {
   await connectToDatabase();
-  app.use('/uploads', express.static('uploads'));
+  app.use('/uploads', authenticate, express.static('uploads'));
   app.use('/api/v1', v1Routes);
 
   // global error handler

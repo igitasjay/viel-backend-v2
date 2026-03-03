@@ -3,6 +3,7 @@ import { logger } from '@/lib/winston';
 import { Request, Response } from 'express';
 import OTP from '@/models/otp.mode';
 import { sendVerificationEmail } from '@/lib/email';
+import crypto from 'crypto';
 
 const resendOTP = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body as { email: string };
@@ -16,7 +17,8 @@ const resendOTP = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = crypto.randomInt(100000, 999999).toString();
+
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     await OTP.create({

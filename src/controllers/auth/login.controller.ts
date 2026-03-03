@@ -8,12 +8,14 @@ import { logger } from '@/lib/winston';
 import OTP from '@/models/otp.mode';
 import { sendVerificationEmail } from '@/lib/email';
 import bcrypt from 'bcrypt';
-// import { sendEmail } from '@/lib/email';
+import crypto from 'crypto';
 
 type UserData = Pick<IUser, 'email' | 'password'>;
 
+const otp = crypto.randomInt(100000, 999999).toString();
+
 const generateOTP = (): string => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return otp;
 };
 
 const login = async (req: Request, res: Response): Promise<void> => {
@@ -96,6 +98,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
       httpOnly: true,
       secure: config.NODE_ENV === 'production',
       sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.status(200).json({

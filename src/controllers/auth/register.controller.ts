@@ -6,14 +6,18 @@ import { Request, Response } from 'express';
 import OTP from '@/models/otp.mode';
 import Referral from '@/models/referral.model';
 import { sendVerificationEmail } from '@/lib/email';
+import crypto from 'crypto';
 
 type UserData = Pick<
   IUser,
   'firstname' | 'lastname' | 'email' | 'password' | 'referredBy'
->;
+  >;
+
+const otp = crypto.randomInt(100000, 999999).toString();
+
 
 const generateOTP = (): string => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return otp;
 };
 
 const register = async (req: Request, res: Response): Promise<void> => {
