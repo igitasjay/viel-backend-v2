@@ -58,7 +58,7 @@ app.use(helmet());
 app.use(limiter);
 
 const startHealthCheck = () => {
-  const url = `http://localhost:${config.PORT}/api/v1/health`;
+  const url = `${config.SERVER_URL}/api/v1/health`;
   setInterval(async () => {
     try {
       const response = await axios.get(url);
