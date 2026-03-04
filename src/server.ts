@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import axios from 'axios';
 
 // custom module import
 import limiter from '@/lib/express_rate_limit';
@@ -56,6 +57,18 @@ app.use(helmet());
 
 app.use(limiter);
 
+const startHealthCheck = () => {
+  const url = `http://localhost:${config.PORT}/api/v1/health`;
+  setInterval(async () => {
+    try {
+      const response = await axios.get(url);
+      logger.info(`Autonomous health check: ${response.data.status} - ${response.data.database}`);
+    } catch (error: any) {
+      logger.error('Autonomous health check failed:', error.message);
+    }
+  }, 60000); // 1 minute
+};
+
 (async () => {
   await connectToDatabase();
   app.use('/uploads', authenticate, express.static('uploads'));
@@ -67,6 +80,7 @@ app.use(limiter);
   try {
     app.listen(config.PORT, () => {
       logger.info(`Server is running on http://localhost:${config.PORT}`);
+      startHealthCheck();
     });
     // startScanner('ethereum');
   } catch (error) {

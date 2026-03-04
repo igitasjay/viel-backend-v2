@@ -25,6 +25,7 @@ import bannerRouter from '@/routes/v1/banner.routes';
 import adminBannerRouter from '@/routes/v1/admin-banner.routes';
 import adminUserRouter from '@/routes/v1/admin-user.routes';
 import adminSettingRouter from '@/routes/v1/admin-setting.routes';
+import healthRouter from '@/routes/v1/health.route';
 
 const router = Router();
 
@@ -61,6 +62,7 @@ router.use('/banners', bannerRouter);
 router.use('/admin/banners', adminBannerRouter);
 router.use('/admin/users', adminUserRouter);
 router.use('/admin/settings', adminSettingRouter);
+router.use('/health', healthRouter);
 
 router.post('/monnify/webhook', handleMonnifyWebhook);
 
