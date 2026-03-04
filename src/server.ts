@@ -20,6 +20,7 @@ import { globalErrorHandler } from '@/middlewares/error.middleware';
 // types
 import type { CorsOptions } from 'cors';
 import authenticate from './middlewares/authenticate.middleware';
+import router from './routes/v1/health.route';
 // import { startScanner } from './crypto/service/deposit-scanner.service';
 
 const app = express();
@@ -72,6 +73,7 @@ const startHealthCheck = () => {
 (async () => {
   await connectToDatabase();
   app.use('/uploads', authenticate, express.static('uploads'));
+  app.use('/', router);
   app.use('/api/v1', v1Routes);
 
   // global error handler
