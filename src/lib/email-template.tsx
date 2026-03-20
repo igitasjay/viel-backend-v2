@@ -57,7 +57,6 @@ function EmailShell({
             <Img
               src="https://res.cloudinary.com/dwfm8zqvt/image/upload/v1773976428/logo_vd4e8c.png" 
               alt="VIEL Logo"
-              width="32"
               height="32"
               style={styles.logo}
             />
