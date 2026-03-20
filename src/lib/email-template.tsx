@@ -12,16 +12,17 @@ import {
 import * as React from 'react';
 
 // ---------------------------------------------------------------------------
-// Refined Design Tokens (Minimalist & Premium)
+// Refined Design Tokens (Minimalist + Subtle Brand Accent)
 // ---------------------------------------------------------------------------
 const colors = {
-  bg: '#FAFAFA',         // Subtle off-white for the email client background
-  card: '#FFFFFF',       // Pure white for the content area
-  textMain: '#111111',   // Near-black for primary readability
-  textMuted: '#666666',  // Softer gray for secondary text
-  faint: '#999999',      // Very light gray for footers/disclaimers
-  border: '#EAEAEA',     // Barely-there borders
-  pillBg: '#F4F4F5',     // Gentle contrast for the OTP block
+  bg: '#FAFAFA',         
+  card: '#FFFFFF',       
+  textMain: '#111111',   
+  textMuted: '#666666',  
+  faint: '#999999',      
+  border: '#EAEAEA',     
+  brandAccent: '#4F46E5', // A sophisticated, vibrant indigo
+  brandTint: '#EEF2FF',   // A 5% opacity wash of the accent color
 };
 
 const font = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
@@ -61,7 +62,7 @@ function EmailShell({
             
             {children}
 
-            {/* ── Clean OTP Block ── */}
+            {/* ── Tinted OTP Block ── */}
             <Section style={styles.otpContainer}>
               <Text style={styles.otpLabel}>{label}</Text>
               <Text style={styles.otpCode}>{otp}</Text>
@@ -163,9 +164,9 @@ const styles: Record<string, React.CSSProperties> = {
   },
   brand: {
     fontSize: '14px',
-    fontWeight: 600,
+    fontWeight: 700,
     letterSpacing: '1px',
-    color: colors.textMain,
+    color: colors.brandAccent, // Injected brand color here
     margin: 0,
   },
   content: {
@@ -185,7 +186,7 @@ const styles: Record<string, React.CSSProperties> = {
     margin: '0 0 16px',
   },
   otpContainer: {
-    backgroundColor: colors.pillBg,
+    backgroundColor: colors.brandTint, // Soft colored background wash
     borderRadius: '6px',
     padding: '24px',
     marginTop: '24px',
@@ -193,8 +194,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   otpLabel: {
     fontSize: '12px',
-    fontWeight: 500,
-    color: colors.textMuted,
+    fontWeight: 600,
+    color: colors.brandAccent, // Tying the label to the accent
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
     margin: '0 0 8px',
@@ -202,7 +203,7 @@ const styles: Record<string, React.CSSProperties> = {
   otpCode: {
     fontSize: '28px',
     fontWeight: 700,
-    color: colors.textMain,
+    color: colors.brandAccent, // Code pops in the brand color
     fontFamily: mono,
     letterSpacing: '4px',
     margin: 0,
