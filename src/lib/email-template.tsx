@@ -84,7 +84,7 @@ function EmailShell({
               This is an automated message from VIEL. If you did not request this, please ignore this email.
             </Text>
             <Text style={styles.footerText}>
-              © {new Date().getFullYear()} VIEL Inc. All rights reserved.
+              © {new Date().getFullYear()} VIEL Technologies Ltd. All rights reserved.
             </Text>
           </Section>
 
