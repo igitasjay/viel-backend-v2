@@ -10,7 +10,7 @@ import config from '@/config/config';
 
 export const listCountries = asyncHandler(
   async (_req: Request, res: Response) => {
-    let countries = await countryService.getAllCountriesWithGiftCards();
+    let countries = await countryService.getAllCountriesWithGiftCards(config.SHOW_TEST_ASSETS);
     res.json({ success: true, data: countries });
   },
 );
@@ -22,7 +22,7 @@ export const listGiftCardsByCountry = asyncHandler(
       country as string,
     );
     if (!config.SHOW_TEST_ASSETS) {
-      giftcards = giftcards.filter(g => !g.name.startsWith('TEST_'));
+      giftcards = giftcards.filter(g => !/^TEST[ _]/.test(g.name));
     }
     res.json({ success: true, data: giftcards });
   },

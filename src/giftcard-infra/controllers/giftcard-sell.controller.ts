@@ -15,7 +15,7 @@ import config from '@/config/config';
 export const getSellBrands = asyncHandler(async (req: Request, res: Response) => {
   let brands = await sellService.getAllBrands();
   if (!config.SHOW_TEST_ASSETS) {
-      brands = brands.filter(b => !b.name.startsWith('TEST_'));
+      brands = brands.filter(b => !/^TEST[ _]/.test(b.name));
   }
   res.json({ success: true, data: brands });
 });

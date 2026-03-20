@@ -5,7 +5,11 @@ export const createCountry = (payload: ICountry) => Country.create(payload);
 export const getAllCountries = () => Country.find().sort({ name: 1 });
 export const getCountryById = (id: string) => Country.findById(id);
 
-export const getAllCountriesWithGiftCards = async () => {
+export const getAllCountriesWithGiftCards = async (showTestAssets: boolean = true) => {
+  const matchPipeline = showTestAssets 
+    ? { isAvailable: true }
+    : { isAvailable: true, name: { $not: /^TEST[ _]/ } };
+
   return Country.aggregate([
     {
       $lookup: {
@@ -13,7 +17,7 @@ export const getAllCountriesWithGiftCards = async () => {
         localField: '_id',
         foreignField: 'country',
         as: 'giftCards',
-        pipeline: [{ $match: { isAvailable: true } }],
+        pipeline: [{ $match: matchPipeline }],
       },
     },
     {
