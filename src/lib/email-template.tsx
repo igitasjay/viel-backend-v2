@@ -5,6 +5,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Preview,
   Section,
   Text,
@@ -51,9 +52,15 @@ function EmailShell({
       <Body style={styles.body}>
         <Container style={styles.container}>
           
-          {/* ── Brand Header ── */}
+         {/* ── Brand Header ── */}
           <Section style={styles.header}>
-            <Text style={styles.brand}>VIEL</Text>
+            <Img
+              src="https://res.cloudinary.com/dwfm8zqvt/image/upload/v1773976428/logo_vd4e8c.png" 
+              alt="VIEL Logo"
+              width="32"
+              height="32"
+              style={styles.logo}
+            />
           </Section>
 
           {/* ── Content Body ── */}
