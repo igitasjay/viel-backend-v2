@@ -66,12 +66,26 @@ const register = async (req: Request, res: Response): Promise<void> => {
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
-    await OTP.create({
-      userId: newUser._id,
-      email: newUser.email,
-      otp,
-      expiresAt,
-    });
+    try {
+      await OTP.create({
+        userId: newUser._id,
+        email: newUser.email,
+        otp,
+        expiresAt,
+      });
+    } catch (otpError) {
+      // Roll back: delete the user so they are not left in a stuck state
+      await User.findByIdAndDelete(newUser._id);
+      logger.error('OTP creation failed during registration, user rolled back', {
+        email,
+        error: otpError,
+      });
+      res.status(500).json({
+        message: 'Registration failed. Please try again.',
+        status: 'error',
+      });
+      return;
+    }
 
     try {
       await sendVerificationEmail(newUser.email, newUser.firstname, otp);
@@ -96,7 +110,15 @@ const register = async (req: Request, res: Response): Promise<void> => {
       email: newUser.email,
       role: newUser.role,
     });
-  } catch (error) {
+  } catch (error: any) {
+    // Duplicate email — can happen if two requests race past the validator
+    if (error.code === 11000) {
+      res.status(409).json({
+        code: 'ConflictError',
+        message: 'An account with this email already exists.',
+      });
+      return;
+    }
     res.status(500).json({
       message: 'Internal server error',
       status: 'error',

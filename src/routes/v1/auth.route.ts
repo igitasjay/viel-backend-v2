@@ -43,7 +43,9 @@ router.post(
   body('referredBy')
     .optional()
     .isString()
-    .withMessage('Invalid referral code: must be a string.'),
+    .withMessage('Invalid referral code: must be a string.')
+    .isLength({ max: 50 })
+    .withMessage('Referral code must not exceed 50 characters.'),
   validationError,
   register,
 );
