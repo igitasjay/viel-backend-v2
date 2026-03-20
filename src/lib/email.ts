@@ -12,7 +12,7 @@ export const sendVerificationEmail = async (
 ) => {
   try {
     await resend.emails.send({
-      from: 'VIEL Auth <[EMAIL_ADDRESS]>',
+      from: `VIEL Auth <${config.EMAIL_FROM}>`,
       to: email,
       subject: `Hello ${firstname},`,
       html:
@@ -35,7 +35,7 @@ export const sendForgotPasswordEmail = async (
 ) => {
   try {
     await resend.emails.send({
-      from: 'VIEL Auth <[EMAIL_ADDRESS]>',
+      from: `VIEL Auth <${config.EMAIL_FROM}>`,
       to: email,
       subject: 'Reset Your Password',
       html: `
