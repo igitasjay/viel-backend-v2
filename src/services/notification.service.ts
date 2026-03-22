@@ -39,6 +39,7 @@ export class NotificationService {
       console.log('Player ids:', playerIds);
     } catch (error: any) {
       console.error('Error sending push notification via OneSignal:', error?.response?.data || error.message);
+      console.log('Player ids:', playerIds);
     }
   }
 
