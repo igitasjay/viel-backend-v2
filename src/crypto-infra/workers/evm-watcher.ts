@@ -6,6 +6,7 @@ import { LedgerService } from "../services/ledger.service.js";
 import { LedgerType, LedgerCategory, TransactionAction } from "../models/ledger.model.js";
 import { connectToDatabase } from "@/lib/mongoose.js";
 import { UserService, VolumeType } from "../../services/user.service.js";
+import { NotificationService } from "../../services/notification.service.js";
 
 dotenv.config();
 
@@ -73,6 +74,13 @@ async function startWatcher() {
               targetWallet.currency,
             );
             console.log(`✅ User Credited: ${amount} ${targetWallet.currency}`);
+
+            // Trigger notification
+            await NotificationService.sendDepositNotification(
+              targetWallet.userId.toString(),
+              targetWallet.currency,
+              amount
+            );
 
             // Update User Trading Volume
             if (coin) {

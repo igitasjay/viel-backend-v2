@@ -4,6 +4,7 @@ import { fulfillGiftCardPurchase } from '@/giftcard-infra/controllers/purchase.c
 import { asyncHandler } from '@/utils/async-handler.util';
 import { ApiError } from '@/utils/api-error.util';
 import { logger } from '@/lib/winston';
+import { NotificationService } from '@/services/notification.service';
 
 /**
  * List all gift card purchase transactions.
@@ -51,6 +52,15 @@ export const approveGiftCardPurchase = asyncHandler(async (req: Request, res: Re
   
   const purchase = await fulfillGiftCardPurchase(transaction);
 
+  // Trigger push & email notification
+  await NotificationService.sendGiftCardStatusNotification(
+    transaction.userId.toString(),
+    'buy',
+    'approved',
+    Number(transaction.fiat_amount) || purchase.totalInNaira,
+    'NGN'
+  );
+
   res.json({ 
     success: true, 
     message: 'Gift card purchase approved and fulfilled successfully',
@@ -88,6 +98,16 @@ export const declineGiftCardPurchase = asyncHandler(async (req: Request, res: Re
 
   logger.info(`Admin declined GiftCard Purchase for TX ${transaction.id}`);
   
+  // Trigger push & email notification
+  await NotificationService.sendGiftCardStatusNotification(
+    transaction.userId.toString(),
+    'buy',
+    'rejected',
+    Number(transaction.fiat_amount),
+    'NGN',
+    adminComment
+  );
+
   res.json({ 
     success: true, 
     message: 'Gift card purchase request declined' 

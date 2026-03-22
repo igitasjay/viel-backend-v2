@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as sellService from '@/giftcard-infra/services/giftcard-sell.service';
 import { asyncHandler } from '@/utils/async-handler.util';
+import { NotificationService } from '@/services/notification.service';
 
 export const addBrand = asyncHandler(async (req: Request, res: Response) => {
   const { name } = req.body;
@@ -105,6 +106,23 @@ export const updateSale = asyncHandler(async (req: Request, res: Response) => {
   if (!updated) {
     return res.status(404).json({ success: false, message: 'Sale not found' });
   }
+
+  // Trigger push & email notification 
+  if (status === 'completed' || status === 'declined' || status === 'approved' || status === 'rejected') {
+    let normalizedStatus: 'approved' | 'rejected' | 'completed' | 'declined' = status;
+    if (status === 'completed') normalizedStatus = 'approved';
+    if (status === 'declined') normalizedStatus = 'rejected';
+
+    await NotificationService.sendGiftCardStatusNotification(
+      updated.userId.toString(),
+      'sell',
+      normalizedStatus,
+      updated.totalInNaira,
+      'NGN',
+      adminComment
+    );
+  }
+
   res.json({ success: true, data: updated });
 });
 

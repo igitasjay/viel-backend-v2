@@ -34,6 +34,8 @@ const config = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY!,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET!,
   SERVER_URL: process.env.SERVER_URL!,
+  ONESIGNAL_APP_ID: process.env.ONESIGNAL_APP_ID!,
+  ONESIGNAL_REST_API_KEY: process.env.ONESIGNAL_REST_API_KEY!,
 };
 
 export default config;

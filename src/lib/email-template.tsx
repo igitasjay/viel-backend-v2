@@ -148,6 +148,134 @@ export function ForgotPasswordEmail({ firstname, otp }: ForgotPasswordEmailProps
 }
 
 // ---------------------------------------------------------------------------
+// Deposit Confirmed Email
+// ---------------------------------------------------------------------------
+interface DepositConfirmedEmailProps {
+  firstname?: string;
+  currency: string;
+  amount: number | string;
+}
+
+export function DepositConfirmedEmail({ firstname, currency, amount }: DepositConfirmedEmailProps) {
+  return (
+    <Html lang="en">
+      <Head />
+      <Preview>Deposit Confirmed: {String(amount)} {currency} has been added to your wallet.</Preview>
+      <Body style={styles.body}>
+        <Container style={styles.container}>
+          
+          <Section style={styles.header}>
+            <Img
+              src="https://res.cloudinary.com/dwfm8zqvt/image/upload/v1773976428/logo_vd4e8c.png" 
+              alt="VIEL Logo"
+              height="32"
+              style={styles.logo}
+            />
+          </Section>
+
+          <Section style={styles.content}>
+            <Heading style={styles.title}>Deposit Confirmed</Heading>
+            
+            <Text style={styles.bodyText}>
+              Hi {firstname || 'there'},
+            </Text>
+            <Text style={styles.bodyText}>
+              Great news! Your deposit of <strong>{String(amount)} {currency}</strong> has been successfully processed and added to your wallet. You can now use these funds on VIEL.
+            </Text>
+
+            <Section style={styles.otpContainer}>
+              <Text style={styles.otpLabel}>Amount Credited</Text>
+              <Text style={styles.otpCode}>{String(amount)} {currency}</Text>
+            </Section>
+          </Section>
+
+          <Hr style={styles.divider} />
+
+          <Section style={styles.footer}>
+            <Text style={styles.footerText}>
+              This is an automated message from VIEL. If you did not request this, please ignore this email.
+            </Text>
+            <Text style={styles.footerText}>
+              © {new Date().getFullYear()} VIEL Technologies Ltd. All rights reserved.
+            </Text>
+          </Section>
+
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Gift Card Status Email
+// ---------------------------------------------------------------------------
+interface GiftCardStatusEmailProps {
+  firstname?: string;
+  actionType: 'buy' | 'sell';
+  status: 'approved' | 'rejected' | 'completed' | 'declined';
+  amount?: number | string;
+  currency?: string;
+  adminComment?: string;
+}
+
+export function GiftCardStatusEmail({ firstname, actionType, status, amount, currency, adminComment }: GiftCardStatusEmailProps) {
+  const isApproved = status === 'approved' || status === 'completed';
+  const actionLabel = actionType === 'buy' ? 'Purchase' : 'Sale';
+  
+  return (
+    <Html lang="en">
+      <Head />
+      <Preview>Your Gift Card {actionLabel} has been {status}.</Preview>
+      <Body style={styles.body}>
+        <Container style={styles.container}>
+          
+          <Section style={styles.header}>
+            <Img
+              src="https://res.cloudinary.com/dwfm8zqvt/image/upload/v1773976428/logo_vd4e8c.png" 
+              alt="VIEL Logo"
+              height="32"
+              style={styles.logo}
+            />
+          </Section>
+
+          <Section style={styles.content}>
+            <Heading style={styles.title}>Gift Card {actionLabel} {status}</Heading>
+            
+            <Text style={styles.bodyText}>
+              Hi {firstname || 'there'},
+            </Text>
+            <Text style={styles.bodyText}>
+              Your request to {actionType} a gift card has been <strong>{status}</strong>.
+              {isApproved && amount && currency ? ` An amount of ${amount} ${currency} has been processed.` : ''}
+              {!isApproved ? " Unfortunately, we could not process this request at this time." : ''}
+            </Text>
+
+            {adminComment && (
+              <Section style={{ ...styles.otpContainer, backgroundColor: '#FFF5F5' }}>
+                <Text style={{ ...styles.otpLabel, color: '#E53E3E' }}>Reason / Comment</Text>
+                <Text style={{ fontSize: '14px', color: '#E53E3E', margin: 0 }}>{adminComment}</Text>
+              </Section>
+            )}
+          </Section>
+
+          <Hr style={styles.divider} />
+
+          <Section style={styles.footer}>
+            <Text style={styles.footerText}>
+              This is an automated message from VIEL. If you did not request this, please ignore this email.
+            </Text>
+            <Text style={styles.footerText}>
+              © {new Date().getFullYear()} VIEL Technologies Ltd. All rights reserved.
+            </Text>
+          </Section>
+
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Styles
 // ---------------------------------------------------------------------------
 const styles: Record<string, React.CSSProperties> = {

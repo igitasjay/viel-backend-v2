@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { LedgerService } from '../services/ledger.service';
 import { LedgerCategory, LedgerType, TransactionAction } from '../models/ledger.model';
 import config from '@/config/config';
+import { NotificationService } from '@/services/notification.service';
 
 const PAYSTACK_SECRET = config.PAYSTACK_SECRET_KEY;
 
@@ -45,6 +46,8 @@ export const paystackWebhook = async (req: Request, res: Response) => {
           'completed',
           'NGN',
         );
+        // Trigger notification
+        await NotificationService.sendDepositNotification(userId, 'NGN', amountNGN);
       } catch (e) {
         console.log('Duplicate Paystack Event:', reference);
       }

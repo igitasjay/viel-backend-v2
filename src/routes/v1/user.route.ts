@@ -5,33 +5,39 @@ import getCurrentUser from '@/controllers/user/get-current-user';
 import updateCurrentUser from '@/controllers/user/update-current-user';
 import editProfile from '@/controllers/user/edit-profile';
 import verifyIdentity from '@/controllers/user/identity-verification.controller';
+import registerDeviceToken from '@/controllers/user/register-device';
+
 const router = Router();
+
+router.use(authenticate)
 
 router.get(
   '/current',
-  authenticate,
   authorize(['user', 'admin']),
   getCurrentUser,
 );
 
 router.put(
   '/current',
-  authenticate,
   authorize(['user', 'admin']),
   updateCurrentUser,
 );
 
 router.put(
   '/edit-profile',
-  authenticate,
   authorize(['user']),
   editProfile,
 );
 
 router.post(
   '/verify-identity',
-  authenticate,
   verifyIdentity,
+);
+
+router.post(
+  '/device-token',
+  authorize(['user', 'admin']),
+  registerDeviceToken,
 );
 
 export default router;
