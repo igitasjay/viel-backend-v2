@@ -87,12 +87,6 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
     imageUrls,   // proof images uploaded by user
   );
 
-  // Update User Trading Volume
-  await UserService.updateUserVolume(
-    req.userId!.toString(),
-    totalInNaira,
-    VolumeType.SELL,
-  );
 
   res.status(201).json({
     success: true,

@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import * as sellService from '@/giftcard-infra/services/giftcard-sell.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { NotificationService } from '@/services/notification.service';
+import { UserService, VolumeType } from '@/services/user.service';
+import { ApiError } from '@/utils/api-error.util';
 
 export const addBrand = asyncHandler(async (req: Request, res: Response) => {
   const { name } = req.body;
@@ -122,6 +124,50 @@ export const updateSale = asyncHandler(async (req: Request, res: Response) => {
       adminComment
     );
   }
+
+  res.json({ success: true, data: updated });
+});
+
+export const approveSale = asyncHandler(async (req: Request, res: Response) => {
+  const id = req.query.saleId as string;
+
+  if (!id) {
+    throw new ApiError(400, 'saleId query parameter is required');
+  }
+
+  const sale = await sellService.getSaleById(id);
+  if (!sale) {
+    return res.status(404).json({ success: false, message: 'Sale not found' });
+  }
+
+  if (sale.status === 'completed') {
+    return res.status(400).json({ success: false, message: 'Sale is already completed' });
+  }
+
+  if (sale.status === 'declined') {
+    return res.status(400).json({ success: false, message: 'Cannot approve a declined sale' });
+  }
+
+  const updated = await sellService.updateSaleStatus(id, 'completed');
+  if (!updated) {
+     return res.status(500).json({ success: false, message: 'Failed to update sale status' });
+  }
+
+  // Update User Trading Volume Only on Completion
+  await UserService.updateUserVolume(
+    updated.userId.toString(),
+    updated.totalInNaira,
+    VolumeType.SELL,
+  );
+
+  // Trigger push & email notification 
+  await NotificationService.sendGiftCardStatusNotification(
+    updated.userId.toString(),
+    'sell',
+    'approved', // completed maps to approved in notification
+    updated.totalInNaira,
+    'NGN'
+  );
 
   res.json({ success: true, data: updated });
 });

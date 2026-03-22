@@ -22,6 +22,7 @@ router.post('/sell/brands/countries', sellAdminCtrl.addCountry);
 router.post('/sell/brands/countries/ranges', sellAdminCtrl.addRange);
 router.post('/sell/brands/countries/ranges/types', sellAdminCtrl.addType);
 router.get('/sell/requests', sellAdminCtrl.listSales);
+router.post('/sell/requests/approve', sellAdminCtrl.approveSale);
 router.patch('/sell/requests', sellAdminCtrl.updateSale);
 
 export default router;

@@ -35,6 +35,7 @@ export const pushType = (brandId: string, iso: string, range: string, type: any)
 
 // --- SALE SERVICES ---
 export const createSaleEntry = (data: any) => GiftCardSale.create(data);
+export const getSaleById = (id: string) => GiftCardSale.findById(id);
 export const getSalesByStatus = (status?: string) => {
   const query = status ? { status } : {};
   return GiftCardSale.find(query).populate('userId brandId').sort({ createdAt: -1 });
