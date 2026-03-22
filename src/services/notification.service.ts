@@ -24,7 +24,7 @@ export class NotificationService {
         'https://onesignal.com/api/v1/notifications',
         {
           app_id: config.ONESIGNAL_APP_ID,
-          include_player_ids: playerIds,
+          include_external_user_ids: playerIds,
           headings: { en: heading },
           contents: { en: content },
         },
