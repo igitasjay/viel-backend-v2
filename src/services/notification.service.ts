@@ -20,7 +20,7 @@ export class NotificationService {
     if (playerIds.length === 0) return;
 
     try {
-      await axios.post(
+     const response = await axios.post(
         'https://onesignal.com/api/v1/notifications',
         {
           app_id: config.ONESIGNAL_APP_ID,
@@ -37,6 +37,7 @@ export class NotificationService {
       );
       // log player ids
       console.log('Player ids:', playerIds);
+      console.log('OneSignal Response:', response.data);
     } catch (error: any) {
       console.error('Error sending push notification via OneSignal:', error?.response?.data || error.message);
       console.log('Player ids:', playerIds);
