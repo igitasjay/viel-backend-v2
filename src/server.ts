@@ -24,7 +24,7 @@ import router from './routes/v1/health.route';
 // import { startScanner } from './crypto/service/deposit-scanner.service';
 
 const app = express();
-app.set('trust proxy', 'loopback');
+app.set('trust proxy', true);
 app.use(morgan('dev'));
 
 const corsOptions: CorsOptions = {

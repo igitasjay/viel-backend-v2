@@ -15,7 +15,20 @@ import resetPassword from '@/controllers/auth/reset-password.controller';
 import rateLimit from 'express-rate-limit';
 const router = Router();
 
-const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5 });
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  keyGenerator: (req) => {
+    const email = req.body?.email || 'unidentified';
+    return `${req.ip}-${email}`;
+  },
+  handler: (req, res) => {
+    res.status(429).json({
+      success: false,
+      message: 'Too many authentication attempts. Please try again after 15 minutes.',
+    });
+  },
+});
 
 router.post(
   '/register',
