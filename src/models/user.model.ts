@@ -18,6 +18,7 @@ export interface IUser {
   myReferralCode?: string;
   referredBy?: string;
   accountStatus: 'active' | 'suspended' | 'deleted';
+  hasPasscode: boolean;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -94,6 +95,10 @@ const UserSchema = new Schema<IUser>(
       enum: ['active', 'suspended', 'deleted'],
       default: 'active',
     },
+    hasPasscode: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -105,8 +110,13 @@ UserSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  if (this.isModified('passcode') && this.passcode) {
-    this.passcode = await bcrypt.hash(this.passcode, 10);
+  if (this.isModified('passcode')) {
+    if (this.passcode) {
+      this.passcode = await bcrypt.hash(this.passcode, 10);
+      this.hasPasscode = true;
+    } else {
+      this.hasPasscode = false;
+    }
   }
   next();
 });

@@ -20,7 +20,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body as UserData;
     const user = await User.findOne({ email })
-      .select('firstname lastname email phone password role isEmailVerified accountStatus')
+      .select('firstname lastname email phone password role isEmailVerified accountStatus passcode myReferralCode')
       .lean()
       .exec();
     if (!user) {
@@ -46,7 +46,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
         success: false,
         message: 'Invalid credentials',
       });
-      logger.warn('Failed login attempt: Incorrect password', { email });
+      logger.warn('Failed login attempt: Incorrect credential', { email });
       return;
     }
 
@@ -106,6 +106,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
         email: user.email,
         phone: user.myReferralCode,
         role: user.role,
+        hasPasscode: !!user.passcode,
       },
       accessToken,
     });

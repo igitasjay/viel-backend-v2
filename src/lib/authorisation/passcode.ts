@@ -13,7 +13,7 @@ export const verifyPassword = async (req: Request, res: Response) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Incorrect password.' });
+      return res.status(401).json({ message: 'Incorrect credential.' });
     }
 
     res.status(200).json({
@@ -51,7 +51,7 @@ export const createPasscode = async (req: Request, res: Response) => {
     // 3. Verify password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Incorrect password.' });
+      return res.status(401).json({ message: 'Incorrect credential.' });
     }
 
     // 4. Assign the plain text; the pre-save hook will hash it
