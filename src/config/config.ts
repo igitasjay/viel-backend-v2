@@ -36,6 +36,7 @@ const config = {
   SERVER_URL: process.env.SERVER_URL!,
   ONESIGNAL_APP_ID: process.env.ONESIGNAL_APP_ID!,
   ONESIGNAL_REST_API_KEY: process.env.ONESIGNAL_REST_API_KEY!,
+  ALCHEMY_RPC_URL: process.env.ALCHEMY_RPC_URL!,
 };
 
 export default config;

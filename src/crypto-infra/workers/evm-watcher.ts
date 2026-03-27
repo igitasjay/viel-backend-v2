@@ -1,33 +1,34 @@
 import { ethers } from "ethers";
-import dotenv from "dotenv";
-import { Wallet } from "../models/wallet.model.js";
-import { Currency } from "../models/currency.model.js";
-import { LedgerService } from "../services/ledger.service.js";
-import { LedgerType, LedgerCategory, TransactionAction } from "../models/ledger.model.js";
-import { connectToDatabase } from "@/lib/mongoose.js";
-import { UserService, VolumeType } from "../../services/user.service.js";
-import { NotificationService } from "../../services/notification.service.js";
-
-dotenv.config();
+import { Wallet } from "../models/wallet.model";
+import { Currency } from "../models/currency.model";
+import { LedgerService } from "../services/ledger.service";
+import { LedgerType, LedgerCategory, TransactionAction } from "../models/ledger.model";
+import { connectToDatabase } from "@/lib/mongoose";
+import { UserService, VolumeType } from "../../services/user.service";
+import { NotificationService } from "../../services/notification.service";
+import config from "@/config/config";
 
 // v6 Change: Removed '.providers' namespace
-const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_RPC_URL);
+const provider = new ethers.JsonRpcProvider(config.ALCHEMY_RPC_URL);
 
-async function startWatcher() {
-  await connectToDatabase();
+export async function startWatcher(standalone = false) {
+  if (standalone) {
+    await connectToDatabase();
+  }
   console.log("👀 EVM Watcher Starting...");
 
   try {
     const network = await provider.getNetwork();
     const currentBlock = await provider.getBlockNumber();
-    console.log(`📡 Connected to ${network.name} (ChainID: ${network.chainId})`);
-    console.log(`⛓️  Current Block Height: ${currentBlock}`);
+    console.log(`Connected to ${network.name} (ChainID: ${network.chainId})`);
+    console.log(`Current Block Height: ${currentBlock}`);
   } catch (error) {
-    console.error("❌ Failed to connect to Provider. Please check ALCHEMY_RPC_URL.");
-    process.exit(1);
+    console.error("Failed to connect to Provider. Please check ALCHEMY_RPC_URL.");
+    if (standalone) process.exit(1);
+    return; // Don't crash the main server
   }
 
-  console.log("🚀 EVM Watcher Started and Listening...");
+  console.log("EVM Watcher Started and Listening...");
 
   // Listen to every block
   provider.on("block", async (blockNumber: number) => {
@@ -84,7 +85,7 @@ async function startWatcher() {
 
             // Update User Trading Volume
             if (coin) {
-            const nairaValue = amount * (coin.sellRate || 0);
+              const nairaValue = amount * (coin.sellRate || 0);
               await UserService.updateUserVolume(
                 targetWallet.userId.toString(),
                 nairaValue,
@@ -103,4 +104,8 @@ async function startWatcher() {
   });
 }
 
-startWatcher();
+// Auto-start when run directly (e.g. `npm run watcher:dev`)
+// When imported from server.ts, this won't execute
+if (require.main === module) {
+  startWatcher(true);
+}

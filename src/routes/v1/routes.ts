@@ -63,6 +63,7 @@ router.use('/admin/banners', adminBannerRouter);
 router.use('/admin/users', adminUserRouter);
 router.use('/admin/settings', adminSettingRouter);
 router.use('/health', healthRouter);
+router.use('/infra/crypto', userCryptoRoute);
 
 router.post('/monnify/webhook', handleMonnifyWebhook);
 
@@ -77,6 +78,5 @@ router.use('/infra/admin', adminRoutes);
 router.use('/infra/wallets', walletRoutes);  
 // router.use('/infra/trade', tradeRoutes); 
 router.use('/infra/webhooks', webhookRoutes);
-router.use('/infra/crypto', userCryptoRoute);
 
 export default router;

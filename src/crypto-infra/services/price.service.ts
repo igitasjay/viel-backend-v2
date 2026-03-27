@@ -69,8 +69,12 @@ export class PriceService {
       }
 
       return rates;
-    } catch (error) {
-        logger.error('Failed to fetch live rates from TwelveData:', error);
+    } catch (error: any) {
+        logger.error('Failed to fetch live rates from TwelveData:', {
+          message: error?.message,
+          status: error?.response?.status,
+          data: error?.response?.data,
+        });
         return new Map();
     }
   }

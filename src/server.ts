@@ -22,6 +22,7 @@ import type { CorsOptions } from 'cors';
 import authenticate from './middlewares/authenticate.middleware';
 import router from './routes/v1/health.route';
 // import { startScanner } from './crypto/service/deposit-scanner.service';
+import { startWatcher } from './crypto-infra/workers/evm-watcher';
 
 const app = express();
 app.set('trust proxy', true);
@@ -84,7 +85,8 @@ const startHealthCheck = () => {
       logger.info(`Server is running on http://localhost:${config.PORT}`);
       startHealthCheck();
     });
-    // startScanner('ethereum');
+    // Start the EVM deposit watcher (non-blocking, won't crash server on failure)
+    startWatcher().catch((err: any) => logger.error('EVM Watcher failed to start:', err));
   } catch (error) {
     logger.error('Error starting the server:', error);
     if (config.NODE_ENV == 'production') {

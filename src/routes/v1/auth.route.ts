@@ -12,16 +12,18 @@ import resendOTP from '@/controllers/auth/resend-otp.controller';
 import forgotPassword from '@/controllers/auth/forgot-password.controller';
 import verifyResetOTP from '@/controllers/auth/verify-reset-otp.controller';
 import resetPassword from '@/controllers/auth/reset-password.controller';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { type Options } from 'express-rate-limit';
 const router = Router();
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   keyGenerator: (req) => {
+    const ip = req.ip || 'unknown';
     const email = req.body?.email || 'unidentified';
-    return `${req.ip}-${email}`;
+    return `${ip}-${email}`;
   },
+  validate: { keyGeneratorIpFallback: false },
   handler: (req, res) => {
     res.status(429).json({
       success: false,

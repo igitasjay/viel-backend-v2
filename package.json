@@ -7,7 +7,9 @@
     "start": "node dist/server.js",
     "dev": "nodemon",
     "seed:crypto": "ts-node -r tsconfig-paths/register src/seed/crypto-seeds.ts",
-    "seed:transaction": "ts-node src/seed/transaction-seeds.ts"
+    "seed:transaction": "ts-node src/seed/transaction-seeds.ts",
+    "watcher:dev": "ts-node -r tsconfig-paths/register src/crypto-infra/workers/evm-watcher.ts",
+    "watcher": "node dist/crypto-infra/workers/evm-watcher.js"
   },
   "keywords": [],
   "author": "",
