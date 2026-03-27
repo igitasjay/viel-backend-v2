@@ -9,7 +9,8 @@
     "seed:crypto": "ts-node -r tsconfig-paths/register src/seed/crypto-seeds.ts",
     "seed:transaction": "ts-node src/seed/transaction-seeds.ts",
     "watcher:dev": "ts-node -r tsconfig-paths/register src/crypto-infra/workers/evm-watcher.ts",
-    "watcher": "node dist/crypto-infra/workers/evm-watcher.js"
+    "watcher": "node dist/crypto-infra/workers/evm-watcher.js",
+    "start:all": "concurrently \"node dist/server.js\" \"node dist/crypto-infra/workers/evm-watcher.js\""
   },
   "keywords": [],
   "author": "",
@@ -43,6 +44,7 @@
     "bcrypt": "^6.0.0",
     "cloudinary": "^1.41.3",
     "compression": "^1.8.1",
+    "concurrently": "^9.2.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
