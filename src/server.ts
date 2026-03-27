@@ -25,7 +25,7 @@ import router from './routes/v1/health.route';
 // import { startWatcher } from './crypto-infra/workers/evm-watcher';
 
 const app = express();
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 app.use(morgan('dev'));
 
 const corsOptions: CorsOptions = {
