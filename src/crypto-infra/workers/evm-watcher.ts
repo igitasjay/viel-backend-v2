@@ -8,7 +8,6 @@ import { UserService, VolumeType } from "../../services/user.service";
 import { NotificationService } from "../../services/notification.service";
 import config from "@/config/config";
 
-// v6 Change: Removed '.providers' namespace
 const provider = new ethers.JsonRpcProvider(config.ALCHEMY_RPC_URL);
 
 export async function startWatcher(standalone = false) {
@@ -35,8 +34,6 @@ export async function startWatcher(standalone = false) {
     console.log(`New Block: ${blockNumber}`);
 
     try {
-      // v6 Change: getBlockWithTransactions is gone.
-      // Use getBlock(number, true) to include full transaction objects.
       const block = await provider.getBlock(blockNumber, true);
 
       if (!block || !block.prefetchedTransactions) return;
