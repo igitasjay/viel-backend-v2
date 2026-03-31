@@ -36,6 +36,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@google-cloud/kms": "^5.4.0",
     "@react-email/components": "^1.0.10",
     "@types/morgan": "^1.9.10",
     "@types/react": "^19.2.14",
