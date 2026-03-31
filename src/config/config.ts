@@ -37,6 +37,8 @@ const config = {
   ONESIGNAL_APP_ID: process.env.ONESIGNAL_APP_ID!,
   ONESIGNAL_REST_API_KEY: process.env.ONESIGNAL_REST_API_KEY!,
   ALCHEMY_RPC_URL: process.env.ALCHEMY_RPC_URL!,
+  SOLANA_RPC_URL: process.env.SOLANA_RPC_URL,
+  BITCOIN_API_URL: process.env.BITCOIN_API_URL || 'https://blockstream.info/api', // Public API for BTC
 };
 
 export default config;

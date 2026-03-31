@@ -26,6 +26,7 @@ export const addCurrency = async (req: Request, res: Response) => {
       usd_rate,
       status, // optional, defaults to 1
       price_symbol,
+      chainFamily,
     } = req.body;
 
     // Check if file exists (Multer)
@@ -65,6 +66,7 @@ export const addCurrency = async (req: Request, res: Response) => {
       usd_rate: Number(usd_rate || 0),
       status: Number(status || 1),
       price_symbol: price_symbol || null,
+      chainFamily: chainFamily || 'EVM',
     });
 
     return res.status(201).json({ success: true, data: newCurrency });
@@ -156,7 +158,8 @@ export const updateCurrency = async (req: Request, res: Response) => {
       usd_rate,
       status,
       decimals,
-      price_symbol
+      price_symbol,
+      chainFamily
     } = req.body;
 
     const file = (req as any).file;
@@ -200,6 +203,7 @@ export const updateCurrency = async (req: Request, res: Response) => {
     if (status !== undefined) currency.status = Number(status);
     if (decimals !== undefined) currency.decimals = Number(decimals);
     if (price_symbol !== undefined) currency.price_symbol = price_symbol;
+    if (chainFamily !== undefined) currency.chainFamily = chainFamily;
 
     if (file) {
       currency.imageUrl = file.path;

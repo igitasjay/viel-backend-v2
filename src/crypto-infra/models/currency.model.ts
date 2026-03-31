@@ -5,6 +5,7 @@ export interface ICurrency extends Document {
   name: string; // Tether
   code: string; // USDT (alias for symbol for consistency with target JSON)
   network: string; // ERC20, TRC20, BTC
+  chainFamily: 'EVM' | 'SOLANA' | 'BITCOIN';
   contractAddress?: string; // Null for Native ETH/BTC
   
   // New Fields
@@ -38,6 +39,12 @@ const CurrencySchema = new Schema(
     symbol: { type: String, required: true, uppercase: true }, // acts as 'code'
     name: { type: String, required: true },
     network: { type: String, required: true }, // e.g., 'ERC20'
+    chainFamily: {
+      type: String,
+      enum: ['EVM', 'SOLANA', 'BITCOIN'],
+      required: true,
+      default: 'EVM',
+    },
     contractAddress: { type: String, default: null },
     
     // Network Details
