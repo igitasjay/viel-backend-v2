@@ -1,7 +1,10 @@
 import axios from 'axios';
 import config from '@/config/config';
 import { Resend } from 'resend';
-import { DepositConfirmedEmail, GiftCardStatusEmail } from '@/lib/email-template';
+import {
+  DepositConfirmedEmail,
+  GiftCardStatusEmail,
+} from '@/lib/email-template';
 import User from '@/models/user.model';
 import { DeviceToken } from '@/models/device-token.model';
 
@@ -11,16 +14,22 @@ export class NotificationService {
   /**
    * Send a push notification via OneSignal
    */
-  public static async sendPushNotification(playerIds: string[], heading: string, content: string) {
+  public static async sendPushNotification(
+    playerIds: string[],
+    heading: string,
+    content: string,
+  ) {
     if (!config.ONESIGNAL_APP_ID || !config.ONESIGNAL_REST_API_KEY) {
-      console.warn('OneSignal credentials not configured. Skipping push notification.');
+      console.warn(
+        'OneSignal credentials not configured. Skipping push notification.',
+      );
       return;
     }
-    
+
     if (playerIds.length === 0) return;
 
     try {
-     const response = await axios.post(
+      const response = await axios.post(
         'https://onesignal.com/api/v1/notifications',
         {
           app_id: config.ONESIGNAL_APP_ID,
@@ -33,13 +42,16 @@ export class NotificationService {
             'Content-Type': 'application/json; charset=utf-8',
             Authorization: `Basic ${config.ONESIGNAL_REST_API_KEY}`,
           },
-        }
+        },
       );
       // log player ids
       console.log('Player ids:', playerIds);
       console.log('OneSignal Response:', response.data);
     } catch (error: any) {
-      console.error('Error sending push notification via OneSignal:', error?.response?.data || error.message);
+      console.error(
+        'Error sending push notification via OneSignal:',
+        error?.response?.data || error.message,
+      );
       console.log('Player ids:', playerIds);
     }
   }
@@ -47,7 +59,11 @@ export class NotificationService {
   /**
    * Trigger email and push notification for a confirmed deposit
    */
-  public static async sendDepositNotification(userId: string, currency: string, amount: number) {
+  public static async sendDepositNotification(
+    userId: string,
+    currency: string,
+    amount: number,
+  ) {
     try {
       const user = await User.findById(userId);
       if (!user) return;
@@ -59,10 +75,17 @@ export class NotificationService {
             from: `VIEL <${config.EMAIL_FROM}>`,
             to: user.email,
             subject: 'Deposit Confirmed',
-            react: DepositConfirmedEmail({ firstname: user.firstname, currency, amount }),
+            react: DepositConfirmedEmail({
+              firstname: user.firstname,
+              currency,
+              amount,
+            }),
           });
         } catch (emailError: any) {
-          console.error('Error sending deposit email:', emailError?.response?.data || emailError.message);
+          console.error(
+            'Error sending deposit email:',
+            emailError?.response?.data || emailError.message,
+          );
         }
       }
 
@@ -71,7 +94,7 @@ export class NotificationService {
       const playerIds = tokens.map((t) => t.token);
 
       if (playerIds.length > 0) {
-        const heading = 'Deposit Confirmed ✅';
+        const heading = 'Deposit Confirmed';
         const content = `Your deposit of ${amount} ${currency} has been successfully credited to your wallet.`;
         await this.sendPushNotification(playerIds, heading, content);
       }
@@ -89,7 +112,7 @@ export class NotificationService {
     status: 'approved' | 'rejected' | 'completed' | 'declined',
     amount?: number,
     currency?: string,
-    adminComment?: string
+    adminComment?: string,
   ) {
     try {
       const user = await User.findById(userId);
@@ -105,17 +128,20 @@ export class NotificationService {
             from: `VIEL <${config.EMAIL_FROM}>`,
             to: user.email,
             subject: `Gift Card ${verb} ${status}`,
-            react: GiftCardStatusEmail({ 
-              firstname: user.firstname, 
-              actionType, 
-              status, 
-              amount, 
-              currency, 
-              adminComment 
+            react: GiftCardStatusEmail({
+              firstname: user.firstname,
+              actionType,
+              status,
+              amount,
+              currency,
+              adminComment,
             }),
           });
         } catch (emailError: any) {
-          console.error('Error sending gift card status email:', emailError?.response?.data || emailError.message);
+          console.error(
+            'Error sending gift card status email:',
+            emailError?.response?.data || emailError.message,
+          );
         }
       }
 
@@ -126,10 +152,10 @@ export class NotificationService {
       if (playerIds.length > 0) {
         const icon = isApproved ? '✅' : '❌';
         const heading = `Gift Card ${verb} ${status} ${icon}`;
-        const content = isApproved 
-          ? `Your gift card ${actionType} request has been approved.` 
+        const content = isApproved
+          ? `Your gift card ${actionType} request has been approved.`
           : `Your gift card ${actionType} request was declined.`;
-          
+
         await this.sendPushNotification(playerIds, heading, content);
       }
     } catch (error) {

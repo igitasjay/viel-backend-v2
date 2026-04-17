@@ -1,12 +1,16 @@
-import { ethers } from "ethers";
-import { Wallet } from "../models/wallet.model";
-import { Currency } from "../models/currency.model";
-import { LedgerService } from "../services/ledger.service";
-import { LedgerType, LedgerCategory, TransactionAction } from "../models/ledger.model";
-import { connectToDatabase } from "@/lib/mongoose";
-import { UserService, VolumeType } from "../../services/user.service";
-import { NotificationService } from "../../services/notification.service";
-import config from "@/config/config";
+import { ethers } from 'ethers';
+import { Wallet } from '../models/wallet.model';
+import { Currency } from '../models/currency.model';
+import { LedgerService } from '../services/ledger.service';
+import {
+  LedgerType,
+  LedgerCategory,
+  TransactionAction,
+} from '../models/ledger.model';
+import { connectToDatabase } from '@/lib/mongoose';
+import { UserService, VolumeType } from '../../services/user.service';
+import { NotificationService } from '../../services/notification.service';
+import config from '@/config/config';
 
 const provider = new ethers.JsonRpcProvider(config.ALCHEMY_RPC_URL);
 
@@ -14,7 +18,7 @@ export async function startWatcher(standalone = false) {
   if (standalone) {
     await connectToDatabase();
   }
-  console.log("👀 EVM Watcher Starting...");
+  console.log('EVM Watcher Starting...');
 
   try {
     const network = await provider.getNetwork();
@@ -22,15 +26,17 @@ export async function startWatcher(standalone = false) {
     console.log(`Connected to ${network.name} (ChainID: ${network.chainId})`);
     console.log(`Current Block Height: ${currentBlock}`);
   } catch (error) {
-    console.error("Failed to connect to Provider. Please check ALCHEMY_RPC_URL.");
+    console.error(
+      'Failed to connect to Provider. Please check ALCHEMY_RPC_URL.',
+    );
     if (standalone) process.exit(1);
     return; // Don't crash the main server
   }
 
-  console.log("EVM Watcher Started and Listening...");
+  console.log('EVM Watcher Started and Listening...');
 
   // Listen to every block
-  provider.on("block", async (blockNumber: number) => {
+  provider.on('block', async (blockNumber: number) => {
     console.log(`New Block: ${blockNumber}`);
 
     try {
@@ -45,7 +51,7 @@ export async function startWatcher(standalone = false) {
         const targetWallet = await Wallet.findOne({ address: tx.to });
 
         if (targetWallet) {
-          console.log(`💰 Deposit Detected! ${tx.value} wei to ${tx.to}`);
+          console.log(`Deposit Detected! ${tx.value} wei to ${tx.to}`);
 
           // 2. Wait for confirmations (Optional logic)
           // await tx.wait(12);
@@ -71,13 +77,13 @@ export async function startWatcher(standalone = false) {
               'completed',
               targetWallet.currency,
             );
-            console.log(`✅ User Credited: ${amount} ${targetWallet.currency}`);
+            console.log(`User Credited: ${amount} ${targetWallet.currency}`);
 
             // Trigger notification
             await NotificationService.sendDepositNotification(
               targetWallet.userId.toString(),
               targetWallet.currency,
-              amount
+              amount,
             );
 
             // Update User Trading Volume
@@ -88,10 +94,10 @@ export async function startWatcher(standalone = false) {
                 nairaValue,
                 VolumeType.SELL,
               );
-              console.log(`📈 User Volume Updated: ${nairaValue} NGN`);
+              console.log(`User Volume Updated: ${nairaValue} NGN`);
             }
           } catch (err) {
-            console.error("Credit failed (likely duplicate)", err);
+            console.error('Credit failed (likely duplicate)', err);
           }
         }
       }
