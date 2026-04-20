@@ -64,7 +64,9 @@ const startHealthCheck = () => {
   setInterval(async () => {
     try {
       const response = await axios.get(url);
-      logger.info(`Autonomous health check: ${response.data.status} - ${response.data.database}`);
+      logger.info(
+        `Autonomous health check: ${response.data.status} - ${response.data.database}`,
+      );
     } catch (error: any) {
       logger.error('Autonomous health check failed:', error.message);
     }
