@@ -1,9 +1,10 @@
 import type { Request, Response } from 'express';
 import crypto from 'crypto';
 import { LedgerService } from '../services/ledger.service';
-import { LedgerCategory, LedgerType, TransactionAction } from '../models/ledger.model';
+import { LedgerCategory, LedgerType, TransactionAction, SystemAccount } from '../models/ledger.model';
 import config from '@/config/config';
 import { NotificationService } from '@/services/notification.service';
+import * as Decimal from '@/utils/decimal.util';
 
 const PAYSTACK_SECRET = config.PAYSTACK_SECRET_KEY;
 
@@ -29,25 +30,25 @@ export const paystackWebhook = async (req: Request, res: Response) => {
 
       if (!userId) return res.sendStatus(200); // Ignore if no user attached
 
-      // Paystack amount is in Kobo (NGN * 100)
-      const amountNGN = amount / 100;
+      // Paystack amount is in Kobo (NGN * 100) — convert with Decimal
+      const amountNGN = Decimal.fromMinorUnits(String(amount), 2);
 
-      // 3. Credit Ledger
+      // 3. Credit Ledger (double-entry)
       try {
-        await LedgerService.creditUser(
+        await LedgerService.recordEntry({
           userId,
-          'NGN',
-          amountNGN,
-          LedgerType.DEPOSIT,
-          `PAYSTACK-${reference}`,
-          LedgerCategory.CRYPTO,
-          TransactionAction.SELL,
-          undefined,
-          'completed',
-          'NGN',
-        );
+          asset: 'NGN',
+          amount: amountNGN,
+          type: LedgerType.DEPOSIT,
+          refId: `PAYSTACK-${reference}`,
+          category: LedgerCategory.CRYPTO,
+          action: TransactionAction.SELL,
+          counterparty: SystemAccount.REVENUE,
+          status: 'completed',
+          tradedAsset: 'NGN',
+        });
         // Trigger notification
-        await NotificationService.sendDepositNotification(userId, 'NGN', amountNGN);
+        await NotificationService.sendDepositNotification(userId, 'NGN', parseFloat(amountNGN));
       } catch (e) {
         console.log('Duplicate Paystack Event:', reference);
       }

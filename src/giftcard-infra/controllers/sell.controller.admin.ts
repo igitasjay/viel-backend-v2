@@ -4,6 +4,7 @@ import { asyncHandler } from '@/utils/async-handler.util';
 import { NotificationService } from '@/services/notification.service';
 import { UserService, VolumeType } from '@/services/user.service';
 import { ApiError } from '@/utils/api-error.util';
+import mongoose from 'mongoose';
 
 export const addBrand = asyncHandler(async (req: Request, res: Response) => {
   const { name } = req.body;
@@ -45,14 +46,8 @@ export const addCountry = asyncHandler(async (req: Request, res: Response) => {
     return res.status(400).json({ success: false, message: 'name, iso, and currencySymbol are required' });
   }
 
-  // Ranges are now optional during creation
-  // if (!ranges || !Array.isArray(ranges) || ranges.length === 0) {
-  //   return res.status(400).json({ success: false, message: 'At least one range is required when adding a country.' });
-  // }
-
   if (ranges && Array.isArray(ranges)) {
     for (const r of ranges) {
-      // If ranges are provided, they must have a name, but types can be empty
       if (!r.range) {
          return res.status(400).json({ success: false, message: 'Each range must have a name (range).' });
       }
@@ -74,11 +69,6 @@ export const addRange = asyncHandler(async (req: Request, res: Response) => {
   if (!range) {
     return res.status(400).json({ success: false, message: 'Range name is required.' });
   }
-
-  // Types are now optional
-  // if (!types || !Array.isArray(types) || types.length === 0) {
-  //   return res.status(400).json({ success: false, message: 'Range and at least one type are required.' });
-  // }
 
   const updated = await sellService.pushRange(id, iso, req.body);
   if (!updated) {
@@ -148,28 +138,42 @@ export const approveSale = asyncHandler(async (req: Request, res: Response) => {
     return res.status(400).json({ success: false, message: 'Cannot approve a declined sale' });
   }
 
-  const updated = await sellService.updateSaleStatus(id, 'completed');
-  if (!updated) {
-     return res.status(500).json({ success: false, message: 'Failed to update sale status' });
+  // Wrap status update + volume update in a session for atomicity
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const updated = await sellService.updateSaleStatus(id, 'completed');
+    if (!updated) {
+      throw new ApiError(500, 'Failed to update sale status');
+    }
+
+    // Update User Trading Volume inside session
+    await UserService.updateUserVolume(
+      updated.userId.toString(),
+      String(updated.totalInNaira),
+      VolumeType.SELL,
+      session,
+    );
+
+    await session.commitTransaction();
+
+    // Trigger push & email notification (outside session, fire-and-forget)
+    await NotificationService.sendGiftCardStatusNotification(
+      updated.userId.toString(),
+      'sell',
+      'approved',
+      updated.totalInNaira,
+      'NGN'
+    );
+
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  // Update User Trading Volume Only on Completion
-  await UserService.updateUserVolume(
-    updated.userId.toString(),
-    updated.totalInNaira,
-    VolumeType.SELL,
-  );
-
-  // Trigger push & email notification 
-  await NotificationService.sendGiftCardStatusNotification(
-    updated.userId.toString(),
-    'sell',
-    'approved', // completed maps to approved in notification
-    updated.totalInNaira,
-    'NGN'
-  );
-
-  res.json({ success: true, data: updated });
 });
 
 export const listSales = asyncHandler(async (req: Request, res: Response) => {

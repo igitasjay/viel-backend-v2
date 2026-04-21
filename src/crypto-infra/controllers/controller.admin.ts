@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { Currency } from '../models/currency.model';
 import { Ledger } from '../models/ledger.model';
 import { Wallet } from '../models/wallet.model';
+import { LedgerService } from '../services/ledger.service';
 
 export const addCurrency = async (req: Request, res: Response) => {
   try {
@@ -106,11 +107,7 @@ export const auditLedger = async (req: Request, res: Response) => {
     if (!currency) return res.status(400).json({ error: 'Currency required' });
 
     // 1. Calculate Internal Liability (Sum of all user balances in DB)
-    const liabilityResult = await Ledger.aggregate([
-      { $match: { asset: currency, affectsBalance: true } },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
-    ]);
-    const totalLiability = liabilityResult[0]?.total || 0;
+    const totalLiability = await LedgerService.getSystemLiability(currency as string);
 
     // 2. Calculate Real Assets (Sum of Hot + Cold Wallet balances)
     // Note: In a real app, you would fetch the balance of your Cold Vault here.

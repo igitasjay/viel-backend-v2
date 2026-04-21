@@ -19,14 +19,30 @@ export enum TransactionAction {
   SELL = 'SELL',
 }
 
+export enum LedgerSide {
+  CREDIT = 'CREDIT',
+  DEBIT = 'DEBIT',
+}
+
+export enum SystemAccount {
+  HOT_WALLET = 'PLATFORM:HOT_WALLET',
+  REVENUE = 'PLATFORM:REVENUE',
+  GIFTCARD_FLOAT = 'PLATFORM:GIFTCARD_FLOAT',
+  INVENTORY = 'PLATFORM:INVENTORY',
+}
+
 export interface ILedger extends Document {
   userId: mongoose.Types.ObjectId;
-  asset: string; // Bitcoin, Ethereum, Amazon, Steam, iTunes etc
-  amount: number; // Positive for credit, Negative for debit
+  asset: string;
+  amount: string;
+  side: LedgerSide;
+  account: string;
+  counterpartyAccount: string;
+  correlationId: string;
   type: LedgerType;
   transactionCategory: LedgerCategory;
   transactionType: TransactionAction;
-  referenceId: string; // TxHash or Internal Trade ID
+  referenceId: string;
   description: string;
   tradedAsset?: string;
   image?: string;
@@ -43,8 +59,16 @@ const LedgerSchema = new Schema(
       required: true,
       index: true,
     },
-    asset: { type: String, required: true }, // Bitcoin, Ethereum, Amazon, Steam, iTunes etc
-    amount: { type: Number, required: true },
+    asset: { type: String, required: true },
+    amount: { type: String, required: true },
+    side: {
+      type: String,
+      enum: Object.values(LedgerSide),
+      required: true,
+    },
+    account: { type: String, required: true },
+    counterpartyAccount: { type: String, required: true },
+    correlationId: { type: String, required: true },
     type: { type: String, enum: Object.values(LedgerType), required: true },
     transactionCategory: {
       type: String,
@@ -56,7 +80,7 @@ const LedgerSchema = new Schema(
       enum: Object.values(TransactionAction),
       required: true,
     },
-    referenceId: { type: String, required: true, unique: true }, // Idempotency Key
+    referenceId: { type: String, required: true },
     description: { type: String },
     tradedAsset: { type: String },
     image: { type: String },
@@ -66,5 +90,12 @@ const LedgerSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// Compound unique: same refId can exist for CREDIT + DEBIT pair
+LedgerSchema.index({ referenceId: 1, side: 1 }, { unique: true });
+// Balance query performance
+LedgerSchema.index({ account: 1, asset: 1, affectsBalance: 1 });
+// Correlation lookup
+LedgerSchema.index({ correlationId: 1 });
 
 export const Ledger = mongoose.model<ILedger>("Ledger", LedgerSchema);

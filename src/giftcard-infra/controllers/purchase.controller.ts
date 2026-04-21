@@ -15,8 +15,10 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
+  SystemAccount,
 } from '@/crypto-infra/models/ledger.model';
 import config from '@/config/config';
+import mongoose from 'mongoose';
 
 export const initiateGiftCardPurchase = asyncHandler(
   async (req: Request, res: Response) => {
@@ -111,56 +113,74 @@ export const initiateGiftCardPurchase = asyncHandler(
 );
 
 // Internal function to be called after successful payment
+// Now wrapped in a single Mongo session for atomicity.
 export const fulfillGiftCardPurchase = async (transaction: any) => {
-  const { giftCardId, amount, quantity, recipientEmail } = transaction.giftcard_data;
-  const user = await User.findById(transaction.userId);
-  
-  if (!user) {
-    throw new Error('User not found for gift card fulfillment');
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { giftCardId, amount, quantity, recipientEmail } = transaction.giftcard_data;
+    const user = await User.findById(transaction.userId);
+    
+    if (!user) {
+      throw new Error('User not found for gift card fulfillment');
+    }
+
+    const fullName = `${user.firstname} ${user.lastname}`;
+
+    const purchase = await purchaseService.purchaseGiftCard(
+      user._id.toString(),
+      fullName,
+      user.email,
+      giftCardId,
+      Number(amount),
+      Number(quantity),
+      recipientEmail,
+    );
+
+    const totalInNairaStr = String(purchase.totalInNaira);
+
+    // Log to Ledger — double-entry (inside session)
+    await LedgerService.recordEntry({
+      userId: user._id.toString(),
+      asset: purchase.detailsSnapshot.brandName,
+      amount: totalInNairaStr,
+      type: LedgerType.GIFTCARD_BUY,
+      refId: `GCB-${purchase._id}`,
+      category: LedgerCategory.GIFTCARD,
+      action: TransactionAction.BUY,
+      counterparty: SystemAccount.GIFTCARD_FLOAT,
+      image: purchase.detailsSnapshot.image,
+      status: 'completed',
+      tradedAsset: purchase.detailsSnapshot.brandName,
+      affectsBalance: false,
+      session,
+    });
+
+    // Update User Trading Volume (inside session)
+    await UserService.updateUserVolume(
+      user._id.toString(),
+      totalInNairaStr,
+      VolumeType.BUY,
+      session,
+    );
+
+    // Update transaction status (inside session)
+    transaction.giftcard_data.purchase_result = purchase;
+    transaction.status = 'completed';
+    await transaction.save({ session });
+
+    await session.commitTransaction();
+
+    // send email (fire-and-forget, outside session)
+    const html = purchaseEmailHtml(purchase);
+    // sendPurchaseEmail(...)
+    
+    return purchase;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  const fullName = `${user.firstname} ${user.lastname}`;
-
-  const purchase = await purchaseService.purchaseGiftCard(
-    user._id.toString(),
-    fullName,
-    user.email,
-    giftCardId,
-    Number(amount),
-    Number(quantity),
-    recipientEmail,
-  );
-
-  // Log to Ledger (History only, no balance affect)
-  await LedgerService.creditUser(
-    user._id.toString(),
-    purchase.detailsSnapshot.brandName,
-    purchase.totalInNaira,
-    LedgerType.GIFTCARD_BUY,
-    `GCB-${purchase._id}`,
-    LedgerCategory.GIFTCARD,
-    TransactionAction.BUY,
-    purchase.detailsSnapshot.image,
-    'completed',
-    purchase.detailsSnapshot.brandName,
-    false, // affectsBalance = false
-  );
-
-  // Update User Trading Volume
-  await UserService.updateUserVolume(
-    user._id.toString(),
-    purchase.totalInNaira,
-    VolumeType.BUY,
-  );
-
-  // Update transaction metadata with purchase result
-  transaction.giftcard_data.purchase_result = purchase;
-  transaction.status = 'completed'; // Or 'processing' depending on service response
-  await transaction.save();
-
-  // send email (fire-and-forget)
-  const html = purchaseEmailHtml(purchase);
-  // sendPurchaseEmail(...)
-  
-  return purchase;
 };

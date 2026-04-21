@@ -6,12 +6,15 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
+  SystemAccount,
 } from '../models/ledger.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { UserService, VolumeType } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import config from '@/config/config';
 import { logger } from '@/lib/winston';
+import mongoose from 'mongoose';
+import * as Decimal from '@/utils/decimal.util';
 
 // Using Blockstream's public API for this prototype
 const BITCOIN_API_BASE =
@@ -45,54 +48,68 @@ export async function startBitcoinWatcher(standalone = false) {
           const latestTx = txs[0];
           if (!latestTx.status.confirmed) continue;
 
-          // 3. Check if this tx was already processed (using refId in the Ledger)
-          // Note: In production, we'd use a more efficient way to track processed TXs
-
-          // 4. Find the output sent to our user's address
+          // 3. Find the output sent to our user's address
           const vout = latestTx.vout.find(
             (v: any) => v.scriptpubkey_address === wallet.address,
           );
           if (!vout) continue;
 
-          const amountBTC = vout.value / 100000000; // Satoshis to BTC
+          // 4. Convert satoshis to BTC using Decimal (no float division)
+          const amountBTC = Decimal.fromMinorUnits(String(vout.value), 8);
 
           const coin = await Currency.findOne({
             symbol: wallet.currency,
             network: 'BITCOIN',
           });
 
-          // creditUser is idempotent via referenceId (latestTx.txid)
-          await LedgerService.creditUser(
-            wallet.userId.toString(),
-            wallet.currency,
-            amountBTC,
-            LedgerType.DEPOSIT,
-            latestTx.txid,
-            LedgerCategory.CRYPTO,
-            TransactionAction.SELL,
-            coin?.imageUrl,
-            'completed',
-            wallet.currency,
-          );
+          // 5. Atomic: ledger credit + volume update in one session
+          const session = await mongoose.startSession();
+          session.startTransaction();
 
-          logger.info(
-            `Bitcoin Deposit Processed! ${amountBTC} BTC for ${wallet.address}`,
-          );
+          try {
+            await LedgerService.recordEntry({
+              userId: wallet.userId.toString(),
+              asset: wallet.currency,
+              amount: amountBTC,
+              type: LedgerType.DEPOSIT,
+              refId: latestTx.txid,
+              category: LedgerCategory.CRYPTO,
+              action: TransactionAction.SELL,
+              counterparty: SystemAccount.HOT_WALLET,
+              image: coin?.imageUrl,
+              status: 'completed',
+              tradedAsset: wallet.currency,
+              session,
+            });
 
+            if (coin) {
+              const sellRateStr = String(coin.sellRate || 0);
+              const nairaValue = Decimal.mul(amountBTC, sellRateStr);
+              await UserService.updateUserVolume(
+                wallet.userId.toString(),
+                nairaValue,
+                VolumeType.SELL,
+                session,
+              );
+            }
+
+            await session.commitTransaction();
+            logger.info(
+              `Bitcoin Deposit Processed! ${amountBTC} BTC for ${wallet.address}`,
+            );
+          } catch (err) {
+            await session.abortTransaction();
+            logger.error(`Bitcoin credit failed (likely duplicate)`, err);
+          } finally {
+            session.endSession();
+          }
+
+          // Notification outside session (fire-and-forget)
           await NotificationService.sendDepositNotification(
             wallet.userId.toString(),
             wallet.currency,
-            amountBTC,
+            parseFloat(amountBTC),
           );
-
-          if (coin) {
-            const nairaValue = amountBTC * (coin.sellRate || 0);
-            await UserService.updateUserVolume(
-              wallet.userId.toString(),
-              nairaValue,
-              VolumeType.SELL,
-            );
-          }
         } catch (err: any) {
           // Log but don't stop the loop
           logger.error(

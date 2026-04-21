@@ -11,6 +11,7 @@ import {
   LedgerCategory,
   TransactionAction,
 } from '@/crypto-infra/models/ledger.model';
+import * as Decimal from '@/utils/decimal.util';
 
 export enum VolumeType {
   BUY = 'BUY',
@@ -19,36 +20,33 @@ export enum VolumeType {
 
 export class UserService {
   /**
-   * Update user trading volume atomically
+   * Update user trading volume using Decimal arithmetic.
+   * Session is required to ensure atomicity with the calling operation.
    */
   static async updateUserVolume(
     userId: string | mongoose.Types.ObjectId,
-    amount: number,
+    amount: string,
     type: VolumeType,
-    session?: mongoose.ClientSession
+    session: mongoose.ClientSession,
   ) {
-    const user = await User.findById(userId).session(session || null);
+    const user = await User.findById(userId).session(session);
     if (!user) return null;
 
-    const isFirstTransaction = user.netTradingVolumn === 0;
+    const currentNet = String(user.netTradingVolumn || '0');
+    const isFirstTransaction = Decimal.isZero(currentNet);
 
-    const update: any = {
-      $inc: {
-        netTradingVolumn: Number(amount),
-      },
-    };
+    // Update volume with Decimal precision
+    user.netTradingVolumn = Decimal.add(currentNet, amount) as any;
 
     if (type === VolumeType.BUY) {
-      update.$inc.totalBuyVolume = Number(amount);
+      const currentBuy = String(user.totalBuyVolume || '0');
+      user.totalBuyVolume = Decimal.add(currentBuy, amount) as any;
     } else {
-      update.$inc.totalSellVolume = Number(amount);
+      const currentSell = String(user.totalSellVolume || '0');
+      user.totalSellVolume = Decimal.add(currentSell, amount) as any;
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      update,
-      { session, new: true }
-    );
+    await user.save({ session });
 
     // Referral Reward Logic
     if (isFirstTransaction && user.referredBy) {
@@ -57,7 +55,7 @@ export class UserService {
       });
     }
 
-    return updatedUser;
+    return user;
   }
 
   private static async triggerReferralReward(referrerId: string, referredUserId: string) {

@@ -7,8 +7,10 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
+  SystemAccount,
 } from '@/crypto-infra/models/ledger.model';
 import { UserService, VolumeType } from '@/services/user.service';
+import * as Decimal from '@/utils/decimal.util';
 
 import config from '@/config/config';
 
@@ -51,7 +53,12 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
     throw new ApiError(400, `Invalid amount. Supported: ${typeData.denominations.join(', ')}`);
   }
 
-  const totalInNaira = Number(amount) * Number(quantity) * typeData.rate;
+  // Use Decimal for rate calculation
+  const totalInNairaStr = Decimal.mul(
+    Decimal.mul(String(amount), String(quantity)),
+    String(typeData.rate),
+  );
+  const totalInNaira = parseFloat(totalInNairaStr);
   const imageUrls = files.map(file => file.path);
 
   const sale = await sellService.createSaleEntry({
@@ -71,21 +78,22 @@ export const sellGiftCard = asyncHandler(async (req: Request, res: Response) => 
     status: 'pending',
   });
 
-  // Log to Ledger (Credit Naira - user receives money for selling)
-  await LedgerService.creditUser(
-    req.userId!.toString(),
-    brand.name,
-    totalInNaira,
-    LedgerType.GIFTCARD_SELL,
-    `GCS-${sale._id}`,
-    LedgerCategory.GIFTCARD,
-    TransactionAction.SELL,
-    brand.logoUrl,
-    'pending',
-    brand.name,
-    true,        // affectsBalance
-    imageUrls,   // proof images uploaded by user
-  );
+  // Log to Ledger — double-entry (Credit Naira - user receives money for selling)
+  await LedgerService.recordEntry({
+    userId: req.userId!.toString(),
+    asset: brand.name,
+    amount: totalInNairaStr,
+    type: LedgerType.GIFTCARD_SELL,
+    refId: `GCS-${sale._id}`,
+    category: LedgerCategory.GIFTCARD,
+    action: TransactionAction.SELL,
+    counterparty: SystemAccount.GIFTCARD_FLOAT,
+    image: brand.logoUrl,
+    status: 'pending',
+    tradedAsset: brand.name,
+    affectsBalance: true,
+    images: imageUrls,
+  });
 
 
   res.status(201).json({

@@ -6,11 +6,14 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
+  SystemAccount,
 } from '../models/ledger.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { UserService, VolumeType } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import config from '@/config/config';
+import mongoose from 'mongoose';
+import * as Decimal from '@/utils/decimal.util';
 
 const provider = new ethers.JsonRpcProvider(config.ALCHEMY_RPC_URL);
 
@@ -56,49 +59,61 @@ export async function startWatcher(standalone = false) {
           // 2. Wait for confirmations (Optional logic)
           // await tx.wait(12);
 
-          // 3. Normalize Amount (v6 Change: moved to top-level)
-          const amount = Number(ethers.formatEther(tx.value));
+          // 3. Normalize Amount — keep as string, no Number() conversion
+          const amount = ethers.formatEther(tx.value);
 
-          // 4. Credit User (Idempotent via TxHash)
+          // 4. Credit User in atomic session (Idempotent via TxHash)
+          const session = await mongoose.startSession();
+          session.startTransaction();
+
           try {
             const coin = await Currency.findOne({
               symbol: targetWallet.currency,
             });
 
-            await LedgerService.creditUser(
-              targetWallet.userId.toString(),
-              targetWallet.currency,
+            await LedgerService.recordEntry({
+              userId: targetWallet.userId.toString(),
+              asset: targetWallet.currency,
               amount,
-              LedgerType.DEPOSIT,
-              tx.hash, // Uses TxHash as Idempotency Key
-              LedgerCategory.CRYPTO,
-              TransactionAction.SELL,
-              coin?.imageUrl,
-              'completed',
-              targetWallet.currency,
-            );
-            console.log(`User Credited: ${amount} ${targetWallet.currency}`);
+              type: LedgerType.DEPOSIT,
+              refId: tx.hash, // Uses TxHash as Idempotency Key
+              category: LedgerCategory.CRYPTO,
+              action: TransactionAction.SELL,
+              counterparty: SystemAccount.HOT_WALLET,
+              image: coin?.imageUrl,
+              status: 'completed',
+              tradedAsset: targetWallet.currency,
+              session,
+            });
 
-            // Trigger notification
-            await NotificationService.sendDepositNotification(
-              targetWallet.userId.toString(),
-              targetWallet.currency,
-              amount,
-            );
-
-            // Update User Trading Volume
+            // Update User Trading Volume atomically
             if (coin) {
-              const nairaValue = amount * (coin.sellRate || 0);
+              const sellRateStr = String(coin.sellRate || 0);
+              const nairaValue = Decimal.mul(amount, sellRateStr);
               await UserService.updateUserVolume(
                 targetWallet.userId.toString(),
                 nairaValue,
                 VolumeType.SELL,
+                session,
               );
               console.log(`User Volume Updated: ${nairaValue} NGN`);
             }
+
+            await session.commitTransaction();
+            console.log(`User Credited: ${amount} ${targetWallet.currency}`);
           } catch (err) {
+            await session.abortTransaction();
             console.error('Credit failed (likely duplicate)', err);
+          } finally {
+            session.endSession();
           }
+
+          // Trigger notification (fire-and-forget, outside session)
+          await NotificationService.sendDepositNotification(
+            targetWallet.userId.toString(),
+            targetWallet.currency,
+            parseFloat(amount),
+          );
         }
       }
     } catch (error) {

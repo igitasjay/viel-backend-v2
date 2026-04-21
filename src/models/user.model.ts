@@ -9,9 +9,9 @@ export interface IUser {
   role: 'user' | 'admin';
   isEmailVerified: boolean;
   verifiedUser: boolean;
-  netTradingVolumn?: number;
-  totalBuyVolume?: number;
-  totalSellVolume?: number;
+  netTradingVolumn?: string;
+  totalBuyVolume?: string;
+  totalSellVolume?: string;
   passcode?: string;
   nin?: string;
   bvn?: string;
@@ -60,16 +60,16 @@ const UserSchema = new Schema<IUser>(
       default: false,
     },
     netTradingVolumn: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: '0',
     },
     totalBuyVolume: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: '0',
     },
     totalSellVolume: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: '0',
     },
     passcode: {
       type: String,

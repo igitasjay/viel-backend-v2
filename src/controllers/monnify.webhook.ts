@@ -4,7 +4,6 @@ import Transaction from '@/models/transaction.model';
 import { fulfillGiftCardPurchase } from '@/giftcard-infra/controllers/purchase.controller';
 import { logger } from '@/lib/winston';
 import { UserService, VolumeType } from '@/services/user.service';
-// import { sendCrypto } from '@/lib/crypto-dispatch'; // Placeholder for crypto dispatch logic
 
 import { fulfillBuyCrypto } from '@/crypto-infra/controllers/trade.controller';
 import config from '@/config/config';
@@ -49,9 +48,7 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
       return res.status(200).send('Ignored non-success event');
     }
 
-    // Find transaction by reference (Monnify reference or our reference)
-    // Note: If you used `transactionReference` as the payment reference in Init, it maps to `paymentReference` here.
-    // If you used your own reference, Monnify returns it as `paymentReference`.
+    // Find transaction by reference
     const tx = await Transaction.findOne({ reference: paymentReference });
 
     if (!tx) {
@@ -59,23 +56,28 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
       return res.status(200).send('Transaction not found'); // Return 200 to acknowledge webhook
     }
 
-    if (tx.status === 'completed' || tx.status === 'paid' || tx.status === 'processing') {
+    if (tx.status === 'completed' || tx.status === 'processing') {
       logger.info(`Transaction ${tx.id} already processed`);
       return res.status(200).send('Already processed');
     }
 
-    // Update Transaction status to paid first
-    tx.status = 'paid';
+    // Mark as processing (pre-fulfillment state)
+    // fulfillBuyCrypto and fulfillGiftCardPurchase now handle their own sessions
+    // and set the final status atomically inside the session.
+    tx.status = 'processing';
     tx.monnify_data = { ...tx.monnify_data, webhook_event: body };
     await tx.save();
 
-    // Trigger Fulfillment
+    // Trigger Fulfillment (each function manages its own atomic session)
     if (tx.type === 'buy_crypto') {
       logger.info(`Webhook: Triggering Crypto Dispatch/Fulfillment for TX ${tx.id}`);
       await fulfillBuyCrypto(tx);
     } else if (tx.type === 'buy_giftcard') {
       logger.info(`GiftCard Purchase for TX ${tx.id} is now PAID. Awaiting Admin Approval.`);
       // Manual approval required - fulfilling happens via admin API
+      // Set final status for giftcard to 'paid' (not 'completed')
+      tx.status = 'paid';
+      await tx.save();
     }
 
     res.status(200).send('Webhook processed');

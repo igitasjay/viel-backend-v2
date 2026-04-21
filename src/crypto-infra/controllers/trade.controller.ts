@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { Currency } from '../models/currency.model';
 import { LedgerService } from '../services/ledger.service';
-import { LedgerType, LedgerCategory, TransactionAction } from '../models/ledger.model';
+import { LedgerType, LedgerCategory, TransactionAction, SystemAccount } from '../models/ledger.model';
 import axios from 'axios';
 import User from '@/models/user.model';
 import Transaction from '@/models/transaction.model';
@@ -10,6 +10,8 @@ import { logger } from '@/lib/winston';
 import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/monnify-infra/services/monnify.service';
 import { UserService, VolumeType } from '@/services/user.service';
 import config from '@/config/config';
+import mongoose from 'mongoose';
+import * as Decimal from '@/utils/decimal.util';
 
 
 /**
@@ -63,20 +65,22 @@ export const buyCrypto = async (req: Request, res: Response) => {
     const coin = await Currency.findOne({ symbol });
     if (!coin) throw new Error('Invalid Coin: ' + symbol);
 
-    const buyRate = coin.buyRate;
+    const buyRateStr = String(coin.buyRate);
     const minLimit = coin.minimum || 0;
 
-    const cryptoAmount = Number(amount);
+    const cryptoAmountStr = String(amount);
 
     // 2. Enforce Minimum Buy Limit
-    if (cryptoAmount < minLimit) {
+    if (parseFloat(cryptoAmountStr) < minLimit) {
         return res.status(400).json({ 
             message: `Minimum purchase amount is ${minLimit} ${symbol}` 
         });
     }
-    const nairaAmount = cryptoAmount * buyRate; 
+
+    // Use Decimal for rate multiplication
+    const nairaAmountStr = Decimal.mul(cryptoAmountStr, buyRateStr);
     
-    if (isNaN(nairaAmount)) {
+    if (Decimal.isNegative(nairaAmountStr) || Decimal.isZero(nairaAmountStr)) {
          return res.status(400).json({ message: 'Calculated NGN amount is invalid' }); 
     } 
 
@@ -92,8 +96,8 @@ export const buyCrypto = async (req: Request, res: Response) => {
         type: 'buy_crypto',
         coin: symbol,
         network: network || 'Default', // Fallback if network not in Currency model yet
-        crypto_amount: cryptoAmount.toFixed(8),
-        fiat_amount: nairaAmount.toFixed(2),
+        crypto_amount: Decimal.format(cryptoAmountStr, 8),
+        fiat_amount: Decimal.format(nairaAmountStr, 2),
         receive_address: walletAddress,
         reference,
         status: 'pending',
@@ -103,14 +107,16 @@ export const buyCrypto = async (req: Request, res: Response) => {
         image: coin.imageUrl,
     });
 
+    const nairaAmountNum = parseFloat(nairaAmountStr);
+
     logger.info('Buy crypto transaction initialized (pending payment)', {
-          nairaAmount,
+          nairaAmount: nairaAmountStr,
     });
 
     // 3. Init Monnify Flow
     // Step A: Init Transaction
     const initTxResponse = await initMonnifyTransaction({
-      amount: nairaAmount,
+      amount: nairaAmountNum,
       customerName: `${user.firstname} ${user.lastname}`,
       customerEmail: user.email,
       paymentReference: reference,
@@ -126,7 +132,7 @@ export const buyCrypto = async (req: Request, res: Response) => {
     // Step B: Init Bank Transfer
     const monnifyResponse = await initMonnifyBankTransfer({
       transactionReference: monnifyRef,
-      amount: nairaAmount,
+      amount: nairaAmountNum,
       customerName: `${user.firstname} ${user.lastname}`,
       customerEmail: user.email,
       paymentDescription: `Buy Crypto - ${reference}`,
@@ -139,7 +145,7 @@ export const buyCrypto = async (req: Request, res: Response) => {
         message: 'Transaction initialized. Please proceed to payment.',
         data: {
             reference,
-            naira_amount: nairaAmount.toFixed(2),
+            naira_amount: Decimal.format(nairaAmountStr, 2),
             transactionId: txId,
             paymentDetails: monnifyResponse.responseBody,
         }
@@ -154,43 +160,55 @@ export const buyCrypto = async (req: Request, res: Response) => {
 /**
  * Shared fulfillment function for buy crypto
  * Called after successful payment (webhook or manual verification)
+ * Now wrapped in a single Mongo session for atomicity.
  */
 export const fulfillBuyCrypto = async (transaction: any) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
         const userId = transaction.userId.toString();
+        const fiatAmountStr = String(transaction.fiat_amount || '0');
         
-        // 1. Update User Trading Volume
+        // 1. Update User Trading Volume (inside session)
         if (transaction.fiat_amount) {
             await UserService.updateUserVolume(
                 userId,
-                Number(transaction.fiat_amount),
+                fiatAmountStr,
                 VolumeType.BUY,
+                session,
             );
         }
 
-        // 2. Create Ledger Entry (History)
-        await LedgerService.creditUser(
+        // 2. Create Ledger Entry — double-entry (inside session)
+        await LedgerService.recordEntry({
             userId,
-            `${transaction.coin} (${transaction.network})`,
-            Number(transaction.fiat_amount || 0), 
-            LedgerType.TRADE_BUY,
-            `BUY-${transaction.id}-${transaction.reference}`,
-            LedgerCategory.CRYPTO,
-            TransactionAction.BUY,
-            transaction.image,
-            'completed',
-            'NGN', // Traded against Naira
-            false, // affectsBalance = false (for now, as per user's observation of volume vs history)
-        );
+            asset: `${transaction.coin} (${transaction.network})`,
+            amount: fiatAmountStr,
+            type: LedgerType.TRADE_BUY,
+            refId: `BUY-${transaction.id}-${transaction.reference}`,
+            category: LedgerCategory.CRYPTO,
+            action: TransactionAction.BUY,
+            counterparty: SystemAccount.INVENTORY,
+            image: transaction.image,
+            status: 'completed',
+            tradedAsset: 'NGN',
+            affectsBalance: false,
+            session,
+        });
 
-        // 3. Update Transaction Status
+        // 3. Update Transaction Status (inside session)
         transaction.status = 'completed';
-        await transaction.save();
+        await transaction.save({ session });
 
+        await session.commitTransaction();
         logger.info(`Buy Crypto Fulfillment Successful for TX ${transaction.id}`);
         return true;
     } catch (error) {
+        await session.abortTransaction();
         logger.error(`Buy Crypto Fulfillment Failed for TX ${transaction.id}:`, error);
         throw error;
+    } finally {
+        session.endSession();
     }
 };

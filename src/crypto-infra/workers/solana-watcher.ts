@@ -6,12 +6,15 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
+  SystemAccount,
 } from '../models/ledger.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { UserService, VolumeType } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import config from '@/config/config';
 import { logger } from '@/lib/winston';
+import mongoose from 'mongoose';
+import * as Decimal from '@/utils/decimal.util';
 
 // Solana Mainnet/Devnet RPC
 const connection = new solana.Connection(
@@ -37,10 +40,6 @@ export async function startSolanaWatcher(standalone = false) {
   }
 
   logger.info('Solana Watcher Started and Listening for Logs...');
-
-  // In Solana, we can listen for logs mentioning our addresses
-  // For a large number of addresses, we use Program Account filters or Webhooks.
-  // For this implementation, we will fetch all SOL wallets and subscribe to each.
 
   const solWallets = await Wallet.find({ network: 'SOLANA' });
   logger.info(`Monitoring ${solWallets.length} Solana addresses`);
@@ -81,42 +80,60 @@ export async function startSolanaWatcher(standalone = false) {
 
           if (amountLamports <= 0) return; // Not an incoming transfer
 
-          const amount = amountLamports / solana.LAMPORTS_PER_SOL;
+          // Convert lamports to SOL using Decimal (no float division)
+          const amount = Decimal.fromMinorUnits(String(amountLamports), 9);
 
           const coin = await Currency.findOne({
             symbol: wallet.currency,
             network: 'SOLANA',
           });
 
-          await LedgerService.creditUser(
-            wallet.userId.toString(),
-            wallet.currency,
-            amount,
-            LedgerType.DEPOSIT,
-            signature, // Reference ID
-            LedgerCategory.CRYPTO,
-            TransactionAction.SELL,
-            coin?.imageUrl,
-            'completed',
-            wallet.currency,
-          );
+          // Atomic: ledger credit + volume update in one session
+          const session = await mongoose.startSession();
+          session.startTransaction();
 
-          logger.info(`User Credited: ${amount} ${wallet.currency}`);
+          try {
+            await LedgerService.recordEntry({
+              userId: wallet.userId.toString(),
+              asset: wallet.currency,
+              amount,
+              type: LedgerType.DEPOSIT,
+              refId: signature,
+              category: LedgerCategory.CRYPTO,
+              action: TransactionAction.SELL,
+              counterparty: SystemAccount.HOT_WALLET,
+              image: coin?.imageUrl,
+              status: 'completed',
+              tradedAsset: wallet.currency,
+              session,
+            });
 
+            if (coin) {
+              const sellRateStr = String(coin.sellRate || 0);
+              const nairaValue = Decimal.mul(amount, sellRateStr);
+              await UserService.updateUserVolume(
+                wallet.userId.toString(),
+                nairaValue,
+                VolumeType.SELL,
+                session,
+              );
+            }
+
+            await session.commitTransaction();
+            logger.info(`User Credited: ${amount} ${wallet.currency}`);
+          } catch (err) {
+            await session.abortTransaction();
+            logger.error(`Solana credit failed (likely duplicate)`, err);
+          } finally {
+            session.endSession();
+          }
+
+          // Notification outside session (fire-and-forget)
           await NotificationService.sendDepositNotification(
             wallet.userId.toString(),
             wallet.currency,
-            amount,
+            parseFloat(amount),
           );
-
-          if (coin) {
-            const nairaValue = amount * (coin.sellRate || 0);
-            await UserService.updateUserVolume(
-              wallet.userId.toString(),
-              nairaValue,
-              VolumeType.SELL,
-            );
-          }
         } catch (err) {
           logger.error(
             `Failed to process Solana deposit for ${wallet.address}:`,

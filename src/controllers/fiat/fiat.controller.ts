@@ -10,6 +10,7 @@ import { getNextSequence } from '@/lib/sequence';
 import config from '@/config/config';
 import User from '@/models/user.model';
 import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/monnify-infra/services/monnify.service';
+import * as Decimal from '@/utils/decimal.util';
 
 const buyValidation = [
   body('coin').trim().notEmpty().toUpperCase(),
@@ -108,8 +109,9 @@ export const initializeBuyCrypto = [
 
       // Live rate
       const live = await fetchLiveRate(asset.code);
-      const rate = parseFloat(String(live?.ngn ?? asset.naira_rate));
-      const nairaAmount = cryptoAmount * rate;
+      const rateStr = String(live?.ngn ?? asset.naira_rate);
+      const nairaAmountStr = Decimal.mul(String(cryptoAmount), rateStr);
+      const nairaAmount = parseFloat(nairaAmountStr);
 
       // Generate reference (Monnify compliant if needed, or just unique)
       const reference = `buy_${req.userId}_${Date.now()}`;
