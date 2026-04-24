@@ -12,7 +12,7 @@ const bip32 = BIP32Factory(ecc);
 
 export class WalletService {
   /**
-   * Generates a unique  address for a user on a specific chain.
+   * Generates a unique address for a user on a specific chain.
    * Uses BIP-44 path: m/44'/60'/0'/0/index
    */
   static async generateWallet(
@@ -79,19 +79,23 @@ export class WalletService {
    * Helper to resolve master mnemonic from KMS or Environment
    */
   private static async getMasterMnemonic(): Promise<string> {
-    // 1. Prioritize ENV (Development/Manual Migration)
-    const envMnemonic = process.env.HD_MASTER_MNEMONIC || process.env.MASTER_MNEMONIC;
-    if (envMnemonic) return envMnemonic;
-
     try {
-      // 2. Fallback to KMS (Production)
+      // 1. Try KMS first (Production)
       const mnemonic = await getDecryptedSeed();
       if (mnemonic) return mnemonic;
     } catch (error) {
-      console.warn('KMS decryption failed or skipped');
+      console.warn(
+        'KMS decryption failed, falling back to environment variable',
+      );
     }
 
-    throw new Error('Master mnemonic not found in KMS or ENV');
+    // 2. Fallback to ENV (Development)
+    const envMnemonic =
+      process.env.HD_MASTER_MNEMONIC || process.env.MASTER_MNEMONIC;
+    if (!envMnemonic) {
+      throw new Error('Master mnemonic not found in KMS or ENV');
+    }
+    return envMnemonic;
   }
 
   /**
@@ -110,7 +114,7 @@ export class WalletService {
   static async getSigner(derivationPath: string): Promise<ethers.Wallet> {
     const mnemonic = await this.getMasterMnemonic();
     // Initialize at the root 'm' to allow absolute path derivation
-    const hdNode = ethers.HDNodeWallet.fromPhrase(mnemonic, undefined, "m");
+    const hdNode = ethers.HDNodeWallet.fromPhrase(mnemonic, undefined, 'm');
     const childNode = hdNode.derivePath(derivationPath);
 
     // Return a connected wallet
