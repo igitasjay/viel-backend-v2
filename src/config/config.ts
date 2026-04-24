@@ -38,7 +38,11 @@ const config = {
   ONESIGNAL_REST_API_KEY: process.env.ONESIGNAL_REST_API_KEY!,
   ALCHEMY_RPC_URL: process.env.ALCHEMY_RPC_URL!,
   SOLANA_RPC_URL: process.env.SOLANA_RPC_URL,
-  BITCOIN_API_URL: process.env.BITCOIN_API_URL || 'https://blockstream.info/api', // Public API for BTC
+  BITCOIN_API_URL:
+    process.env.BITCOIN_API_URL || 'https://blockstream.info/api', // Public API for BTC
+  COLD_WALLET_EVM: process.env.COLD_WALLET_EVM!,
+  COLD_WALLET_BITCOIN: process.env.COLD_WALLET_BITCOIN!,
+  COLD_WALLET_SOLANA: process.env.COLD_WALLET_SOLANA!,
 };
 
 export default config;

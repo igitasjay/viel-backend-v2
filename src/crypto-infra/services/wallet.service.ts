@@ -28,9 +28,8 @@ export class WalletService {
     const count = await Wallet.countDocuments({ network });
     const addressIndex = count + 1;
 
-    // 3. Get Master Mnemonic from KMS
-    const mnemonic = await getDecryptedSeed();
-    if (!mnemonic) throw new Error('Failed to retrieve master mnemonic from KMS');
+    // 3. Get Master Mnemonic
+    const mnemonic = await this.getMasterMnemonic();
 
     let address = '';
     let derivationPath = '';
@@ -73,23 +72,42 @@ export class WalletService {
   }
 
   /**
+   * Helper to resolve master mnemonic from KMS or Environment
+   */
+  private static async getMasterMnemonic(): Promise<string> {
+    try {
+      // 1. Try KMS first (Production)
+      const mnemonic = await getDecryptedSeed();
+      if (mnemonic) return mnemonic;
+    } catch (error) {
+      console.warn('KMS decryption failed, falling back to environment variable');
+    }
+
+    // 2. Fallback to ENV (Development)
+    const envMnemonic = process.env.HD_MASTER_MNEMONIC || process.env.MASTER_MNEMONIC;
+    if (!envMnemonic) {
+      throw new Error('Master mnemonic not found in KMS or ENV');
+    }
+    return envMnemonic;
+  }
+
+  /**
+   * Returns a provider for the EVM network
+   */
+  static getEVMProvider() {
+    return new ethers.JsonRpcProvider(require('@/config/config').default.ALCHEMY_RPC_URL);
+  }
+
+  /**
    * Sweeping Logic (Admin Only)
    * Signs a tx to move funds from User Wallet -> Cold Wallet
    */
-  static async signTransfer(
-    derivationPath: string,
-    to: string,
-    amount: string,
-  ) {
-    // Re-create the master node
-    const mnemonic = await getDecryptedSeed();
-    if (!mnemonic) throw new Error('Failed to retrieve master mnemonic from KMS');
+  static async getSigner(derivationPath: string): Promise<ethers.Wallet> {
+    const mnemonic = await this.getMasterMnemonic();
     const hdNode = ethers.HDNodeWallet.fromPhrase(mnemonic);
-    // Derive the specific child node (which contains the private key)
-    const childWallet = hdNode.derivePath(derivationPath);
+    const childNode = hdNode.derivePath(derivationPath);
 
-    // In v6, the wallet instance is ready to sign
-    // Logic to broadcast tx... e.g. await childWallet.sendTransaction(...)
-    return childWallet;
+    // Return a connected wallet
+    return new ethers.Wallet(childNode.privateKey, this.getEVMProvider());
   }
 }
