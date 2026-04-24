@@ -12,7 +12,7 @@ const bip32 = BIP32Factory(ecc);
 
 export class WalletService {
   /**
-   * Generates a unique address for a user on a specific chain.
+   * Generates a unique  address for a user on a specific chain.
    * Uses BIP-44 path: m/44'/60'/0'/0/index
    */
   static async generateWallet(
@@ -21,8 +21,12 @@ export class WalletService {
     network: string,
   ) {
     // 1. Fetch Currency to get chainFamily
-    const currency = await Currency.findOne({ symbol: currencySymbol, network });
-    if (!currency) throw new Error(`Currency ${currencySymbol} on ${network} not found`);
+    const currency = await Currency.findOne({
+      symbol: currencySymbol,
+      network,
+    });
+    if (!currency)
+      throw new Error(`Currency ${currencySymbol} on ${network} not found`);
 
     // 2. Get next index from DB
     const count = await Wallet.countDocuments({ network });
@@ -80,11 +84,14 @@ export class WalletService {
       const mnemonic = await getDecryptedSeed();
       if (mnemonic) return mnemonic;
     } catch (error) {
-      console.warn('KMS decryption failed, falling back to environment variable');
+      console.warn(
+        'KMS decryption failed, falling back to environment variable',
+      );
     }
 
     // 2. Fallback to ENV (Development)
-    const envMnemonic = process.env.HD_MASTER_MNEMONIC || process.env.MASTER_MNEMONIC;
+    const envMnemonic =
+      process.env.HD_MASTER_MNEMONIC || process.env.MASTER_MNEMONIC;
     if (!envMnemonic) {
       throw new Error('Master mnemonic not found in KMS or ENV');
     }
@@ -95,7 +102,9 @@ export class WalletService {
    * Returns a provider for the EVM network
    */
   static getEVMProvider() {
-    return new ethers.JsonRpcProvider(require('@/config/config').default.ALCHEMY_RPC_URL);
+    return new ethers.JsonRpcProvider(
+      require('@/config/config').default.ALCHEMY_RPC_URL,
+    );
   }
 
   /**

@@ -43,6 +43,7 @@ const config = {
   COLD_WALLET_EVM: process.env.COLD_WALLET_EVM!,
   COLD_WALLET_BITCOIN: process.env.COLD_WALLET_BITCOIN!,
   COLD_WALLET_SOLANA: process.env.COLD_WALLET_SOLANA!,
+  SWEEP_THRESHOLD_ETH: process.env.SWEEP_THRESHOLD_ETH || '0.01', // Minimum ETH balance to trigger a sweep
 };
 
 export default config;
