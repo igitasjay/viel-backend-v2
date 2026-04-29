@@ -1,4 +1,5 @@
 import { Ledger } from '@/crypto-infra/models/ledger.model';
+import { LedgerService } from '@/crypto-infra/services/ledger.service';
 import AppSetting from '@/models/app-setting.model';
 import BankAccount from '@/models/bank.model';
 import Referral from '@/models/referral.model';
@@ -10,11 +11,12 @@ import {
   LedgerType,
   LedgerCategory,
   TransactionAction,
+  SystemAccount,
 } from '@/crypto-infra/models/ledger.model';
 
 const getPayoutHistory = async (req: Request, res: Response): Promise<void> => {
   try {
-    const rewards = await Ledger.find({ type: 'REFERRAL_REWARD' })
+    const rewards = await Ledger.find({ type: 'REFERRAL_REWARD', account: { $regex: /^USER:/ } })
       .populate('userId', 'firstname lastname email phone')
       .sort({ createdAt: -1 })
       .lean()
@@ -128,17 +130,19 @@ const approveReferral = async (req: Request, res: Response): Promise<void> => {
     referral.disbursementReference = reference;
     await referral.save();
 
-    // Create Ledger entry
-    await Ledger.create({
-      userId: referral.referrerId,
+    // Create Ledger entry (double-entry)
+    await LedgerService.recordEntry({
+      userId: referral.referrerId.toString(),
       asset: 'NGN',
-      amount: referral.rewardAmount,
-      type: 'REFERRAL_REWARD',
-      transactionCategory: LedgerCategory.GIFTCARD,
-      transactionType: TransactionAction.SELL,
-      referenceId: reference,
-      description: `Referral reward payout for user ${referral.referredUserId}`,
+      amount: String(referral.rewardAmount),
+      type: LedgerType.DEPOSIT,
+      refId: reference,
+      category: LedgerCategory.GIFTCARD,
+      action: TransactionAction.SELL,
+      counterparty: SystemAccount.REVENUE,
       status: 'completed',
+      description: `Referral reward payout for user ${referral.referredUserId}`,
+      affectsBalance: false,
     });
 
     logger.info(`Referral ${referralId} approved and disbursed by admin.`);

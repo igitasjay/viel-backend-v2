@@ -8,7 +8,10 @@ export const getTransactionHistory = asyncHandler(
     const userId = req.userId;
     const { category, type, page = 1, limit = 10 } = req.query;
 
-    const query: any = { userId: new mongoose.Types.ObjectId(userId) };
+    const query: any = {
+      userId: new mongoose.Types.ObjectId(userId),
+      account: `USER:${userId}`,
+    };
 
     if (category) {
       query.transactionCategory = category;
