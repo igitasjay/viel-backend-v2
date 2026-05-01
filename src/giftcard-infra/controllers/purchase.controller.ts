@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import User from '@/models/user.model';
 import * as purchaseService from '@/giftcard-infra/services/giftcard.service';
-import { initMonnifyBankTransfer, initMonnifyTransaction } from '@/monnify-infra/services/monnify.service';
+import {
+  initMonnifyBankTransfer,
+  initMonnifyTransaction,
+} from '@/monnify-infra/services/monnify.service';
 import { asyncHandler } from '@/utils/async-handler.util';
 import { ApiError } from '@/utils/api-error.util';
 import { purchaseEmailHtml } from '@/lib/email-temeplate';
@@ -80,7 +83,7 @@ export const initiateGiftCardPurchase = asyncHandler(
       currencyCode: 'NGN',
       contractCode: config.MONNIFY_CONTRACT_CODE!,
       redirectUrl: config.FRONTEND_URL,
-      paymentMethods: ["ACCOUNT_TRANSFER"]
+      paymentMethods: ['ACCOUNT_TRANSFER'],
     });
 
     const monnifyRef = initTxResponse.responseBody.transactionReference;
@@ -119,9 +122,10 @@ export const fulfillGiftCardPurchase = async (transaction: any) => {
   session.startTransaction();
 
   try {
-    const { giftCardId, amount, quantity, recipientEmail } = transaction.giftcard_data;
+    const { giftCardId, amount, quantity, recipientEmail } =
+      transaction.giftcard_data;
     const user = await User.findById(transaction.userId);
-    
+
     if (!user) {
       throw new Error('User not found for gift card fulfillment');
     }
@@ -146,7 +150,7 @@ export const fulfillGiftCardPurchase = async (transaction: any) => {
       asset: purchase.detailsSnapshot.brandName,
       amount: totalInNairaStr,
       type: LedgerType.GIFTCARD_BUY,
-      refId: `GCB-${purchase._id}`,
+      refId: `GCB|${purchase._id}`,
       category: LedgerCategory.GIFTCARD,
       action: TransactionAction.BUY,
       counterparty: SystemAccount.GIFTCARD_FLOAT,
@@ -175,7 +179,7 @@ export const fulfillGiftCardPurchase = async (transaction: any) => {
     // send email (fire-and-forget, outside session)
     const html = purchaseEmailHtml(purchase);
     // sendPurchaseEmail(...)
-    
+
     return purchase;
   } catch (error) {
     await session.abortTransaction();
