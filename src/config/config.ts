@@ -44,6 +44,16 @@ const config = {
   COLD_WALLET_BITCOIN: process.env.COLD_WALLET_BITCOIN!,
   COLD_WALLET_SOLANA: process.env.COLD_WALLET_SOLANA!,
   SWEEP_THRESHOLD_ETH: process.env.SWEEP_THRESHOLD_ETH || '0.01', // Minimum ETH balance to trigger a sweep
+  
+  // RPC Mapping for Sweeper
+  getNetworkRPC: (networkName: string) => {
+    const name = networkName.toUpperCase();
+    if (name.includes('SEPOLIA')) return process.env.ALCHEMY_RPC_URL;
+    if (name.includes('ETHEREUM') || name === 'ETH' || name === 'ERC20') return process.env.ALCHEMY_RPC_URL; // Default to Alchemy for now
+    if (name.includes('BSC') || name.includes('BNB')) return process.env.BSC_RPC_URL;
+    if (name.includes('POLYGON') || name === 'MATIC') return process.env.POLYGON_RPC_URL;
+    return process.env.ALCHEMY_RPC_URL; // Fallback
+  }
 };
 
 export default config;

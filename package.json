@@ -16,6 +16,7 @@
     "watcher:solana": "node dist/crypto-infra/workers/solana-watcher.js",
     "watcher:bitcoin": "node dist/crypto-infra/workers/bitcoin-watcher.js",
     "sweeper": "node dist/crypto-infra/workers/sweep-worker.js",
+    "sweep:test": "ts-node -r tsconfig-paths/register src/crypto-infra/workers/test-sweep.ts",
     "start:all": "concurrently \"node dist/server.js\" \"pnpm run watcher\" \"pnpm run watcher:solana\" \"pnpm run watcher:bitcoin\" \"pnpm run sweeper\""
   },
   "keywords": [],

@@ -91,7 +91,7 @@ export class WalletService {
 
     // 2. Fallback to ENV (Development)
     const envMnemonic =
-      process.env.HD_MASTER_MNEMONIC || process.env.MASTER_MNEMONIC;
+      process.env.MASTER_MNEMONIC || process.env.HD_MASTER_MNEMONIC;
     if (!envMnemonic) {
       throw new Error('Master mnemonic not found in KMS or ENV');
     }
@@ -101,23 +101,23 @@ export class WalletService {
   /**
    * Returns a provider for the EVM network
    */
-  static getEVMProvider() {
-    return new ethers.JsonRpcProvider(
-      require('@/config/config').default.ALCHEMY_RPC_URL,
-    );
+  static getEVMProvider(network?: string) {
+    const config = require('@/config/config').default;
+    const rpcUrl = network ? config.getNetworkRPC(network) : config.ALCHEMY_RPC_URL;
+    return new ethers.JsonRpcProvider(rpcUrl);
   }
 
   /**
    * Sweeping Logic (Admin Only)
    * Signs a tx to move funds from User Wallet -> Cold Wallet
    */
-  static async getSigner(derivationPath: string): Promise<ethers.Wallet> {
+  static async getSigner(derivationPath: string, network?: string): Promise<ethers.Wallet> {
     const mnemonic = await this.getMasterMnemonic();
     // Initialize at the root 'm' to allow absolute path derivation
     const hdNode = ethers.HDNodeWallet.fromPhrase(mnemonic, undefined, 'm');
     const childNode = hdNode.derivePath(derivationPath);
 
     // Return a connected wallet
-    return new ethers.Wallet(childNode.privateKey, this.getEVMProvider());
+    return new ethers.Wallet(childNode.privateKey, this.getEVMProvider(network));
   }
 }
