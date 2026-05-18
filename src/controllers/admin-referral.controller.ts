@@ -16,7 +16,7 @@ import {
 
 const getPayoutHistory = async (req: Request, res: Response): Promise<void> => {
   try {
-    const rewards = await Ledger.find({ type: 'REFERRAL_REWARD', account: { $regex: /^USER:/ } })
+    const rewards = await Ledger.find({ type: 'REFERRAL_REWARD' as any, account: { $regex: /^USER:/ } })
       .populate('userId', 'firstname lastname email phone')
       .sort({ createdAt: -1 })
       .lean()

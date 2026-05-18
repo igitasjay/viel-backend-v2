@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Schema, model, Document } from 'mongoose';
 
 export type TransactionType = 'buy_crypto' | 'deposit_crypto' | 'withdraw_fiat' | 'buy_giftcard';
 export type TransactionStatus =
@@ -12,7 +12,7 @@ export type TransactionStatus =
 
 export interface ITransaction extends Document {
   id: number;
-  userId: Schema.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   type: TransactionType;
   coin?: string;
   network?: string;

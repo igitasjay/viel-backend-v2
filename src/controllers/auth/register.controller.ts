@@ -44,7 +44,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
       password,
       isEmailVerified: false,
       verifiedUser: false,
-      netTradingVolumn: 0,
+      netTradingVolumn: '0',
       passcode: '',
       nin: '',
       bvn: '',

@@ -707,7 +707,7 @@ const seedCryptoAssets = async () => {
       const existing = await CryptoAsset.findOne({ code: asset.code });
       if (!existing) {
         const nextId = await getNextId();
-        await CryptoAsset.create({ ...asset, id: nextId });
+        await CryptoAsset.create({ ...asset, id: nextId } as any);
         logger.info(`Created: ${asset.code} (id: ${nextId})`);
       } else {
         await CryptoAsset.updateOne({ _id: existing._id }, { $set: asset });

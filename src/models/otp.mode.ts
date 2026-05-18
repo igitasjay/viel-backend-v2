@@ -1,9 +1,9 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model, Document } from 'mongoose';
 import config from '@/config/config';
 import bcrypt from 'bcrypt';
 
-export interface IOTP {
-  userId: string;
+export interface IOTP extends Document {
+  userId: mongoose.Types.ObjectId;
   email: string;
   otp: string;
   expiresAt: Date;
@@ -13,7 +13,8 @@ export interface IOTP {
 const OTPSchema = new Schema<IOTP>(
   {
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     email: {
@@ -39,11 +40,10 @@ const OTPSchema = new Schema<IOTP>(
   },
 );
 
-OTPSchema.pre('save', async function (next) {
+OTPSchema.pre('save', async function () {
   if (this.isModified('otp')) {
     this.otp = await bcrypt.hash(this.otp, 10);
   }
-  next();
 });
 
 export default model<IOTP>('OTP', OTPSchema);

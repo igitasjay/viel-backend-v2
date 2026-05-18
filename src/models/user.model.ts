@@ -6,9 +6,9 @@ export interface IUser {
   lastname: string;
   email: string;
   password: string;
-  role: 'user' | 'admin';
-  isEmailVerified: boolean;
-  verifiedUser: boolean;
+  role?: 'user' | 'admin';
+  isEmailVerified?: boolean;
+  verifiedUser?: boolean;
   netTradingVolumn?: string;
   totalBuyVolume?: string;
   totalSellVolume?: string;
@@ -17,8 +17,8 @@ export interface IUser {
   bvn?: string;
   myReferralCode?: string;
   referredBy?: string;
-  accountStatus: 'active' | 'suspended' | 'deleted';
-  hasPasscode: boolean;
+  accountStatus?: 'active' | 'suspended' | 'deleted';
+  hasPasscode?: boolean;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -105,7 +105,7 @@ const UserSchema = new Schema<IUser>(
   },
 );
 
-UserSchema.pre('save', async function (next) {
+UserSchema.pre('save', async function () {
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 10);
   }
@@ -118,7 +118,6 @@ UserSchema.pre('save', async function (next) {
       this.hasPasscode = false;
     }
   }
-  next();
 });
 
 export default model<IUser>('User', UserSchema);
