@@ -5,7 +5,7 @@ import { fulfillGiftCardPurchase } from '@/giftcard-infra/controllers/purchase.c
 import { logger } from '@/lib/winston';
 import { UserService, VolumeType } from '@/services/user.service';
 
-import { fulfillBuyCrypto } from '@/crypto-infra/controllers/trade.controller';
+import { CryptoBuyService } from '@/crypto-v2/services/crypto-buy.service';
 import config from '@/config/config';
 
 const MONNIFY_IPS = ['35.242.133.146', '34.89.51.11', '::ffff:35.242.133.146', '::ffff:34.89.51.11'];
@@ -71,7 +71,7 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
     // Trigger Fulfillment (each function manages its own atomic session)
     if (tx.type === 'buy_crypto') {
       logger.info(`Webhook: Triggering Crypto Dispatch/Fulfillment for TX ${tx.id}`);
-      await fulfillBuyCrypto(tx);
+      await CryptoBuyService.handleMonnifyPaymentSuccess(tx);
     } else if (tx.type === 'buy_giftcard') {
       logger.info(`GiftCard Purchase for TX ${tx.id} is now PAID. Awaiting Admin Approval.`);
       // Manual approval required - fulfilling happens via admin API

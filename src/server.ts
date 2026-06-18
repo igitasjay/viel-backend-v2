@@ -15,6 +15,7 @@ import { logger } from '@/lib/winston';
 
 // routes
 import v1Routes from '@/routes/v1/routes';
+import cryptoV2Routes from '@/crypto-v2/routes/crypto-v2.routes';
 import { globalErrorHandler } from '@/middlewares/error.middleware';
 
 // types
@@ -45,7 +46,11 @@ const corsOptions: CorsOptions = {
 // apply cors middleware
 app.use(cors(corsOptions));
 
-app.use(express.json());
+app.use(express.json({
+  verify: (req: any, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
@@ -78,6 +83,7 @@ const startHealthCheck = () => {
   app.use('/uploads', authenticate, express.static('uploads'));
   app.use('/', router);
   app.use('/api/v1', v1Routes);
+  app.use('/api/v2/crypto', cryptoV2Routes);
 
   // global error handler
   app.use(globalErrorHandler);
