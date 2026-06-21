@@ -6,6 +6,7 @@
     "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "start": "node dist/server.js",
     "dev": "nodemon",
+    "seed:giftcard": "ts-node -r tsconfig-paths/register src/scripts/seed-v2-giftcards.ts",
     "seed:crypto": "ts-node -r tsconfig-paths/register src/seed/crypto-seeds.ts",
     "seed:transaction": "ts-node src/seed/transaction-seeds.ts",
     "watcher:dev": "ts-node -r tsconfig-paths/register src/crypto-infra/workers/evm-watcher.ts",

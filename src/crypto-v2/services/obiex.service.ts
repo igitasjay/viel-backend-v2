@@ -1,5 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import crypto from 'crypto';
+import dotenv from 'dotenv';
+dotenv.config();
 
 interface ObiexTradeQuoteParams {
   sourceId: string;

@@ -13,6 +13,7 @@ export class CryptoSellController {
       const wallet = await CryptoSellService.generateWallet(userId, data);
       res.status(200).json({ status: true, data: wallet });
     } catch (error: any) {
+      console.log(error)
       res.status(400).json({ status: false, message: error.message });
     }
   }

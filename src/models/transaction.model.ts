@@ -1,6 +1,6 @@
 import mongoose, { Schema, model, Document } from 'mongoose';
 
-export type TransactionType = 'buy_crypto' | 'deposit_crypto' | 'withdraw_fiat' | 'buy_giftcard';
+export type TransactionType = 'buy_crypto' | 'deposit_crypto' | 'withdraw_fiat' | 'buy_giftcard' | 'buy_giftcard_v2' | 'sell_giftcard_v2';
 export type TransactionStatus =
   | 'pending'
   | 'initialized'
@@ -39,7 +39,7 @@ const TransactionSchema = new Schema<ITransaction>(
     },
     type: {
       type: String,
-      enum: ['buy_crypto', 'deposit_crypto', 'withdraw_fiat', 'buy_giftcard'],
+      enum: ['buy_crypto', 'deposit_crypto', 'withdraw_fiat', 'buy_giftcard', 'buy_giftcard_v2', 'sell_giftcard_v2'],
       required: true,
     },
     coin: { type: String },
