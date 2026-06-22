@@ -8,26 +8,34 @@ import { getNextSequence } from '@/lib/sequence';
 import { ensureFreshRate, verifyBuyPrice } from '../services/giftcard-buy.service';
 import { initMonnifyTransaction, initMonnifyBankTransfer } from '@/monnify-infra/services/monnify.service';
 import config from '@/config/config';
-import { placeReloadlyOrder, getReloadlyOrderCodes } from '../services/reloadly.service';
+import { placeReloadlyOrder, getReloadlyOrderCodes, getCountriesFromReloadly, getProductByIsoCode } from '../services/reloadly.service';
 import { logger } from '@/lib/winston';
 
 export const getCountries = asyncHandler(async (req: Request, res: Response) => {
-  const countries = await GiftcardProductV2.distinct('countryCode', { isActive: true });
+  // const countries = await GiftcardProductV2.distinct('name', { isActive: true });
+  const countries = await getCountriesFromReloadly();
   res.status(200).json({ success: true, data: countries });
 });
 
-export const getProducts = asyncHandler(async (req: Request, res: Response) => {
-  const { countryCode, page = 1, limit = 20 } = req.query;
-  const filter: any = { isActive: true };
-  if (countryCode) {
-    filter.countryCode = (countryCode as string).toUpperCase();
-  }
-
-  const products = await GiftcardProductV2.find(filter)
-    .skip((Number(page) - 1) * Number(limit))
-    .limit(Number(limit));
+export const getCountryProducts = asyncHandler(async (req: Request, res: Response) => {
+  const { countryCode } = req.params;
+  const { page = 1, limit = 20 } = req.query;
+  const products = await getProductByIsoCode(countryCode as string, Number(page), Number(limit));
   res.status(200).json({ success: true, data: products });
 });
+
+// export const getProducts = asyncHandler(async (req: Request, res: Response) => {
+//   const { countryCode, page = 1, limit = 20 } = req.query;
+//   const filter: any = { isActive: true };
+//   if (countryCode) {
+//     filter.countryCode = (countryCode as string).toUpperCase();
+//   }
+
+//   const products = await GiftcardProductV2.find(filter)
+//     .skip((Number(page) - 1) * Number(limit))
+//     .limit(Number(limit));
+//   res.status(200).json({ success: true, data: products });
+// });
 
 export const getExchangeRate = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -48,7 +56,7 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
 
   const user = await User.findById(userId);
   if (!user) throw new ApiError(404, 'User not found');
-  
+
   // TODO: Verify PIN logic here based on your existing user schema `passcode` comparison
 
   let product = await GiftcardProductV2.findById(productId);
@@ -125,7 +133,7 @@ export const fulfillOrder = asyncHandler(async (req: Request, res: Response) => 
   // Assuming Monnify webhook already marked transaction as 'paid'
   const { transactionReference } = req.body;
   const tx = await Transaction.findOne({ 'monnify_data.transactionReference': transactionReference, type: 'buy_giftcard_v2', status: 'paid' });
-  
+
   if (!tx) throw new ApiError(404, 'Transaction not found or not in paid status');
 
   const { reloadlyId, cardValue, quantity, recipientEmail } = tx.giftcard_data;
@@ -142,7 +150,7 @@ export const fulfillOrder = asyncHandler(async (req: Request, res: Response) => 
     });
 
     tx.giftcard_data.reloadlyTransactionId = orderResponse.transactionId;
-    
+
     // Async code delivery delay
     setTimeout(async () => {
       try {

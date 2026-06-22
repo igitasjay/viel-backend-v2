@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model GiftcardProducts {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  reloadlyId   String   @unique
+  name         String
+  country      String
+  countryCode  String
+  currency     String
+  denomination Int // Stored in cents (e.g., 5000 for $50.00)
+  minAmount    Int? // Stored in cents
+  maxAmount    Int? // Stored in cents
+  imageUrl     String?
+  isActive     Boolean  @default(true)
+  reloadlyData Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([countryCode])
+  @@index([country])
+  @@index([isActive])
+  @@map("giftcards_products")
+}

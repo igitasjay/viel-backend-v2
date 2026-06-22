@@ -9,3 +9,6 @@ json
 docs
 scripts
 tsc-errors.log
+/src/generated/prisma
+
+/generated/prisma
