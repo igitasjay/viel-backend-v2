@@ -7,21 +7,27 @@
     "esModuleInterop": true,
     // "ignoreDeprecations": "6.0",
     "rootDir": "src",
-    "baseUrl": "./",
     "outDir": "dist",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "removeComments": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@shared/*": [
+        "src/shared/*"
+      ],
+      "@shared": [
+        "src/shared"
       ]
     },
     "typeRoots": [
       "./src/@types"
     ],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
   },
   "include": [
     "src/**/*"
