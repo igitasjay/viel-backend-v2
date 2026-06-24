@@ -1,15 +1,13 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
 }
 
 model User {
-  id                          String                        @id @default(auto()) @map("_id") @db.ObjectId
+  id                          String                        @id @default(ulid())
   fullname                    String
   email                       String                        @unique
   username                    String                        @unique
@@ -23,12 +21,10 @@ model User {
   isKycVerified               Boolean                       @default(false)
   bvn                         String?
   nin                         String?
-  dailyTransactionSum         Float                         @default(0)
+  dailyTransactionSum         Decimal                       @default(0) @db.Decimal(10, 2)
   createdAt                   DateTime                      @default(now())
   updatedAt                   DateTime                      @updatedAt
-  referredById                String?                       @db.ObjectId
-  referralSource              String?
-  hasUpdatedDob               Boolean                       @default(false)
+  referredById                String?
   biometricPublicKey          String?
   isBiometricEnabled          Boolean                       @default(false)
   twoFactorSecret             String?
@@ -43,16 +39,19 @@ model User {
   externalAccounts            ExternalAccount[]
   giftcardSales               GiftcardSales[]
   notifications               Notification[]
+  price_alerts                PriceAlert[]
+  priceQuote                  PriceQuote[]
   referredEarnings            ReferralEarning[]             @relation("ReferredEarnings")
   referralEarnings            ReferralEarning[]             @relation("ReferrerEarnings")
   supportConversations        SupportConversation[]
   transactions                Transaction[]
   security                    UserSecurity?
-  referredBy                  User?                         @relation("UserReferrals", fields: [referredById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  referredBy                  User?                         @relation("UserReferrals", fields: [referredById], references: [id])
   referredUsers               User[]                        @relation("UserReferrals")
-  priceQuotes                 PriceQuote[]
-  priceAlerts                 PriceAlert[]
 
+  @@index([email])
+  @@index([username])
+  @@index([referralCode])
   @@index([isActive])
   @@index([createdAt])
   @@index([referredById])
@@ -61,8 +60,8 @@ model User {
 }
 
 model CryptoWallet {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  id        String   @id @default(ulid())
+  userId    String
   address   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -80,8 +79,8 @@ model CryptoWallet {
 }
 
 model ExternalAccount {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String   @db.ObjectId
+  id            String   @id @default(ulid())
+  userId        String
   bankName      String
   accountNumber String
   accountName   String
@@ -96,8 +95,8 @@ model ExternalAccount {
 }
 
 model UserSecurity {
-  id                         String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId                     String     @unique @db.ObjectId
+  id                         String     @id @default(ulid())
+  userId                     String     @unique
   code                       String?
   createdAt                  DateTime   @default(now())
   expiresAt                  DateTime?
@@ -117,14 +116,15 @@ model UserSecurity {
   passwordAttemptsResetAt    DateTime?
   user                       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@index([action])
   @@index([expiresAt])
   @@map("user_security")
 }
 
 model DeviceSession {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId          String    @db.ObjectId
+  id              String    @id @default(ulid())
+  userId          String
   deviceId        String
   deviceType      String
   osVersion       String?
@@ -148,8 +148,8 @@ model DeviceSession {
 }
 
 model Transaction {
-  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
-  userId               String              @db.ObjectId
+  id                   String              @id @default(ulid())
+  userId               String
   walletId             String?
   category             TransactionCategory
   narration            String?
@@ -159,39 +159,27 @@ model Transaction {
   reference            String              @unique
   sessionId            String?
   externalRef          String?
-  amount               Float
+  amount               Decimal             @db.Decimal(10, 2)
   currency             String
-  fee                  Float?
+  fee                  Decimal?            @db.Decimal(10, 2)
   channel              String?
   meta                 Json?
-  recipient            String?
-  accountNo            String?
-  meterNo              String?
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
   giftCardQuantity     Int?
   giftCardReceipt      String?
   giftCardType         String?
-  giftCardValue        Float?
+  giftCardValue        Decimal?            @db.Decimal(10, 2)
   internalRef          String?
-  metertoken           String?
-  sender               String?
-  virtualAccountId     String?
-  usdValue             Float?
+  usdValue             Decimal?            @db.Decimal(10, 2)
   providerRef          String?
-  waecCards            Json?
-  waecTokens           String[]
-  jambPin              String?
   rate                 String?
-  txHash               String?
-  rewardId             String?             @unique
+  txHash               String?             @unique
   idempotencyKey       String?
-  eventId              String?
   transactionValue     String?
-  dataPlan             String?
   institutionBank      String?
   institutionAccountNo String?
-  giftcardSaleId       String?             @unique @db.ObjectId
+  giftcardSaleId       String?             @unique
   cablePlan            String?
   gcAcceptedCardId     String?
   gcCardCurrency       String?
@@ -212,11 +200,11 @@ model Transaction {
 
   @@unique([userId, idempotencyKey])
   @@index([userId])
-  @@index([walletId])
-  @@index([eventId])
+  @@index([userId, idempotencyKey])
   @@index([status])
   @@index([category])
   @@index([type])
+  @@index([reference])
   @@index([createdAt])
   @@index([userId, createdAt])
   @@index([status, createdAt])
@@ -227,8 +215,8 @@ model Transaction {
 }
 
 model Notification {
-  id        String           @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String           @db.ObjectId
+  id        String           @id @default(ulid())
+  userId    String
   title     String
   message   String
   type      NotificationType
@@ -247,7 +235,7 @@ model Notification {
 }
 
 model BroadcastNotification {
-  id             String                        @id @default(auto()) @map("_id") @db.ObjectId
+  id             String                        @id @default(ulid())
   title          String
   message        String
   type           NotificationType
@@ -268,9 +256,9 @@ model BroadcastNotification {
 }
 
 model BroadcastNotificationStatus {
-  id          String                @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String                @db.ObjectId
-  broadcastId String                @db.ObjectId
+  id          String                @id @default(ulid())
+  userId      String
+  broadcastId String
   isRead      Boolean               @default(false)
   readAt      DateTime?
   createdAt   DateTime              @default(now())
@@ -285,7 +273,7 @@ model BroadcastNotificationStatus {
 }
 
 model NotificationTemplate {
-  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  id          String           @id @default(ulid())
   name        String           @unique
   title       String
   message     String
@@ -297,13 +285,14 @@ model NotificationTemplate {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 
+  @@index([name])
   @@index([type])
   @@index([isActive])
   @@map("notification_templates")
 }
 
 model ScheduledNotification {
-  id               String                      @id @default(auto()) @map("_id") @db.ObjectId
+  id               String                      @id @default(ulid())
   title            String
   message          String
   type             NotificationType
@@ -327,8 +316,8 @@ model ScheduledNotification {
 }
 
 model UserNotificationPreference {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String    @unique @db.ObjectId
+  id          String    @id @default(ulid())
+  userId      String    @unique
   enableInApp Boolean   @default(true)
   enablePush  Boolean   @default(true)
   enableEmail Boolean   @default(true)
@@ -337,11 +326,12 @@ model UserNotificationPreference {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  @@index([userId])
   @@map("user_notification_preferences")
 }
 
 model AcceptedGiftCard {
-  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  id              String          @id @default(ulid())
   isActive        Boolean         @default(true)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
@@ -362,14 +352,14 @@ model AcceptedGiftCard {
 }
 
 model GiftcardCodes {
-  id            String             @id @default(auto()) @map("_id") @db.ObjectId
+  id            String             @id @default(ulid())
   encryptedCode String
   encryptedPin  String?
   status        GiftCardCodeStatus @default(UNUSED)
   deliveredAt   DateTime?
   createdAt     DateTime           @default(now())
   redemptionUrl String?
-  transactionId String?            @db.ObjectId
+  transactionId String?
   transaction   Transaction?       @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 
   @@index([transactionId])
@@ -378,12 +368,12 @@ model GiftcardCodes {
 }
 
 model FeeConfiguration {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(ulid())
   type      String
   feeType   String   @default("FIXED")
-  feeValue  Float
-  minAmount Float?
-  maxAmount Float?
+  feeValue  Decimal  @db.Decimal(10, 2)
+  minAmount Decimal? @db.Decimal(10, 2)
+  maxAmount Decimal? @db.Decimal(10, 2)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -394,9 +384,9 @@ model FeeConfiguration {
 }
 
 model PlatformRevenue {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String   @id @default(ulid())
   source        String
-  amount        Float
+  amount        Decimal  @db.Decimal(10, 2)
   currency      String   @default("NGN")
   orderId       String?
   transactionId String?
@@ -411,9 +401,9 @@ model PlatformRevenue {
 }
 
 model Dispute {
-  id            String              @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String              @db.ObjectId
-  transactionId String              @db.ObjectId
+  id            String              @id @default(ulid())
+  userId        String
+  transactionId String
   reason        String
   status        DisputeStatus       @default(PENDING)
   createdAt     DateTime            @default(now())
@@ -432,13 +422,13 @@ model Dispute {
 }
 
 model Rate {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(ulid())
   type         String
   cardCountry  String?
   cardRange    Int?
   cardCategory String?
-  currentRate  Float
-  amount       Float?
+  currentRate  Decimal  @db.Decimal(10, 2)
+  amount       Decimal? @db.Decimal(10, 2)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -447,37 +437,15 @@ model Rate {
   @@map("rates")
 }
 
-model PromoCode {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  code          String    @unique
-  description   String?
-  bonusAmount   Float
-  bonusType     String
-  applicableFor String    @default("GIFTCARD_SELL")
-  minSaleAmount Float?
-  maxUses       Int?
-  currentUses   Int       @default(0)
-  isActive      Boolean   @default(true)
-  validFrom     DateTime  @default(now())
-  validUntil    DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@index([isActive])
-  @@index([validFrom, validUntil])
-  @@index([applicableFor])
-  @@map("promo_codes")
-}
-
 model ReferralEarning {
-  id             String                 @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String                 @db.ObjectId
-  referredUserId String                 @db.ObjectId
+  id             String                 @id @default(ulid())
+  userId         String
+  referredUserId String
   earningType    ReferralEarningType    @default(SIGNUP)
-  amount         Float
+  amount         Decimal                @db.Decimal(10, 2)
   status         ReferralEarningStatus?
   expiresAt      DateTime?
-  transactionId  String?                @db.ObjectId
+  transactionId  String?
   meta           Json?
   createdAt      DateTime               @default(now())
   updatedAt      DateTime               @updatedAt
@@ -495,7 +463,7 @@ model ReferralEarning {
 }
 
 model KycSession {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String   @id @default(ulid())
   userId         String
   clientId       String
   identityNumber String
@@ -511,8 +479,8 @@ model KycSession {
 }
 
 model DeviceTokens {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  id        String   @id @default(ulid())
+  userId    String
   token     String   @unique
   deviceId  String
   platform  String
@@ -522,21 +490,22 @@ model DeviceTokens {
   users     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([isActive])
+  @@index([token])
   @@index([userId])
   @@index([deviceId])
   @@map("device_tokens")
 }
 
 model GiftcardProducts {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(ulid())
   reloadlyId   String   @unique
   name         String
   country      String
   countryCode  String
   currency     String
-  denomination Float
-  minAmount    Float?
-  maxAmount    Float?
+  denomination Decimal  @db.Decimal(10, 2)
+  minAmount    Decimal? @db.Decimal(10, 2)
+  maxAmount    Decimal? @db.Decimal(10, 2)
   imageUrl     String?
   isActive     Boolean  @default(true)
   reloadlyData Json?
@@ -550,13 +519,13 @@ model GiftcardProducts {
 }
 
 model GiftcardSales {
-  id                String             @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String             @db.ObjectId
-  acceptedCardId    String             @db.ObjectId
+  id                String             @id @default(ulid())
+  userId            String
+  acceptedCardId    String
   cardType          String
   country           String
   cardRange         String
-  cardValue         Float
+  cardValue         Decimal            @db.Decimal(10, 2)
   cardCurrency      String
   quantity          Int                @default(1)
   receiptType       String
@@ -564,11 +533,11 @@ model GiftcardSales {
   encryptedCardCode String?
   encryptedCardPin  String?
   userNotes         String?
-  buyingRate        Float
-  totalCardValue    Float
-  payoutAmount      Float
+  buyingRate        Decimal            @db.Decimal(10, 2)
+  totalCardValue    Decimal            @db.Decimal(10, 2)
+  payoutAmount      Decimal            @db.Decimal(10, 2)
   promoCode         String?
-  promoDiscount     Float              @default(0)
+  promoDiscount     Decimal            @default(0) @db.Decimal(10, 2)
   status            GiftCardSaleStatus @default(SUBMITTED)
   reviewedBy        String?
   reviewedAt        DateTime?
@@ -591,22 +560,22 @@ model GiftcardSales {
 }
 
 model PriceQuote {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String    @db.ObjectId
+  id            String    @id @default(ulid())
+  userId        String
   productId     String
-  cardValue     Float
+  cardValue     Decimal   @db.Decimal(10, 2)
   quantity      Int
-  basePrice     Float
-  fee           Float
-  promoDiscount Float     @default(0)
-  totalAmount   Float
-  exchangeRate  Float
-  feePercentage Float
+  basePrice     Decimal   @db.Decimal(10, 2)
+  fee           Decimal   @db.Decimal(10, 2)
+  promoDiscount Decimal   @default(0) @db.Decimal(10, 2)
+  totalAmount   Decimal   @db.Decimal(10, 2)
+  exchangeRate  Decimal   @db.Decimal(10, 2)
+  feePercentage Decimal   @db.Decimal(5, 2)
   expiresAt     DateTime
   usedAt        DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  users         User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users         User      @relation(fields: [userId], references: [id])
 
   @@index([expiresAt])
   @@index([userId, expiresAt])
@@ -614,7 +583,7 @@ model PriceQuote {
 }
 
 model Admin {
-  id                   String                @id @default(auto()) @map("_id") @db.ObjectId
+  id                   String                @id @default(ulid())
   name                 String
   email                String                @unique
   password             String
@@ -631,8 +600,8 @@ model Admin {
 }
 
 model AdminNotification {
-  id           String               @id @default(auto()) @map("_id") @db.ObjectId
-  adminId      String?              @db.ObjectId
+  id           String               @id @default(ulid())
+  adminId      String?
   type         NotificationType
   priority     NotificationPriority @default(medium)
   title        String
@@ -652,7 +621,7 @@ model AdminNotification {
 }
 
 model AppSettings {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(ulid())
   key         String   @unique
   description String?
   updatedBy   String?
@@ -660,29 +629,31 @@ model AppSettings {
   updatedAt   DateTime @updatedAt
   appValue    String[]
 
+  @@index([key])
   @@map("app_settings")
 }
 
 model CryptoAsset {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(ulid())
   code      String   @unique
   name      String
   imageUrl  String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  buyRate   Float?
+  buyRate   Decimal? @db.Decimal(10, 2)
 
+  @@index([code])
   @@index([isActive])
   @@map("crypto_assets")
 }
 
 model PriceAlert {
-  id                String        @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String        @db.ObjectId
+  id                String        @id @default(ulid())
+  userId            String
   cryptoAsset       String
   rateType          AlertRateType @default(SELL)
-  targetAmount      Float
+  targetAmount      Decimal       @db.Decimal(10, 2)
   triggerCondition  AlertTrigger
   emailNotification Boolean       @default(false)
   pushNotification  Boolean       @default(true)
@@ -699,12 +670,12 @@ model PriceAlert {
 }
 
 model SupportConversation {
-  id            String                    @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String                    @db.ObjectId
+  id            String                    @id @default(ulid())
+  userId        String
   subject       String
   status        SupportConversationStatus @default(OPEN)
   priority      SupportPriority           @default(MEDIUM)
-  assignedTo    String?                   @db.ObjectId
+  assignedTo    String?
   category      String?
   lastMessageAt DateTime?
   closedAt      DateTime?
@@ -722,8 +693,8 @@ model SupportConversation {
 }
 
 model SupportMessage {
-  id             String               @id @default(auto()) @map("_id") @db.ObjectId
-  conversationId String               @db.ObjectId
+  id             String               @id @default(ulid())
+  conversationId String
   senderId       String
   senderType     SupportMessageSender
   message        String
@@ -747,23 +718,10 @@ enum AlertTrigger {
   AT
 }
 
-enum RequirementType {
-  EMAIL_VERIFICATION
-  PHONE_VERIFICATION
-  BVN_VERIFICATION
-  ID_VERIFICATION
-  UTILITY_BILL
-  BANK_STATEMENT
-  PASSPORT
-  DRIVERS_LICENSE
-  VOTERS_CARD
-}
-
 enum TransactionCategory {
   REVERSAL
   GIFTCARDS
   CRYPTO
-  REFERRAL
 }
 
 enum TransactionStatus {
@@ -844,22 +802,6 @@ enum DisputeStatus {
   IN_REVIEW
   RESOLVED
   REJECTED
-}
-
-enum DocumentType {
-  NATIONAL_ID
-  DRIVERS_LICENSE
-  VOTERS_CARD
-  PASSPORT
-  UTILITY_BILL
-  BANK_STATEMENT
-}
-
-enum DocumentStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  EXPIRED
 }
 
 enum OtpAction {
