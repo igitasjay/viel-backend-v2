@@ -1,4 +1,4 @@
-import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { logger } from '@/lib/winston';
 import Token from '@/models/token.model';
 import type { Request, Response } from 'express';
@@ -26,14 +26,14 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
       accessToken,
     });
   } catch (error) {
-    if (error instanceof TokenExpiredError) {
+    if (error instanceof jwt.TokenExpiredError) {
       res.status(401).json({
         code: 'AuthenticationError',
         message: 'Refresh token has expired',
       });
       return;
     }
-    if (error instanceof JsonWebTokenError) {
+    if (error instanceof jwt.JsonWebTokenError) {
       res.status(401).json({
         code: 'AuthenticationError',
         message: 'Invalid refresh token',

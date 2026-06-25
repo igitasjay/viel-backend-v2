@@ -38,9 +38,9 @@ function createConfig() {
             url: getEnv("DATABASE_URL"),
         },
 
-        appUrl: {
-            baseUrl: getEnv("BASEAPP_URL"),
-        },
+        // appUrl: {
+        //     baseUrl: getEnv("BASEAPP_URL"),
+        // },
 
         jwt: {
             accessSecret: getEnv("JWT_ACCESS_SECRET"),
@@ -49,26 +49,26 @@ function createConfig() {
             refreshTokenExpires: getEnvNumber("REFRESH_TOKEN_EXPIRES"),
         },
 
-        redis: {
-            url: getEnv("REDIS_URL"),
-        },
+        // redis: {
+        //     url: getEnv("REDIS_URL"),
+        // },
 
-        mail: {
-            host: getEnv("MAIL_HOST"),
-            port: getEnvNumber("MAIL_PORT"),
-            username: getEnv("MAIL_USERNAME"),
-            password: getEnv("MAIL_PASSWORD"),
-        },
+        // mail: {
+        //     host: getEnv("MAIL_HOST"),
+        //     port: getEnvNumber("MAIL_PORT"),
+        //     username: getEnv("MAIL_USERNAME"),
+        //     password: getEnv("MAIL_PASSWORD"),
+        // },
 
-        queue: {
-            url: getEnv("QUEUE_URL"),
-            name: getEnv("QUEUE_NAME"),
-            retryExchange: getEnv("RETRY_EXCHANGE"),
-            retryQueue: getEnv("RETRY_QUEUE"),
-            retryDelayMs: getEnvNumber("RETRY_DELAY_MS"),
-            deadLetterQueue: getEnv("DEAD_LETTER_QUEUE_NAME"),
-            maxRetries: getEnvNumber("QUEUE_MAX_RETRIES"),
-        },
+        // queue: {
+        //     url: getEnv("QUEUE_URL"),
+        //     name: getEnv("QUEUE_NAME"),
+        //     retryExchange: getEnv("RETRY_EXCHANGE"),
+        //     retryQueue: getEnv("RETRY_QUEUE"),
+        //     retryDelayMs: getEnvNumber("RETRY_DELAY_MS"),
+        //     deadLetterQueue: getEnv("DEAD_LETTER_QUEUE_NAME"),
+        //     maxRetries: getEnvNumber("QUEUE_MAX_RETRIES"),
+        // },
 
         obiex: {
             baseUrl: getEnv("OBIEX_URL"),
@@ -77,16 +77,16 @@ function createConfig() {
             webhookSecret: getEnv("OBIEX_WH_SECRET"),
         },
 
-        sudo: {
-            apiKey: getEnv("SUDO_API_KEY"),
-            baseUrl: getEnv("SUDO_BASE_URL"),
-            accountId: getEnv("SUDO_ACCOUNTID"),
-        },
-        fireBase: {
-            projectID: getEnv("FIREBASE_PROJECT_ID"),
-            privateKey: getEnvOptional("FIREBASE_PRIVATE_KEY_PATH"),
-            serviceAccount: getEnvOptional("FIREBASE_SERVICE_ACCOUNT"),
-        },
+        // sudo: {
+        //     apiKey: getEnv("SUDO_API_KEY"),
+        //     baseUrl: getEnv("SUDO_BASE_URL"),
+        //     accountId: getEnv("SUDO_ACCOUNTID"),
+        // },
+        // fireBase: {
+        //     projectID: getEnv("FIREBASE_PROJECT_ID"),
+        //     privateKey: getEnvOptional("FIREBASE_PRIVATE_KEY_PATH"),
+        //     serviceAccount: getEnvOptional("FIREBASE_SERVICE_ACCOUNT"),
+        // },
         reloadly: {
             clientID: getEnv("RELOADLY_CLIENT_ID"),
             clientSecret: getEnv("RELOADLY_CLIENT_SECRET"),
@@ -102,9 +102,9 @@ function createConfig() {
             apiKey: getEnv("CLOUDINARY_API_KEY"),
             secretKey: getEnv("CLOUDINARY_API_SECRET"),
         },
-        admin: {
-            superPass: getEnv("SUPER_ADMIN_PASS"),
-        },
+        // admin: {
+        //     superPass: getEnv("SUPER_ADMIN_PASS"),
+        // },
     } as const;
 }
 

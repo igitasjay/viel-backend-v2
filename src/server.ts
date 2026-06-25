@@ -22,6 +22,7 @@ import { globalErrorHandler } from '@/middlewares/error.middleware';
 import type { CorsOptions } from 'cors';
 import authenticate from './middlewares/authenticate.middleware';
 import router from './routes/v1/health.route';
+import v2router from './routes/v1/routes.v2';
 
 // import { startWatcher } from './crypto-infra/workers/evm-watcher';
 
@@ -82,8 +83,9 @@ const startHealthCheck = () => {
   await connectToDatabase();
   app.use('/uploads', authenticate, express.static('uploads'));
   app.use('/', router);
+  app.use('/api/v2', v2router);
   app.use('/api/v1', v1Routes);
-  app.use('/api/v2/crypto', cryptoV2Routes);
+  // app.use('/api/v2/crypto', cryptoV2Routes);
 
   // global error handler
   app.use(globalErrorHandler);

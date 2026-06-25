@@ -56,7 +56,7 @@ router.use('/charge', chargeRouter);
 // router.get('/bankcodes', getBankCodes);
 // router.use('/crypto', cryptoRoute);
 router.use('/giftcard', giftcardRoute);
-router.use('/v2/giftcards', giftcardRoutes);
+// router.use('/v2/giftcards', giftcardRoutes);
 router.use('/admin/giftcard', adminGiftCardRoute);
 router.use('/authorisation', authorisationRoute);
 router.use('/transactions', transactionRouter);

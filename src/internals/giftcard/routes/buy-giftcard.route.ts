@@ -25,6 +25,7 @@ giftcardRoutes.get(
     giftcardController.getExchangeRate,
 );
 
+
 giftcardRoutes.post(
     "/orders/place",
     authenticate,
