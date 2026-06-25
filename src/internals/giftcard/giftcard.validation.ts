@@ -29,18 +29,24 @@ const cancelOrderSchema = z.object({
     reason: z.string().optional(),
 });
 
-const placeDirectOrderSchema = z.object({
+const placeDirectOrderBodySchema = z.object({
     reloadlyId: z.string().min(1, "Product ID is required"),
     cardValue: z.number().positive("Card value must be positive"),
     quantity: z.number().int().min(1, "Quantity must be at least 1"),
     calculatedSubtotal: z.number().positive("Subtotal must be positive"),
     calculatedFee: z.number().min(0, "Fee must be non-negative"),
     calculatedTotal: z.number().positive("Total must be positive"),
-    pin: z.string().regex(/^\d{4}$/, "Pin must be exactly 4 digits"),
+    // pin: z.string().regex(/^\d{4}$/, "Pin must be exactly 4 digits"),
     paymentMethod: z.enum(["WALLET", "VIRTUAL_ACCOUNT"]).default("WALLET"),
     currency: z.string().default("ngn"),
     promoCode: z.string().optional(),
 });
+
+const placeDirectOrderSchema = z.object({
+    body: placeDirectOrderBodySchema,
+});
+
+export type PlaceDirectOrderBody = z.infer<typeof placeDirectOrderBodySchema>;
 
 // GC SELL
 

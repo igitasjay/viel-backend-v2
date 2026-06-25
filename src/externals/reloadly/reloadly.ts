@@ -399,89 +399,85 @@ class ReloadlyService {
             let skippedCount = 0;
 
             const reloadlyIds = new Set<string>();
+            const productsToSync: ReloadlyProduct[] = [];
 
             for (const product of products) {
-                try {
-                    const productId = String(product.productId);
-                    const countryCode = product.country.isoName;
-
-                    if (!ALLOWED_COUNTRY_CODES.includes(countryCode)) {
-                        skippedCount++;
-                        continue;
-                    }
-
-                    reloadlyIds.add(productId);
-
-                    // Handle different denomination types
-                    const isFixedType = product.denominationType === "FIXED";
-                    const denomination = isFixedType
-                        ? product.fixedRecipientDenominations?.[0] || 0
-                        : product.minRecipientDenomination || 0;
-
-                    // For FIXED type, minAmount and maxAmount should be null since they use fixedDenominations instead
-                    const minAmount = isFixedType
-                        ? null
-                        : product.minRecipientDenomination || 0;
-
-                    const maxAmount = isFixedType
-                        ? null
-                        : product.maxRecipientDenomination || 0;
-
-                    // Convert brand name "App Store & iTunes" -> "Apple/iTunes" in reloadlyData
-                    const modifiedProduct = { ...product };
-                    if (
-                        modifiedProduct.brand?.brandName
-                            ?.toLowerCase()
-                            .includes("app store & itunes")
-                    ) {
-                        modifiedProduct.brand = {
-                            ...modifiedProduct.brand,
-                            brandName: modifiedProduct.brand.brandName.replace(
-                                /App Store & iTunes/i,
-                                "Apple/iTunes",
-                            ),
-                        };
-                    }
-
-                    // Upsert product to database
-                    await prisma.giftcardProducts.upsert({
-                        where: { reloadlyId: productId },
-                        update: {
-                            name: product.productName,
-                            country: product.country.name,
-                            countryCode: product.country.isoName,
-                            currency: product.recipientCurrencyCode,
-                            denomination: denomination,
-                            minAmount: minAmount,
-                            maxAmount: maxAmount,
-                            imageUrl: product.logoUrls[0] || null,
-                            isActive: true,
-                            reloadlyData: modifiedProduct as any,
-                            updatedAt: new Date(),
-                        },
-                        create: {
-                            reloadlyId: productId,
-                            name: product.productName,
-                            country: product.country.name,
-                            countryCode: product.country.isoName,
-                            currency: product.recipientCurrencyCode,
-                            denomination: denomination,
-                            minAmount: minAmount,
-                            maxAmount: maxAmount,
-                            imageUrl: product.logoUrls[0] || null,
-                            isActive: true,
-                            reloadlyData: modifiedProduct as any,
-                        },
-                    });
-
-                    syncedCount++;
-                } catch (error) {
-                    logger.error(
-                        `Failed to sync product ${product.productId}:`,
-                        error as any,
-                    );
-                    errorCount++;
+                const countryCode = product.country.isoName;
+                if (!ALLOWED_COUNTRY_CODES.includes(countryCode)) {
+                    skippedCount++;
+                    continue;
                 }
+                productsToSync.push(product);
+            }
+
+            logger.info(`Processing ${productsToSync.length} allowed products...`);
+
+            // Process in chunks of 50 to avoid overloading the DB connections
+            const chunkSize = 50;
+            for (let i = 0; i < productsToSync.length; i += chunkSize) {
+                const chunk = productsToSync.slice(i, i + chunkSize);
+
+                await Promise.all(
+                    chunk.map(async (product) => {
+                        try {
+                            const productId = String(product.productId);
+                            reloadlyIds.add(productId);
+
+                            // Handle different denomination types
+                            const isFixedType = product.denominationType === "FIXED";
+                            const denomination = isFixedType
+                                ? product.fixedRecipientDenominations?.[0] || 0
+                                : product.minRecipientDenomination || 0;
+
+                            const minAmount = isFixedType ? null : product.minRecipientDenomination || 0;
+                            const maxAmount = isFixedType ? null : product.maxRecipientDenomination || 0;
+
+                            // Convert brand name
+                            const modifiedProduct = { ...product };
+                            if (modifiedProduct.brand?.brandName?.toLowerCase().includes("app store & itunes")) {
+                                modifiedProduct.brand = {
+                                    ...modifiedProduct.brand,
+                                    brandName: modifiedProduct.brand.brandName.replace(/App Store & iTunes/i, "Apple/iTunes"),
+                                };
+                            }
+
+                            await prisma.giftcardProducts.upsert({
+                                where: { reloadlyId: productId },
+                                update: {
+                                    name: product.productName,
+                                    country: product.country.name,
+                                    countryCode: product.country.isoName,
+                                    currency: product.recipientCurrencyCode,
+                                    denomination: denomination,
+                                    minAmount: minAmount,
+                                    maxAmount: maxAmount,
+                                    imageUrl: product.logoUrls[0] || null,
+                                    isActive: true,
+                                    reloadlyData: modifiedProduct as any,
+                                    updatedAt: new Date(),
+                                },
+                                create: {
+                                    reloadlyId: productId,
+                                    name: product.productName,
+                                    country: product.country.name,
+                                    countryCode: product.country.isoName,
+                                    currency: product.recipientCurrencyCode,
+                                    denomination: denomination,
+                                    minAmount: minAmount,
+                                    maxAmount: maxAmount,
+                                    imageUrl: product.logoUrls[0] || null,
+                                    isActive: true,
+                                    reloadlyData: modifiedProduct as any,
+                                },
+                            });
+
+                            syncedCount++;
+                        } catch (error) {
+                            logger.error(`Failed to sync product ${product.productId}:`, error as any);
+                            errorCount++;
+                        }
+                    })
+                );
             }
 
             // Deactivate products that are no longer in Reloadly's API

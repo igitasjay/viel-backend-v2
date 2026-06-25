@@ -51,6 +51,12 @@ const authenticate = async (
     // attach user info to request object
     req.userId = jwtPayload.userId;
     req.user = user;
+    req.currentUser = {
+      id: user._id.toString(),
+      email: user.email,
+      name: `${user.firstname} ${user.lastname}`,
+    };
+    req.accessToken = token;
     return next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {

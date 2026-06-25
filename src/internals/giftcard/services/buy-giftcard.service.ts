@@ -115,7 +115,7 @@ class GiftCardService {
             calculatedSubtotal: number;
             calculatedFee: number;
             calculatedTotal: number;
-            pin: string;
+            // pin: string;
             paymentMethod: "WALLET" | "VIRTUAL_ACCOUNT";
             currency: string;
             promoCode?: string;
@@ -130,7 +130,7 @@ class GiftCardService {
             calculatedSubtotal,
             calculatedFee,
             calculatedTotal,
-            pin,
+            // pin,
             paymentMethod,
             currency,
             promoCode,

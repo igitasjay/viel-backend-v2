@@ -1,6 +1,17 @@
-{
-  "success": false,
-  "status": 406,
-  "message": "Request failed with status code 406",
-  "stack": "AxiosError: Request failed with status code 406\n    at settle (/Users/jay/work/viel/viel-backend/node_modules/.pnpm/axios@1.16.1/node_modules/axios/lib/core/settle.js:19:12)\n    at IncomingMessage.handleStreamEnd (/Users/jay/work/viel/viel-backend/node_modules/.pnpm/axios@1.16.1/node_modules/axios/lib/adapters/http.js:1139:13)\n    at IncomingMessage.emit (node:events:536:35)\n    at IncomingMessage.emit (node:domain:489:12)\n    at endReadableNT (node:internal/streams/readable:1698:12)\n    at processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (/Users/jay/work/viel/viel-backend/node_modules/.pnpm/axios@1.16.1/node_modules/axios/lib/core/Axios.js:46:41)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async getReloadlyProducts (/Users/jay/work/viel/viel-backend/src/giftcard-v2/services/reloadly.service.ts:47:22)\n    at async /Users/jay/work/viel/viel-backend/src/giftcard-v2/controllers/admin.controller.ts:92:16"
-}
+docker network create |
+--subnet=192.168.1.0/24 \ redis-network
+
+
+docker run --name redis-server |
+--net redis-network |
+--ip 192.168.1.100 \
+-p 6379:6379
+-d redis
+
+
+
+docker inspect -f '{{range .NetworkSettings. Networks}X{.IPAddress}K{end}}' redis-server
+
+
+
+docker exec -it redis-server redis-cli

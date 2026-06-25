@@ -10,8 +10,6 @@ model User {
   id                          String                        @id @default(ulid())
   fullname                    String
   email                       String                        @unique
-  username                    String                        @unique
-  phone                       String                        @unique
   password                    String
   referralCode                String                        @unique
   profilePicture              String?
@@ -50,7 +48,6 @@ model User {
   referredUsers               User[]                        @relation("UserReferrals")
 
   @@index([email])
-  @@index([username])
   @@index([referralCode])
   @@index([isActive])
   @@index([createdAt])

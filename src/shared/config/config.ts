@@ -49,26 +49,26 @@ function createConfig() {
             refreshTokenExpires: getEnvNumber("REFRESH_TOKEN_EXPIRES"),
         },
 
-        // redis: {
-        //     url: getEnv("REDIS_URL"),
-        // },
+        redis: {
+            url: getEnv("REDIS_URL"),
+        },
 
-        // mail: {
-        //     host: getEnv("MAIL_HOST"),
-        //     port: getEnvNumber("MAIL_PORT"),
-        //     username: getEnv("MAIL_USERNAME"),
-        //     password: getEnv("MAIL_PASSWORD"),
-        // },
+        mail: {
+            host: getEnv("MAIL_HOST"),
+            port: getEnvNumber("MAIL_PORT"),
+            username: getEnv("MAIL_USERNAME"),
+            password: getEnv("MAIL_PASSWORD"),
+        },
 
-        // queue: {
-        //     url: getEnv("QUEUE_URL"),
-        //     name: getEnv("QUEUE_NAME"),
-        //     retryExchange: getEnv("RETRY_EXCHANGE"),
-        //     retryQueue: getEnv("RETRY_QUEUE"),
-        //     retryDelayMs: getEnvNumber("RETRY_DELAY_MS"),
-        //     deadLetterQueue: getEnv("DEAD_LETTER_QUEUE_NAME"),
-        //     maxRetries: getEnvNumber("QUEUE_MAX_RETRIES"),
-        // },
+        queue: {
+            url: getEnv("QUEUE_URL"),
+            name: getEnv("QUEUE_NAME"),
+            retryExchange: getEnv("RETRY_EXCHANGE"),
+            retryQueue: getEnv("RETRY_QUEUE"),
+            retryDelayMs: getEnvNumber("RETRY_DELAY_MS"),
+            deadLetterQueue: getEnv("DEAD_LETTER_QUEUE_NAME"),
+            maxRetries: getEnvNumber("QUEUE_MAX_RETRIES"),
+        },
 
         obiex: {
             baseUrl: getEnv("OBIEX_URL"),
