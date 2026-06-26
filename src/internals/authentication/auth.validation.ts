@@ -12,11 +12,11 @@ const passwordValidation = z
     "Password must contain at least one special character",
   );
 
-const phoneNumberValidation = z
-  .string()
-  .min(1, "Phone number is required")
-  .length(10, "Phone number must be exactly 10 digits")
-  .regex(/^\d+$/, "Phone number must contain only digits");
+// const phoneNumberValidation = z
+//   .string()
+//   .min(1, "Phone number is required")
+//   .length(10, "Phone number must be exactly 10 digits")
+//   .regex(/^\d+$/, "Phone number must contain only digits");
 
 const emailValidation = z
   .email("Invalid email address")

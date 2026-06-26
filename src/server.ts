@@ -313,7 +313,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 //  1. Basic Routes
 app.get("/", (_req: Request, res: Response) => {
-  res.send("Hello, Welcome to the Trade Aviator API!");
+  res.send("Hello, Welcome to the Viel API!");
 });
 
 app.get("/ping", (_req, res) => {
@@ -329,18 +329,18 @@ app.get("/health", (_req, res) => {
 // app.use("/api/v1/webhooks", webhookRoutes);
 
 // Apply auth limiter to login/register endpoints
+app.use("/api/v2", v2router);
 app.use("/api/v1/auth", authRateLimiter);
 
 // // VTU and Transfer need authentication to track by User ID + IP
-app.use("/api/v1/vtu", requireAuth, userVtuRateLimiter);
-app.use("/api/v1/transfer", requireAuth, userTransferRateLimiter);
+// app.use("/api/v1/vtu", requireAuth, userVtuRateLimiter);
+// app.use("/api/v1/transfer", requireAuth, userTransferRateLimiter);
 
 // Apply base admin rate limiter and auth to all admin routes
 app.use("/api/v1/admin/auth/login", adminLoginRateLimiter);
 
 // Apply general limiter to the rest of the API
 app.use("/api/v1", generalRateLimiter);
-app.use("/api/v2", v2router);
 // app.use("/api/v1/admin", adminRouter);
 
 // ========================

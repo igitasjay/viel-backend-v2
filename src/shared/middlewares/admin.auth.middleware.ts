@@ -4,7 +4,7 @@ import { TokenService } from '@shared/guards/tokens'
 import { prisma } from "../db/prisma";
 import { logger } from "@/lib/winston";
 import { redis } from "@shared/common/redis";
-import { TokenExpiredError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 export const requireAdminAuth = async (
   req: Request,
@@ -31,7 +31,7 @@ export const requireAdminAuth = async (
       payload = await TokenService.verifyAdminToken(token);
       logger.info(`✅ Valid token for admin ${payload.id}`);
     } catch (err: any) {
-      if (err instanceof TokenExpiredError) {
+      if (err instanceof jwt.TokenExpiredError) {
         logger.error("Admin token expired");
         throw new UnauthorizedException("Admin token expired");
       } else {

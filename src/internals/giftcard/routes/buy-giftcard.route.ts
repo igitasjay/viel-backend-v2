@@ -1,34 +1,34 @@
 import express from "express";
 import { giftcardController } from "../controllers/buy-giftcard.controller";
-import authenticate from "@/middlewares/authenticate.middleware";
-import { validate } from "@/utils/validate.util";
+import { validate } from "@/shared/middlewares";
 import { giftCardValidation } from "../giftcard.validation";
+import { requireAuth } from "@shared/middlewares/auth.middleware";
 
 const giftcardRoutes = express.Router();
 
-giftcardRoutes.get("/countries", authenticate, giftcardController.getCountries);
+giftcardRoutes.get("/countries", requireAuth, giftcardController.getCountries);
 
 
-giftcardRoutes.get("/products", authenticate, giftcardController.getProducts);
+giftcardRoutes.get("/products", requireAuth, giftcardController.getProducts);
 
 
 giftcardRoutes.get(
     "/products/:reloadlyId",
-    authenticate,
+    requireAuth,
     giftcardController.getSingleProduct,
 );
 
 
 giftcardRoutes.get(
     "/products/:reloadlyId/exchange-rate",
-    authenticate,
+    requireAuth,
     giftcardController.getExchangeRate,
 );
 
 
 giftcardRoutes.post(
     "/orders/place",
-    authenticate,
+    requireAuth,
     validate(giftCardValidation.placeDirectOrderSchema),
     giftcardController.placeOrder,
 );
@@ -36,7 +36,7 @@ giftcardRoutes.post(
 
 giftcardRoutes.post(
     "/orders/:orderId/refresh-codes",
-    authenticate,
+    requireAuth,
     giftcardController.refreshOrderCodes,
 );
 

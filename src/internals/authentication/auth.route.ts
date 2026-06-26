@@ -2,8 +2,8 @@ import express from "express";
 import { authController } from "./auth.controller";
 import { authValidation } from "./auth.validation";
 import { authBiometrics } from "./auth.biometrics";
-import { validate } from "@/utils/validate.util";
 import authenticate from "@/middlewares/authenticate.middleware";
+import { validate } from "@/shared/middlewares/validate";
 
 const authRoutes = express.Router();
 

@@ -84,12 +84,12 @@ export async function sendEmailVerificationOtp(
         message: "Use the OTP below to verify your email.",
         name: fullName,
         otp,
-        appName: "TradeAviator",
+        appName: "Viel",
     });
 
     try {
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: "Your OTP for Email Verification",
             html: emailContent,
@@ -127,7 +127,7 @@ export async function sendPasswordReset(
 
     try {
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: "Your OTP for Email Verification",
             html: emailContent,
@@ -165,7 +165,7 @@ export async function sendForgotPin(
 
     try {
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: "Your OTP for Email Verification",
             html: emailContent,
@@ -202,7 +202,7 @@ export async function sendNewDeviceOtp(
     const loginDate = new Date(timestamp);
     const emailContent = getEmailTemplate("device-verification", {
         name: fullName,
-        appName: "TradeAviator",
+        appName: "Viel",
         deviceName: deviceInfo.deviceName || deviceInfo.deviceType,
         location: deviceInfo.location || "Unknown",
         osVersion: deviceInfo.osVersion,
@@ -217,7 +217,7 @@ export async function sendNewDeviceOtp(
             day: "numeric",
         }),
         otp,
-        supportEmail: "Support@usetradeaviator.com",
+        supportEmail: "Support@myviel.com",
         supportPhone: "07041300082",
     });
 
@@ -226,7 +226,7 @@ export async function sendNewDeviceOtp(
             `Sending device verification email to ${recipient} with OTP: ${otp}`,
         );
         const result = await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: "New Device Login - Verification Required",
             html: emailContent,
@@ -345,14 +345,14 @@ export async function sendGiftcardPurchaseEmail(
                 hour12: true,
             },
         ),
-        appName: "TradeAviator",
-        supportEmail: "support@usetradeaviator.com",
+        appName: "Viel",
+        supportEmail: "support@myviel.com",
         codesSection,
     });
 
     try {
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: `Gift Card Order Confirmation - ${orderDetails.orderReference}`,
             html: emailContent,
@@ -409,13 +409,13 @@ export async function sendGiftcardSaleSubmissionEmail(
             },
         ),
         estimatedReviewTime: "within 24 hours",
-        appName: "TradeAviator",
-        supportEmail: "support@usetradeaviator.com",
+        appName: "Viel",
+        supportEmail: "support@myviel.com",
     });
 
     try {
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: "Gift Card Submitted for Review",
             html: emailContent,
@@ -461,13 +461,13 @@ export async function sendGiftcardSaleApprovedandPayoutEmail(
             minute: "2-digit",
             hour12: true,
         }),
-        appName: "TradeAviator",
-        supportEmail: "support@tradeaviator.com",
+        appName: "Viel",
+        supportEmail: "support@Viel.com",
     });
 
     try {
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: "🎉 Payment Received - Gift Card Sale Approved",
             html: emailContent,
@@ -511,13 +511,13 @@ export async function sendGiftcardSaleRejectedEmail(
                 hour12: true,
             },
         ),
-        appName: "TradeAviator",
-        supportEmail: "support@tradeaviator.com",
+        appName: "Viel",
+        supportEmail: "support@Viel.com",
     });
 
     try {
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: "Gift Card Sale Update - Action Required",
             html: emailContent,
@@ -557,13 +557,13 @@ export async function sendGiftcardSaleCancelledEmail(
                 hour12: true,
             },
         ),
-        appName: "TradeAviator",
-        supportEmail: "support@tradeaviator.com",
+        appName: "Viel",
+        supportEmail: "support@Viel.com",
     });
 
     try {
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: "Gift Card Sale Cancelled",
             html: emailContent,
@@ -610,13 +610,13 @@ export async function sendTicketPurchaseEmail(
         quantity: ticketDetails.quantity.toString(),
         totalPrice: ticketDetails.totalPrice,
         ticketId: ticketDetails.ticketId,
-        appName: "TradeAviator",
-        supportEmail: "support@tradeaviator.com",
+        appName: "Viel",
+        supportEmail: "support@Viel.com",
     });
 
     try {
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: `Your Ticket for ${ticketDetails.eventTitle}`,
             html: emailContent,
@@ -702,7 +702,7 @@ export async function sendNotificationEmail(
         },
         MARKETING: {
             template: "notification-marketing",
-            subject: "Exclusive Update from TradeAviator",
+            subject: "Exclusive Update from Viel",
         },
     };
 
@@ -718,8 +718,8 @@ export async function sendNotificationEmail(
         name: fullName,
         title,
         message,
-        appName: "TradeAviator",
-        supportEmail: "support@tradeaviator.com",
+        appName: "Viel",
+        supportEmail: "support@Viel.com",
     };
 
     // Add metadata fields to context (convert all values to strings)
@@ -733,7 +733,7 @@ export async function sendNotificationEmail(
         const emailContent = getEmailTemplate(config.template, templateContext);
 
         return await transporter.sendMail({
-            from: `"TradeAviator" <no-reply@usetradeaviator.com>`,
+            from: `"Viel" <no-reply@myviel.com>`,
             to: recipient,
             subject: config.subject,
             html: emailContent,
