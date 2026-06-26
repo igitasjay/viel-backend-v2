@@ -210,8 +210,6 @@ const corsOptions = {
       "ionic://localhost",
       "http://localhost",
       "http://localhost:3000",
-      "https://webadmin-zeta.vercel.app",
-      "https://www.tradeaviatoradmin.com",
     ];
 
     if (

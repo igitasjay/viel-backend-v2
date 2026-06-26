@@ -244,7 +244,7 @@ const placeOrder = Asyncly(async (req: Request, res: Response) => {
     const userId = req.currentUser!.id;
     const reqToken = req.accessToken;
 
-    logger.info(`gift card order requested by user ${userId}:`, {
+    logger.info(`Gift card order requested by user ${userId}:`, {
         reloadlyId: validatedData.reloadlyId,
         cardValue: validatedData.cardValue,
         quantity: validatedData.quantity,

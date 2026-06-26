@@ -304,7 +304,7 @@ export const sendWelcomeNotification = async (
         userId,
         notificationType: "SYSTEM",
         priority: "high",
-        title: `Welcome to TradeAviator, ${fullname}! 🚀`,
+        title: `Welcome to MyViel, ${fullname}! 🚀`,
         message:
           "We're thrilled to have you here! Complete your profile to unlock all features and start your journey with us.",
         metadata: {

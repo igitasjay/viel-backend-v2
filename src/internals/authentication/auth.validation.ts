@@ -19,7 +19,7 @@ const passwordValidation = z
 //   .regex(/^\d+$/, "Phone number must contain only digits");
 
 const emailValidation = z
-  .email("Invalid email address")
+  .email("Invalid email address here")
   .transform((email) => email.toLowerCase());
 
 const usernameValidation = z

@@ -49,7 +49,7 @@ export class DeviceSessionService {
                     null,
                     {
                         headers: {
-                            "User-Agent": "TradeAviator/1.0.0 (support@usetradeaviator.com)",
+                            "User-Agent": "MyViel/1.0.0 (support@useMyViel.com)",
                         },
                     },
                     "Geocoding request",

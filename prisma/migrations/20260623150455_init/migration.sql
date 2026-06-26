@@ -666,7 +666,7 @@ CREATE TABLE "promo_codes" (
 -- CreateTable
 CREATE TABLE "spin_wheels" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL DEFAULT 'TradeAviator Spin Wheel',
+    "name" TEXT NOT NULL DEFAULT 'MyViel Spin Wheel',
     "description" TEXT DEFAULT 'Spin once after trading $2000 worth of giftcards',
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "minGiftcardTradeValue" DECIMAL(10,2) NOT NULL DEFAULT 2000,
