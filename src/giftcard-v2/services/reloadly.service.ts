@@ -41,6 +41,43 @@ export const getReloadlyAccessToken = async (): Promise<string> => {
   }
 };
 
+// for buy gift card
+
+// get countries
+export const getCountriesFromReloadly = async (): Promise<any> => {
+  const token = await getReloadlyAccessToken();
+  try {
+    const response = await axios.get(`${RELOADLY_API_URL}/countries`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/com.reloadly.giftcards-v1+json',
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Reloadly get countries error:', error.message);
+    throw error;
+  }
+}
+
+// get products by iso code
+export const getProductByIsoCode = async (isoCode: string, page: number = 1, size: number = 20): Promise<any> => {
+  const token = await getReloadlyAccessToken();
+  console.log('token', token)
+  try {
+    const response = await axios.get(`${RELOADLY_API_URL}/countries/${isoCode}/products?page=${page}&size=${size}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/com.reloadly.giftcards-v1+json',
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Reloadly get products error:', error.message);
+    throw error;
+  }
+}
+
 export const getReloadlyProducts = async (page: number = 1, size: number = 200) => {
   const token = await getReloadlyAccessToken();
   try {

@@ -27,6 +27,7 @@ import adminBannerRouter from '@/routes/v1/admin-banner.routes';
 import adminUserRouter from '@/routes/v1/admin-user.routes';
 import adminSettingRouter from '@/routes/v1/admin-setting.routes';
 import healthRouter from '@/routes/v1/health.route';
+import { giftcardRoutes } from '@/internals/giftcard/routes/buy-giftcard.route';
 
 const router = Router();
 
@@ -55,7 +56,7 @@ router.use('/charge', chargeRouter);
 // router.get('/bankcodes', getBankCodes);
 // router.use('/crypto', cryptoRoute);
 router.use('/giftcard', giftcardRoute);
-router.use('/v2/giftcards', giftcardV2Route);
+// router.use('/v2/giftcards', giftcardRoutes);
 router.use('/admin/giftcard', adminGiftCardRoute);
 router.use('/authorisation', authorisationRoute);
 router.use('/transactions', transactionRouter);
@@ -77,7 +78,7 @@ router.post('/transactions/:reference/verify', verifyTransactionStatus);
 
 
 router.use('/infra/admin', adminRoutes);
-router.use('/infra/wallets', walletRoutes);  
+router.use('/infra/wallets', walletRoutes);
 // router.use('/infra/trade', tradeRoutes); 
 router.use('/infra/webhooks', webhookRoutes);
 

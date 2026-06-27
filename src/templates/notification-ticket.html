@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticket Notification</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 500px;
+        margin: 30px auto;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        color: #333333;
+        margin-bottom: 10px;
+      }
+      .message-box {
+        background: #e8f5e9;
+        padding: 15px;
+        border-left: 4px solid #4caf50;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .footer {
+        font-size: 12px;
+        color: #888888;
+        margin-top: 30px;
+        text-align: center;
+        border-top: 1px solid #eeeeee;
+        padding-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>🎫 $title</h2>
+      <p>Hello $name,</p>
+      <div class="message-box">
+        <p><strong>$message</strong></p>
+      </div>
+      <p>
+        Thank you for your ticket purchase! We're excited to have you join us
+        for this amazing experience.
+      </p>
+      <p style="margin-top: 20px">
+        <strong>Important Reminders:</strong><br />
+        📱 Keep your ticket confirmation handy<br />
+        📍 Check the event location and time details<br />
+        🎟️ Present your ticket (digital or printed) at the venue<br />
+        ⏰ Arrive early to avoid delays
+      </p>
+      <p style="margin-top: 20px">
+        <strong>Need Help?</strong><br />
+        View your ticket details in the app's "My Tickets" section. For any
+        questions or support, contact us at $supportEmail
+      </p>
+      <div class="footer">
+        <p>This is an automated notification for your ticket purchase.</p>
+        &copy; $year $appName. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>

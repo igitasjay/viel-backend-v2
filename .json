@@ -1,0 +1,13 @@
+{
+    "client": {
+        "calculatedSubtotal": 29.76,
+        "calculatedFee": 0.6,
+        "calculatedTotal": 30.36
+    },
+    "server": {
+        "expectedSubtotal": 29.76,
+        "expectedTotalFee": 150,
+        "expectedTotal": 179.76,
+        "promoDiscount": 0
+    }
+}

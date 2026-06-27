@@ -110,7 +110,7 @@ export class CryptoBuyService {
       paymentDescription: `Crypto Purchase - ${quote.cryptoAmount} ${quote.coin}`,
       currencyCode: 'NGN',
       contractCode: config.MONNIFY_CONTRACT_CODE!,
-      redirectUrl: 'https://tradeaviator.com', // Optional redirect
+      redirectUrl: 'https://MyViel.com', // Optional redirect
       paymentMethods: ['ACCOUNT_TRANSFER'],
     });
 
@@ -203,7 +203,7 @@ export class CryptoBuyService {
         const fiatAmt = new Decimal(tx.fiat_amount || '0');
         const netVol = new Decimal(user.netTradingVolumn || '0').plus(fiatAmt);
         const buyVol = new Decimal(user.totalBuyVolume || '0').plus(fiatAmt);
-        
+
         user.netTradingVolumn = netVol.toString();
         user.totalBuyVolume = buyVol.toString();
         await user.save();

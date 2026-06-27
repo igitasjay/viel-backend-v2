@@ -1,0 +1,844 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                          String                        @id @default(ulid())
+  fullname                    String
+  email                       String                        @unique
+  password                    String
+  referralCode                String                        @unique
+  profilePicture              String?
+  dateOfBirth                 DateTime?
+  isActive                    Boolean                       @default(true)
+  isVerified                  Boolean                       @default(false)
+  isKycVerified               Boolean                       @default(false)
+  bvn                         String?
+  nin                         String?
+  dailyTransactionSum         Decimal                       @default(0) @db.Decimal(10, 2)
+  createdAt                   DateTime                      @default(now())
+  updatedAt                   DateTime                      @updatedAt
+  referredById                String?
+  biometricPublicKey          String?
+  isBiometricEnabled          Boolean                       @default(false)
+  twoFactorSecret             String?
+  isTwoFactorEnabled          Boolean                       @default(false)
+  obiExAccountId              String?
+  deletedAt                   DateTime?
+  broadcastNotificationStatus BroadcastNotificationStatus[]
+  cryptoWallets               CryptoWallet[]
+  deviceSessions              DeviceSession[]
+  deviceTokens                DeviceTokens[]
+  disputes                    Dispute[]
+  externalAccounts            ExternalAccount[]
+  giftcardSales               GiftcardSales[]
+  notifications               Notification[]
+  price_alerts                PriceAlert[]
+  priceQuote                  PriceQuote[]
+  referredEarnings            ReferralEarning[]             @relation("ReferredEarnings")
+  referralEarnings            ReferralEarning[]             @relation("ReferrerEarnings")
+  supportConversations        SupportConversation[]
+  transactions                Transaction[]
+  security                    UserSecurity?
+  referredBy                  User?                         @relation("UserReferrals", fields: [referredById], references: [id])
+  referredUsers               User[]                        @relation("UserReferrals")
+
+  @@index([email])
+  @@index([referralCode])
+  @@index([isActive])
+  @@index([createdAt])
+  @@index([referredById])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model CryptoWallet {
+  id        String   @id @default(ulid())
+  userId    String
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  provider  String?  @default("OBI")
+  asset     String?
+  chain     String?
+  qrCode    String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, asset, chain])
+  @@index([userId])
+  @@index([chain])
+  @@index([address])
+  @@map("crypto_wallets")
+}
+
+model ExternalAccount {
+  id            String   @id @default(ulid())
+  userId        String
+  bankName      String
+  accountNumber String
+  accountName   String
+  isPrimary     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  providerCode  String?
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("external_accounts")
+}
+
+model UserSecurity {
+  id                         String     @id @default(ulid())
+  userId                     String     @unique
+  code                       String?
+  createdAt                  DateTime   @default(now())
+  expiresAt                  DateTime?
+  retryCount                 Int        @default(0)
+  lockedUntil                DateTime?
+  sentTo                     String?
+  lastOtpSentAt              DateTime?
+  failedPinAttempts          Int        @default(0)
+  isPinSet                   Boolean    @default(false)
+  oldPinAttempts             Int        @default(0)
+  oldPinAttemptsResetAt      DateTime?
+  isVerifiedForPasswordReset Boolean    @default(false)
+  updatedAt                  DateTime   @updatedAt
+  accountPin                 String?
+  action                     OtpAction?
+  passwordAttempts           Int        @default(0)
+  passwordAttemptsResetAt    DateTime?
+  user                       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([expiresAt])
+  @@map("user_security")
+}
+
+model DeviceSession {
+  id              String    @id @default(ulid())
+  userId          String
+  deviceId        String
+  deviceType      String
+  osVersion       String?
+  appVersion      String?
+  userAgent       String
+  ipAddress       String
+  location        String?
+  isTrusted       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  lastLoginAt     DateTime  @default(now())
+  verifiedAt      DateTime?
+  deviceName      String?
+  networkProvider String?
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deviceId])
+  @@index([userId])
+  @@index([deviceType])
+  @@index([lastLoginAt])
+  @@map("device_sessions")
+}
+
+model Transaction {
+  id                   String              @id @default(ulid())
+  userId               String
+  walletId             String?
+  category             TransactionCategory
+  narration            String?
+  status               TransactionStatus   @default(PENDING)
+  type                 TransactionType?
+  provider             String?
+  reference            String              @unique
+  sessionId            String?
+  externalRef          String?
+  amount               Decimal             @db.Decimal(10, 2)
+  currency             String
+  fee                  Decimal?            @db.Decimal(10, 2)
+  channel              String?
+  meta                 Json?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  giftCardQuantity     Int?
+  giftCardReceipt      String?
+  giftCardType         String?
+  giftCardValue        Decimal?            @db.Decimal(10, 2)
+  internalRef          String?
+  usdValue             Decimal?            @db.Decimal(10, 2)
+  providerRef          String?
+  rate                 String?
+  txHash               String?             @unique
+  idempotencyKey       String?
+  transactionValue     String?
+  institutionBank      String?
+  institutionAccountNo String?
+  giftcardSaleId       String?             @unique
+  cablePlan            String?
+  gcAcceptedCardId     String?
+  gcCardCurrency       String?
+  gcCardRange          String?
+  gcCountry            String?
+  gcEncryptedCode      String?
+  gcEncryptedPin       String?
+  reviewNotes          String?
+  reviewedAt           DateTime?
+  reviewedBy           String?
+  rejectionReason      String?
+  imageUrl             String?
+  disputes             Dispute[]
+  giftcardCodes        GiftcardCodes[]
+  ReferralEarning      ReferralEarning[]
+  giftcardSale         GiftcardSales?      @relation(fields: [giftcardSaleId], references: [id])
+  user                 User                @relation(fields: [userId], references: [id])
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId])
+  @@index([userId, idempotencyKey])
+  @@index([status])
+  @@index([category])
+  @@index([type])
+  @@index([reference])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@index([gcAcceptedCardId])
+  @@index([gcCountry])
+  @@index([userId, category, createdAt(sort: Desc)])
+  @@map("transactions")
+}
+
+model Notification {
+  id        String           @id @default(ulid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  status    String?
+  isRead    Boolean          @default(false)
+  meta      Json?
+  priority  String?
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([type])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model BroadcastNotification {
+  id             String                        @id @default(ulid())
+  title          String
+  message        String
+  type           NotificationType
+  priority       String                        @default("medium")
+  metadata       Json?
+  targetAudience String                        @default("ALL")
+  filterCriteria Json?
+  totalSent      Int                           @default(0)
+  totalRead      Int                           @default(0)
+  createdById    String?
+  createdAt      DateTime                      @default(now())
+  interactions   BroadcastNotificationStatus[]
+
+  @@index([type])
+  @@index([createdAt])
+  @@index([targetAudience])
+  @@map("broadcast_notifications")
+}
+
+model BroadcastNotificationStatus {
+  id          String                @id @default(ulid())
+  userId      String
+  broadcastId String
+  isRead      Boolean               @default(false)
+  readAt      DateTime?
+  createdAt   DateTime              @default(now())
+  broadcast   BroadcastNotification @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, broadcastId])
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([broadcastId])
+  @@map("broadcast_notification_status")
+}
+
+model NotificationTemplate {
+  id          String           @id @default(ulid())
+  name        String           @unique
+  title       String
+  message     String
+  type        NotificationType
+  priority    String           @default("medium")
+  variables   Json?
+  isActive    Boolean          @default(true)
+  createdById String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([name])
+  @@index([type])
+  @@index([isActive])
+  @@map("notification_templates")
+}
+
+model ScheduledNotification {
+  id               String                      @id @default(ulid())
+  title            String
+  message          String
+  type             NotificationType
+  priority         String                      @default("medium")
+  scheduledFor     DateTime
+  isRecurring      Boolean                     @default(false)
+  recurringPattern String?
+  targetUserIds    Json?
+  filterCriteria   Json?
+  status           ScheduledNotificationStatus @default(PENDING)
+  deliveredAt      DateTime?
+  createdById      String?
+  metadata         Json?
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
+
+  @@index([scheduledFor])
+  @@index([status])
+  @@index([type])
+  @@map("scheduled_notifications")
+}
+
+model UserNotificationPreference {
+  id          String    @id @default(ulid())
+  userId      String    @unique
+  enableInApp Boolean   @default(true)
+  enablePush  Boolean   @default(true)
+  enableEmail Boolean   @default(true)
+  mutedTypes  Json?
+  mutedUntil  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("user_notification_preferences")
+}
+
+model AcceptedGiftCard {
+  id              String          @id @default(ulid())
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  cardName        String
+  cardType        String
+  country         String
+  currency        String
+  availableRanges Json
+  receiptTypes    Json
+  rates           Json
+  imageUrl        String?
+  sales           GiftcardSales[]
+
+  @@unique([cardType, country])
+  @@index([cardType])
+  @@index([isActive])
+  @@map("accepted_giftcards")
+}
+
+model GiftcardCodes {
+  id            String             @id @default(ulid())
+  encryptedCode String
+  encryptedPin  String?
+  status        GiftCardCodeStatus @default(UNUSED)
+  deliveredAt   DateTime?
+  createdAt     DateTime           @default(now())
+  redemptionUrl String?
+  transactionId String?
+  transaction   Transaction?       @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@index([transactionId])
+  @@index([status])
+  @@map("giftcard_codes")
+}
+
+model FeeConfiguration {
+  id        String   @id @default(ulid())
+  type      String
+  feeType   String   @default("FIXED")
+  feeValue  Decimal  @db.Decimal(10, 2)
+  minAmount Decimal? @db.Decimal(10, 2)
+  maxAmount Decimal? @db.Decimal(10, 2)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([isActive])
+  @@map("fee_configurations")
+}
+
+model PlatformRevenue {
+  id            String   @id @default(ulid())
+  source        String
+  amount        Decimal  @db.Decimal(10, 2)
+  currency      String   @default("NGN")
+  orderId       String?
+  transactionId String?
+  userId        String
+  description   String?
+  createdAt     DateTime @default(now())
+
+  @@index([source])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("platform_revenue")
+}
+
+model Dispute {
+  id            String              @id @default(ulid())
+  userId        String
+  transactionId String
+  reason        String
+  status        DisputeStatus       @default(PENDING)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  category      TransactionCategory
+  imageUrls     String[]
+  description   String?
+  transaction   Transaction         @relation(fields: [transactionId], references: [id])
+  user          User                @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([transactionId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("disputes")
+}
+
+model Rate {
+  id           String   @id @default(ulid())
+  type         String
+  cardCountry  String?
+  cardRange    Int?
+  cardCategory String?
+  currentRate  Decimal  @db.Decimal(10, 2)
+  amount       Decimal? @db.Decimal(10, 2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([type])
+  @@index([cardCountry])
+  @@map("rates")
+}
+
+model ReferralEarning {
+  id             String                 @id @default(ulid())
+  userId         String
+  referredUserId String
+  earningType    ReferralEarningType    @default(SIGNUP)
+  amount         Decimal                @db.Decimal(10, 2)
+  status         ReferralEarningStatus?
+  expiresAt      DateTime?
+  transactionId  String?
+  meta           Json?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  redeemedAt     DateTime?
+  referredUser   User                   @relation("ReferredEarnings", fields: [referredUserId], references: [id])
+  transaction    Transaction?           @relation(fields: [transactionId], references: [id])
+  user           User                   @relation("ReferrerEarnings", fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([referredUserId])
+  @@index([earningType])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("referral_earnings")
+}
+
+model KycSession {
+  id             String   @id @default(ulid())
+  userId         String
+  clientId       String
+  identityNumber String
+  requestId      String
+  status         String
+  otpVerified    Boolean  @default(false)
+  isDeleted      Boolean
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+  @@map("kyc_session")
+}
+
+model DeviceTokens {
+  id        String   @id @default(ulid())
+  userId    String
+  token     String   @unique
+  deviceId  String
+  platform  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isActive])
+  @@index([token])
+  @@index([userId])
+  @@index([deviceId])
+  @@map("device_tokens")
+}
+
+model GiftcardProducts {
+  id           String   @id @default(ulid())
+  reloadlyId   String   @unique
+  name         String
+  country      String
+  countryCode  String
+  currency     String
+  denomination Decimal  @db.Decimal(10, 2)
+  minAmount    Decimal? @db.Decimal(10, 2)
+  maxAmount    Decimal? @db.Decimal(10, 2)
+  imageUrl     String?
+  isActive     Boolean  @default(true)
+  reloadlyData Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([countryCode])
+  @@index([country])
+  @@index([isActive])
+  @@map("giftcards_products")
+}
+
+model GiftcardSales {
+  id                String             @id @default(ulid())
+  userId            String
+  acceptedCardId    String
+  cardType          String
+  country           String
+  cardRange         String
+  cardValue         Decimal            @db.Decimal(10, 2)
+  cardCurrency      String
+  quantity          Int                @default(1)
+  receiptType       String
+  cardImages        String[]
+  encryptedCardCode String?
+  encryptedCardPin  String?
+  userNotes         String?
+  buyingRate        Decimal            @db.Decimal(10, 2)
+  totalCardValue    Decimal            @db.Decimal(10, 2)
+  payoutAmount      Decimal            @db.Decimal(10, 2)
+  promoCode         String?
+  promoDiscount     Decimal            @default(0) @db.Decimal(10, 2)
+  status            GiftCardSaleStatus @default(SUBMITTED)
+  reviewedBy        String?
+  reviewedAt        DateTime?
+  reviewNotes       String?
+  rejectionReason   String?
+  paymentMethod     String             @default("WALLET")
+  transactionId     String?            @unique
+  paidAt            DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  acceptedCard      AcceptedGiftCard   @relation(fields: [acceptedCardId], references: [id])
+  users             User               @relation(fields: [userId], references: [id])
+  transactions      Transaction?
+
+  @@index([createdAt])
+  @@index([reviewedAt])
+  @@index([status])
+  @@index([userId])
+  @@map("giftcard_sales")
+}
+
+model PriceQuote {
+  id            String    @id @default(ulid())
+  userId        String
+  productId     String
+  cardValue     Decimal   @db.Decimal(10, 2)
+  quantity      Int
+  basePrice     Decimal   @db.Decimal(10, 2)
+  fee           Decimal   @db.Decimal(10, 2)
+  promoDiscount Decimal   @default(0) @db.Decimal(10, 2)
+  totalAmount   Decimal   @db.Decimal(10, 2)
+  exchangeRate  Decimal   @db.Decimal(10, 2)
+  feePercentage Decimal   @db.Decimal(5, 2)
+  expiresAt     DateTime
+  usedAt        DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  users         User      @relation(fields: [userId], references: [id])
+
+  @@index([expiresAt])
+  @@index([userId, expiresAt])
+  @@map("prize_quote")
+}
+
+model Admin {
+  id                   String                @id @default(ulid())
+  name                 String
+  email                String                @unique
+  password             String
+  createdAt            DateTime              @default(now())
+  profilePicture       String?
+  isAdmin              Boolean               @default(false)
+  isSuper              Boolean               @default(false)
+  lastSeenAt           DateTime?
+  isActive             Boolean               @default(true)
+  notifications        AdminNotification[]
+  supportConversations SupportConversation[]
+
+  @@map("admins")
+}
+
+model AdminNotification {
+  id           String               @id @default(ulid())
+  adminId      String?
+  type         NotificationType
+  priority     NotificationPriority @default(medium)
+  title        String
+  message      String
+  metadata     Json?
+  isGeneral    Boolean              @default(false)
+  readByAdmins String[]             @default([])
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  admin        Admin?               @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([isGeneral])
+  @@index([createdAt])
+  @@index([type])
+  @@map("admin_notifications")
+}
+
+model AppSettings {
+  id          String   @id @default(ulid())
+  key         String   @unique
+  description String?
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  appValue    String[]
+
+  @@index([key])
+  @@map("app_settings")
+}
+
+model CryptoAsset {
+  id        String   @id @default(ulid())
+  code      String   @unique
+  name      String
+  imageUrl  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  buyRate   Decimal? @db.Decimal(10, 2)
+
+  @@index([code])
+  @@index([isActive])
+  @@map("crypto_assets")
+}
+
+model PriceAlert {
+  id                String        @id @default(ulid())
+  userId            String
+  cryptoAsset       String
+  rateType          AlertRateType @default(SELL)
+  targetAmount      Decimal       @db.Decimal(10, 2)
+  triggerCondition  AlertTrigger
+  emailNotification Boolean       @default(false)
+  pushNotification  Boolean       @default(true)
+  isActive          Boolean       @default(true)
+  triggeredAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([cryptoAsset])
+  @@map("price_alerts")
+}
+
+model SupportConversation {
+  id            String                    @id @default(ulid())
+  userId        String
+  subject       String
+  status        SupportConversationStatus @default(OPEN)
+  priority      SupportPriority           @default(MEDIUM)
+  assignedTo    String?
+  category      String?
+  lastMessageAt DateTime?
+  closedAt      DateTime?
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+  admin         Admin?                    @relation(fields: [assignedTo], references: [id])
+  user          User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages      SupportMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([createdAt])
+  @@map("support_conversations")
+}
+
+model SupportMessage {
+  id             String               @id @default(ulid())
+  conversationId String
+  senderId       String
+  senderType     SupportMessageSender
+  message        String
+  attachments    Json?
+  isRead         Boolean              @default(false)
+  createdAt      DateTime             @default(now())
+  conversation   SupportConversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+  @@map("support_messages")
+}
+
+enum AlertRateType {
+  SELL
+  BUY
+}
+
+enum AlertTrigger {
+  ABOVE
+  AT
+}
+
+enum TransactionCategory {
+  REVERSAL
+  GIFTCARDS
+  CRYPTO
+}
+
+enum TransactionStatus {
+  UNDER_REVIEW
+  PENDING
+  SUCCESS
+  FAILED
+  REVERSED
+  PROCESSING
+  SUBMITTED
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum NotificationType {
+  TRANSACTION
+  WALLET
+  GIFTCARD
+  DISPUTE
+  SECURITY
+  PROMO
+  SYSTEM
+  REWARD
+  TICKET_PURCHASE
+  MARKETING
+  TEST
+}
+
+enum NotificationPriority {
+  low
+  medium
+  high
+}
+
+enum ScheduledNotificationStatus {
+  PENDING
+  PROCESSING
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum TradeStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum GiftCardOrderStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum GiftCardCodeStatus {
+  UNUSED
+  DELIVERED
+  REDEEMED
+}
+
+enum GiftCardSaleStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  PAID
+  REJECTED
+  CANCELLED
+}
+
+enum DisputeStatus {
+  PENDING
+  IN_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+enum OtpAction {
+  VERIFY_ACCOUNT
+  PASSWORD_RESET
+  DEVICE_VERIFICATION
+  PIN_RESET
+  KYC_VERIFICATION
+}
+
+enum ReferralEarningType {
+  SIGNUP
+  TRANSACTION
+  MILESTONE
+  TIER_UPGRADE
+}
+
+enum ReferralEarningStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+  REDEEMED
+}
+
+enum SupportConversationStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_FOR_USER
+  RESOLVED
+  CLOSED
+}
+
+enum SupportPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum SupportMessageSender {
+  USER
+  ADMIN
+}

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Notification</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 500px;
+        margin: 30px auto;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        color: #333333;
+        margin-bottom: 10px;
+      }
+      .message-box {
+        background: #e3f2fd;
+        padding: 15px;
+        border-left: 4px solid #2196f3;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .footer {
+        font-size: 12px;
+        color: #888888;
+        margin-top: 30px;
+        text-align: center;
+        border-top: 1px solid #eeeeee;
+        padding-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>🔔 $title</h2>
+      <p>Hello $name,</p>
+      <div class="message-box">
+        <p><strong>$message</strong></p>
+      </div>
+      <p>
+        This is an important system notification to keep you informed about
+        updates, changes, or important information regarding our platform.
+      </p>
+      <p style="margin-top: 20px">
+        <strong>Stay Connected:</strong><br />
+        • Check the app regularly for the latest updates<br />
+        • Follow us on social media for announcements<br />
+        • Enable push notifications to stay informed<br />
+        • Visit our help center for detailed guides
+      </p>
+      <p>
+        Questions or concerns? Reach out to our support team at $supportEmail
+      </p>
+      <div class="footer">
+        <p>This is an automated system notification.</p>
+        &copy; $year $appName. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>

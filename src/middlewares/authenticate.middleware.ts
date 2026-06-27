@@ -1,6 +1,6 @@
 import { logger } from '@/lib/winston';
 import User from '@/models/user.model';
-import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import type { Request, Response, NextFunction } from 'express';
 import type { Types } from 'mongoose';
 import { verifyAccessToken } from '@/lib/jwt';
@@ -51,9 +51,15 @@ const authenticate = async (
     // attach user info to request object
     req.userId = jwtPayload.userId;
     req.user = user;
+    req.currentUser = {
+      id: user._id.toString(),
+      email: user.email,
+      name: `${user.firstname} ${user.lastname}`,
+    };
+    req.accessToken = token;
     return next();
   } catch (error) {
-    if (error instanceof TokenExpiredError) {
+    if (error instanceof jwt.TokenExpiredError) {
       res.status(401).json({
         code: 'TokenExpiredError',
         message: 'Access denied: token has expired.',
@@ -61,7 +67,7 @@ const authenticate = async (
       });
       return;
     }
-    if (error instanceof JsonWebTokenError) {
+    if (error instanceof jwt.JsonWebTokenError) {
       res.status(401).json({
         code: 'JsonWebTokenError',
         message: 'Access denied: invalid token.',

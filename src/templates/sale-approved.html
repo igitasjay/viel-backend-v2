@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Received - Sale Approved</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+          Cantarell, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+
+      .container {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        color: #2c3e50;
+        margin: 0;
+        font-size: 24px;
+      }
+
+      .logo {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 32px;
+        font-weight: bold;
+      }
+
+      .content {
+        margin-bottom: 30px;
+      }
+
+      .content p {
+        margin: 15px 0;
+        font-size: 16px;
+      }
+
+      .celebration {
+        text-align: center;
+        font-size: 48px;
+        margin: 20px 0;
+      }
+
+      .payout-box {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border: 2px solid #10b981;
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        margin: 25px 0;
+      }
+
+      .payout-box .label {
+        color: #065f46;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+      }
+
+      .payout-box .amount {
+        font-size: 42px;
+        font-weight: bold;
+        color: #065f46;
+        margin: 15px 0;
+      }
+
+      .payout-box .success-text {
+        color: #047857;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .transaction-details {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 25px 0;
+      }
+
+      .transaction-details h3 {
+        margin-top: 0;
+        color: #1e293b;
+        font-size: 16px;
+      }
+
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .detail-row:last-child {
+        border-bottom: none;
+      }
+
+      .detail-label {
+        color: #64748b;
+        font-weight: 500;
+      }
+
+      .detail-value {
+        color: #1e293b;
+        font-weight: 600;
+      }
+
+      .success-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        margin: 10px 0;
+      }
+
+      .info-box {
+        background-color: #eff6ff;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #3b82f6;
+        margin: 20px 0;
+        font-size: 14px;
+        color: #1e3a8a;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .footer p {
+        margin: 8px 0;
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 600px) {
+        body {
+          padding: 10px;
+        }
+
+        .container {
+          padding: 20px;
+        }
+
+        .header h1 {
+          font-size: 20px;
+        }
+
+        .payout-box .amount {
+          font-size: 32px;
+        }
+
+        .celebration {
+          font-size: 36px;
+        }
+
+        .detail-row {
+          flex-direction: column;
+          gap: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">💰</div>
+        <h1>Payment Received!</h1>
+      </div>
+
+      <div class="celebration">🎉</div>
+
+      <div class="content">
+        <p>Hello <strong>$name</strong>,</p>
+
+        <p>
+          Great news! Your <strong>$cardType</strong> gift card sale has been
+          approved and payment has been credited to your wallet.
+        </p>
+
+        <div class="payout-box">
+          <div class="label">Amount Credited</div>
+          <div class="amount">$payoutAmount</div>
+          <div class="success-text">✓ Successfully paid to your wallet</div>
+        </div>
+
+        <div class="success-badge">✓ APPROVED & PAID</div>
+
+        <div class="transaction-details">
+          <h3>📋 Transaction Details</h3>
+          <div class="detail-row">
+            <span class="detail-label">Card Type:</span>
+            <span class="detail-value">$cardType</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Quantity:</span>
+            <span class="detail-value">$quantity x $cardValue</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Transaction ID:</span>
+            <span class="detail-value">$transactionId</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Payment Date:</span>
+            <span class="detail-value">$paidDate at $paidTime</span>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <strong>💡 Your Payment:</strong><br />
+          The funds are now available in your $appName wallet. You can view your
+          transaction history in the app or withdraw to your bank account.
+        </div>
+
+        <p>
+          Thank you for selling with us! We look forward to your next
+          transaction.
+        </p>
+
+        <p>
+          If you have any questions, please contact our support team at
+          <strong>$supportEmail</strong>.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>
+          This email was sent from an automated system. Please do not reply to
+          this email.
+        </p>
+        <p>&copy; $year $appName. All rights reserved.</p>
+        <p style="font-size: 12px; margin-top: 15px">
+          Need help? Contact us at $supportEmail
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
