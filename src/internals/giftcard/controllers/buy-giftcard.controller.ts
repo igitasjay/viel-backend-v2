@@ -240,7 +240,7 @@ const getExchangeRate = Asyncly(async (req: Request, res: Response) => {
 });
 
 const placeOrder = Asyncly(async (req: Request, res: Response) => {
-    const validatedData = (req as any).validated.body;
+    const validatedData = req.body;
     const userId = req.currentUser!.id;
     const reqToken = req.accessToken;
 

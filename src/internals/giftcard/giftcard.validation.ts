@@ -42,11 +42,9 @@ const placeDirectOrderBodySchema = z.object({
     promoCode: z.string().optional(),
 });
 
-const placeDirectOrderSchema = z.object({
-    body: placeDirectOrderBodySchema,
-});
+const placeDirectOrderSchema = placeDirectOrderBodySchema;
 
-export type PlaceDirectOrderBody = z.infer<typeof placeDirectOrderBodySchema>;
+export type PlaceDirectOrderBody = z.infer<typeof placeDirectOrderSchema>;
 
 // GC SELL
 
