@@ -13,6 +13,9 @@ import * as ref from "@/shared/helpers/references";
 import { TransactionCategory, TransactionType } from "@prisma/client";
 import { createGiftcardMeta, getGiftcardMeta, updateGiftcardMeta } from "../types/giftcard.type";
 import { ReloadlyOrderResponse } from "@/externals/reloadly/interface";
+import { initMonnifyBankTransfer, initMonnifyTransaction } from "@/monnify-infra/services/monnify.service";
+import config from "@/config/config";
+import { useTransactionPin } from "@/internals/account/account.utils";
 
 
 class GiftCardService {
@@ -115,12 +118,14 @@ class GiftCardService {
             calculatedSubtotal: number;
             calculatedFee: number;
             calculatedTotal: number;
-            // pin: string;
-            paymentMethod: "WALLET" | "VIRTUAL_ACCOUNT";
+            pin?: string;
+            paymentMethod: "Monnify";
             currency: string;
             promoCode?: string;
         },
         userId: string,
+        fullname: string,
+        email: string,
         reqToken: string | undefined,
     ): Promise<PlaceOrderResponseDTO> {
         const {
@@ -130,7 +135,7 @@ class GiftCardService {
             calculatedSubtotal,
             calculatedFee,
             calculatedTotal,
-            // pin,
+            pin,
             paymentMethod,
             currency,
             promoCode,
@@ -298,37 +303,66 @@ class GiftCardService {
             );
         }
 
-        // await useTransactionPin(userId, pin, reqToken);
-        // logger.info("Transaction PIN verified");
+        await useTransactionPin(userId, pin ?? '', reqToken);
+        logger.info("Transaction PIN verified");
 
         // await checkTransactionLimits(userId, expectedTotal);
         // logger.info("Transaction limits verified");
-
-        // const paymentResult =
-        //     paymentMethod === "WALLET"
-        //         ? await processDebitWallet(userId, {
-        //             amount: expectedTotal,
-        //             currency: currency,
-        //         }).then((result) => {
-        //             logger.info("Wallet debited successfully");
-        //             return { walletId: result.wallet.id };
-        //         })
-        //         : await processDebitVirtualAccount(userId, {
-        //             amount: expectedTotal,
-        //             currency: currency,
-        //         }).then((result) => {
-        //             logger.info("Virtual account debited successfully");
-        //             return { virtualAccountId: result.wallet.id };
-        //         });
 
         const requestId = ref.generateRequestRef();
         const orderReference = `GCP|${ref.generateTransactionReference()}`;
         const sessionId = ref.generateSessionId();
 
+
+
+        const initTxResponse = await initMonnifyTransaction({
+            amount: expectedTotal,
+            customerName: fullname.trim() || 'User',
+            customerEmail: email,
+            paymentReference: orderReference,
+            paymentDescription: `Giftcard Purchase - ${quantity}x ${product.name} (${product.currency}${Number(cardValue)})`,
+            currencyCode: 'NGN',
+            contractCode: config.MONNIFY_CONTRACT_CODE!,
+            redirectUrl: 'https://MyViel.com', // Optional redirect
+            paymentMethods: ['ACCOUNT_TRANSFER'],
+        });
+
+        const monnifyRef = initTxResponse.responseBody.transactionReference;
+
+        // Initialize Monnify Bank Transfer
+        await initMonnifyBankTransfer({
+            transactionReference: monnifyRef,
+            amount: expectedTotal,
+            customerName: fullname,
+            customerEmail: email,
+            paymentDescription: `Giftcard Purchase - ${quantity}x ${product.name} (${product.currency}${Number(cardValue)})`,
+            currencyCode: 'NGN',
+            contractCode: config.MONNIFY_CONTRACT_CODE!,
+        }).then((result) => {
+            logger.info("Monnify bank transfer initiated successfully");
+            return { ...result.responseBody };
+        });
+
+
+
+        // const paymentResult = await initMonnifyBankTransfer({
+        //     transactionReference: monnifyRef,
+        //     amount: expectedTotal,
+        //     customerName: fullname,
+        //     customerEmail: email,
+        //     paymentDescription: `Giftcard Purchase - ${quantity}x ${product.name} (${product.currency}${Number(cardValue)})`,
+        //     currencyCode: 'NGN',
+        //     contractCode: "",
+        // }).then((result) => {
+        //     logger.info("Monnify bank transfer initiated successfully");
+        //     return { ...result.responseBody };
+        // })
+
+
         const transaction = await prisma.transaction.create({
             data: {
                 userId,
-                // ...paymentResult,
+                // ...monnifyResponse,
                 category: TransactionCategory.GIFTCARDS,
                 type: TransactionType.DEBIT,
                 amount: expectedTotal,

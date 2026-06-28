@@ -8,6 +8,7 @@ import {
 } from '@/types/monnify.type';
 import axios from 'axios';
 import config from '@/config/config';
+import { logger } from '@/lib/winston';
 
 const MONNIFY_API_KEY = config.MONNIFY_API_KEY;
 const MONNIFY_SECRET_KEY = config.MONNIFY_SECRET_KEY;
@@ -55,7 +56,7 @@ export async function getMonnifyAccessToken(): Promise<string> {
   } catch (error: any) {
     // Log only the message to avoid circular JSON print
     console.error('Monnify Auth API error:', error.message);
-    
+
     // Throw simplified error
     const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify Auth Failed') as any;
     safeError.status = error.response?.status;
@@ -84,7 +85,7 @@ export async function getMonnifyTransactionDetails(
     return response.data;
   } catch (error: any) {
     console.error('Monnify Transaction API error:', error.message);
-    
+
     const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify transaction fetch failed') as any;
     safeError.status = error.response?.status;
     safeError.monnifyResponse = error.response?.data;
@@ -97,6 +98,7 @@ export async function initMonnifyBankTransfer(
   payload: MonnifyBankTransferRequest,
 ): Promise<MonnifyBankTransferResponse> {
   const accessToken = await getMonnifyAccessToken();
+  logger.info('initMonnifyBankTransfer: Starting Monnify Bank Transfer init process', { payload });
 
   try {
     const response = await axios.post<MonnifyBankTransferResponse>(
@@ -111,8 +113,8 @@ export async function initMonnifyBankTransfer(
     );
     return response.data;
   } catch (error: any) {
-    console.error('Monnify Bank Transfer API error:', error.message);
-    
+    logger.error('initMonnifyBankTransfer: Monnify Bank Transfer init failed', { error });
+
     const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify bank transfer init failed') as any;
     safeError.status = error.response?.status;
     safeError.monnifyResponse = error.response?.data;
@@ -142,7 +144,7 @@ export async function getMonnifyTransactionStatus(
     return response.data;
   } catch (error: any) {
     console.error('Monnify Query API error:', error.message);
-    
+
     const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify transaction query failed') as any;
     safeError.status = error.response?.status;
     safeError.monnifyResponse = error.response?.data;
@@ -155,6 +157,7 @@ export async function initMonnifyTransaction(
   payload: MonnifyInitTransactionRequest,
 ): Promise<MonnifyInitTransactionResponse> {
   const accessToken = await getMonnifyAccessToken();
+  logger.info('initMonnifyTransaction: Starting Monnify Init Transaction process', { payload });
 
   try {
     const response = await axios.post<MonnifyInitTransactionResponse>(
@@ -170,7 +173,7 @@ export async function initMonnifyTransaction(
     return response.data;
   } catch (error: any) {
     console.error('Monnify Init Transaction API error:', error.message);
-    
+
     const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify init transaction failed') as any;
     safeError.status = error.response?.status;
     safeError.monnifyResponse = error.response?.data;

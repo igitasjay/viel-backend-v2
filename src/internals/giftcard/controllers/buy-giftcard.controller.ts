@@ -12,6 +12,7 @@ import { giftCardService } from "../services/buy-giftcard.service";
 import { decrypt } from "@/shared/utils/encryption";
 import { withPagination } from "@/shared/utils/pagination";
 import { createDisplayName } from "@/shared/helpers/giftcard-displayname";
+import { publishToQueue } from "@/shared/workers/publisher";
 
 const getMinMaxAmounts = (
     reloadlyData: any,
@@ -257,6 +258,8 @@ const placeOrder = Asyncly(async (req: Request, res: Response) => {
     const result = await giftCardService.placeDirectOrder(
         validatedData,
         userId,
+        req.currentUser?.name,
+        req.currentUser?.email,
         reqToken,
     );
 
@@ -273,28 +276,28 @@ const placeOrder = Asyncly(async (req: Request, res: Response) => {
                     ? `Your ${result.productName} gift card (${result.quantity}x ${result.cardValue}) is ready! 🎁`
                     : `Your ${result.productName} gift card order is processing. You'll be notified when codes are ready. ⏳`;
 
-            //   await publishToQueue({
-            //     type: "NOTIFICATION_EVENT",
-            //     payload: {
-            //       userId,
-            //       notificationType: "GIFTCARD",
-            //       priority: result.status === "SUCCESS" ? "high" : "low",
-            //       title:
-            //         result.status === "SUCCESS"
-            //           ? "Gift Card Ready! 🎁"
-            //           : "Order Processing ⏳",
-            //       message: notificationMessage,
-            //       metadata: {
-            //         orderId: result.orderId,
-            //         orderReference: result.orderReference,
-            //         productName: result.productName,
-            //         totalAmount: result.totalAmount,
-            //         status: result.status,
-            //         action: "giftcard_order",
-            //       },
-            //       deliveryChannels: ["in_app, push"],
-            //     },
-            //   });
+            await publishToQueue({
+                type: "NOTIFICATION_EVENT",
+                payload: {
+                    userId,
+                    notificationType: "GIFTCARD",
+                    priority: result.status === "SUCCESS" ? "high" : "low",
+                    title:
+                        result.status === "SUCCESS"
+                            ? "Gift Card Ready! 🎁"
+                            : "Order Processing ⏳",
+                    message: notificationMessage,
+                    metadata: {
+                        orderId: result.orderId,
+                        orderReference: result.orderReference,
+                        productName: result.productName,
+                        totalAmount: result.totalAmount,
+                        status: result.status,
+                        action: "giftcard_order",
+                    },
+                    deliveryChannels: ["in_app, push"],
+                },
+            });
             logger.info(`Giftcard Order notification queued for user ${userId}`, {
                 orderId: result.orderId,
                 status: result.status,
@@ -327,25 +330,25 @@ const placeOrder = Asyncly(async (req: Request, res: Response) => {
                     }
                 });
 
-                // await publishToQueue({
-                //   type: "GIFTCARD_PURCHASED",
-                //   payload: {
-                //     userId,
-                //     recipient: user.email,
-                //     fullName: user.fullname,
-                //     orderDetails: {
-                //       orderId: result.orderId,
-                //       orderReference: result.orderReference,
-                //       productName: result.productName,
-                //       quantity: result.quantity,
-                //       cardValue: result.cardValue,
-                //       totalAmount: result.totalAmount,
-                //       status: result.status,
-                //       purchasedAt: new Date().toISOString(),
-                //       codes: decryptedCodes,
-                //     },
-                //   },
-                // });
+                await publishToQueue({
+                    type: "GIFTCARD_PURCHASED",
+                    payload: {
+                        userId,
+                        recipient: user.email,
+                        fullName: user.fullname,
+                        orderDetails: {
+                            orderId: result.orderId,
+                            orderReference: result.orderReference,
+                            productName: result.productName,
+                            quantity: result.quantity,
+                            cardValue: result.cardValue,
+                            totalAmount: result.totalAmount,
+                            status: result.status,
+                            purchasedAt: new Date().toISOString(),
+                            codes: decryptedCodes,
+                        },
+                    },
+                });
                 logger.info(
                     `Purchase email queued for user ${userId} with ${decryptedCodes.length} codes`,
                 );
