@@ -37,7 +37,7 @@ export const useTransactionPin = async (
     }
     if (!user.isVerified) {
         throw new ForbiddenException(
-            "Please verify your account before using  transaction PIN.",
+            "Please verify your account before using transaction PIN.",
         );
     }
 

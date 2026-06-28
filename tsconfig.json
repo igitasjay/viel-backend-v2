@@ -5,7 +5,6 @@
     "target": "ES2023",
     "strict": true,
     "esModuleInterop": true,
-    // "ignoreDeprecations": "6.0",
     "rootDir": "src",
     "outDir": "dist",
     "skipLibCheck": true,
@@ -27,7 +26,7 @@
     "typeRoots": [
       "./src/@types"
     ],
-    "jsx": "react-jsx",
+    "jsx": "react-jsx"
   },
   "include": [
     "src/**/*",

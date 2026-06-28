@@ -7,6 +7,7 @@
     "start": "node dist/server.js",
     "dev": "tsx src/bin/www.ts",
     "seed:giftcard": "tsx src/scripts/seed-v2-giftcards.ts",
+    "seed:giftcard:main": "tsx prisma/giftcard.seed.ts",
     "seed:crypto": "tsx src/seed/crypto-seeds.ts",
     "seed:transaction": "tsx src/seed/transaction-seeds.ts",
     "watcher:dev": "tsx src/crypto-infra/workers/evm-watcher.ts",

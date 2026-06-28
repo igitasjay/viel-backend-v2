@@ -177,8 +177,8 @@ const getOrder = Asyncly(async (req: Request, res: Response) => {
                     id: true,
                     fullname: true,
                     email: true,
-                    username: true,
-                    phone: true,
+                    // username: true,
+                    // phone: true,
                 },
             },
             giftcardCodes: true,
@@ -249,7 +249,7 @@ const getOrder = Asyncly(async (req: Request, res: Response) => {
 
             paymentMethod: gcMeta.paymentMethod,
             walletId: transaction.walletId,
-            virtualAccountId: transaction.virtualAccountId,
+            // virtualAccountId: transaction.virtualAccountId,
             transactionId: transaction.id,
 
             reloadlyOrderId: gcMeta.reloadlyOrderId,
