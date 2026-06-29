@@ -4,7 +4,7 @@
   "main": "src/server.ts",
   "scripts": {
     "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
-    "start": "node dist/server.js",
+    "start": "tsx dist/bin/www.js",
     "dev": "tsx src/bin/www.ts",
     "seed:giftcard": "tsx src/scripts/seed-v2-giftcards.ts",
     "seed:giftcard:main": "tsx prisma/giftcard.seed.ts",
