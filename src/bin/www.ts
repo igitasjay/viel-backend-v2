@@ -1,5 +1,5 @@
 import http from 'http';
-import app from '../server.js';
+import app from '../server';
 import { prisma } from '@/shared/db/prisma';
 import { config } from '@shared/config/config';
 import { logger } from '@/lib/winston';
