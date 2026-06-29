@@ -27,7 +27,7 @@ import adminBannerRouter from '@/routes/v1/admin-banner.routes';
 import adminUserRouter from '@/routes/v1/admin-user.routes';
 import adminSettingRouter from '@/routes/v1/admin-setting.routes';
 import healthRouter from '@/routes/v1/health.route';
-import { giftcardRoutes } from '@/internals/giftcard/routes/buy-giftcard.route';
+import { buyGiftcardRoutes } from '@/internals/giftcard/routes/buy-giftcard.route';
 
 const router = Router();
 

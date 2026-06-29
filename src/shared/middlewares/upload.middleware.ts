@@ -41,7 +41,7 @@ const giftCardFileFilter = (
     cb(null, true);
   } else {
     cb(
-      new BadRequestException("Only image files (jpg, png, webp) are allowed"),
+      new BadRequestException("Only image files (jpeg, jpg, png, webp) are allowed"),
     );
   }
 };
@@ -67,35 +67,35 @@ export const handleGiftCardUpload = (
   return uploadGiftCardImages.array(fieldName, maxCount);
 };
 
-const eventImages = (
-  _req: Request,
-  file: Express.Multer.File,
-  cb: multer.FileFilterCallback,
-) => {
-  const allowedTypes = [
-    "image/jpeg",
-    "image/jpg",
-    "image/png",
-    "image/webp",
-    "file/txt",
-  ];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(
-      new BadRequestException("Only image files (jpg, png, webp) are allowed"),
-    );
-  }
-};
+// const eventImages = (
+//   _req: Request,
+//   file: Express.Multer.File,
+//   cb: multer.FileFilterCallback,
+// ) => {
+//   const allowedTypes = [
+//     "image/jpeg",
+//     "image/jpg",
+//     "image/png",
+//     "image/webp",
+//     "file/txt",
+//   ];
+//   if (allowedTypes.includes(file.mimetype)) {
+//     cb(null, true);
+//   } else {
+//     cb(
+//       new BadRequestException("Only image files (jpg, png, webp) are allowed"),
+//     );
+//   }
+// };
 
-export const uploadEventImages = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 5 * 1024 * 1024,
-    files: 5,
-  },
-  fileFilter: eventImages,
-});
+// export const uploadEventImages = multer({
+//   storage: multer.memoryStorage(),
+//   limits: {
+//     fileSize: 5 * 1024 * 1024,
+//     files: 5,
+//   },
+//   fileFilter: eventImages,
+// });
 
 const disputeImages = (
   _req: Request,
@@ -113,7 +113,7 @@ const disputeImages = (
     cb(null, true);
   } else {
     cb(
-      new BadRequestException("Only image files (jpg, png, webp) are allowed"),
+      new BadRequestException(`Only image files (jpg, png, webp) are allowed. Received: ${file.mimetype}`),
     );
   }
 };

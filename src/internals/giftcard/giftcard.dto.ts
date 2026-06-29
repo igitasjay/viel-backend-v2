@@ -239,9 +239,9 @@ export interface CalculateSalePayoutResponse {
     totalCardValue: number;
     payoutAmount: number;
     currency: string;
-    breakdown: {
-        promoDiscount?: number;
-    };
+    // breakdown: {
+    //     promoDiscount?: number;
+    // };
     promoCodeId?: string;
 }
 

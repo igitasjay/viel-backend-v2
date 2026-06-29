@@ -65,7 +65,7 @@ const reAuthenticateUser = Asyncly(async (req, res) => {
       email: true,
       fullname: true,
       // username: true,
-      phone: true,
+      // phone: true,
       password: true,
       isActive: true,
       isVerified: true,
