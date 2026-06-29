@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
@@ -7,12 +7,18 @@ import * as repo from "./repo";
 import { OtpAction } from "@prisma/client";
 import { logger } from "@/lib/winston";
 
-// nodemailer transporter
-const transporter = nodemailer.createTransport({
-    host: config.mail.host,
-    port: config.mail.port,
-    auth: { user: config.mail.username, pass: config.mail.password },
-});
+// resend transporter adapter
+const resend = new Resend(config.mail.resendApiKey);
+
+const transporter = {
+    sendMail: async (options: { from: string; to: string; subject: string; html: string }) => {
+        const { data, error } = await resend.emails.send(options);
+        if (error) {
+            throw error;
+        }
+        return { ...data, messageId: data?.id };
+    }
+};
 
 export function generateOtp(): string {
     return crypto.randomInt(100000, 999999).toString().padStart(6, "0");

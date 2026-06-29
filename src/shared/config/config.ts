@@ -54,6 +54,7 @@ function createConfig() {
         },
 
         mail: {
+            resendApiKey: getEnvOptional("RESEND_API_KEY"),
             host: getEnv("MAIL_HOST"),
             port: getEnvNumber("MAIL_PORT"),
             username: getEnv("MAIL_USERNAME"),
