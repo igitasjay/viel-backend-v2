@@ -259,7 +259,9 @@ class GiftCardSellingService {
 
     let buyingRate: number;
 
-    if (data.receiptType === "E-CODE" && rangeRate["E-CODE"]) {
+    if (typeof rangeRate === "number") {
+      buyingRate = rangeRate;
+    } else if (data.receiptType === "E-CODE" && rangeRate["E-CODE"]) {
       buyingRate = rangeRate["E-CODE"];
     } else if (data.receiptType === "PHYSICAL" && rangeRate["PHYSICAL"]) {
       buyingRate = rangeRate["PHYSICAL"];

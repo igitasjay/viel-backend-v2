@@ -1,5 +1,5 @@
 import { logger } from "@/lib/winston";
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "@/config/cloudinary.config";
 import { InternalServerErrorException } from "@shared/exceptions/exceptions";
 
 function extractPublicIdFromUrl(cloudinaryUrl: string): string | null {
@@ -30,7 +30,7 @@ function extractPublicIdFromUrl(cloudinaryUrl: string): string | null {
 const uploadMultipleToCloudinary = async (
     files: Express.Multer.File[],
     userId: string,
-    folder: string = "trade-aviator/giftcard-sales",
+    folder: string = "my-viel/giftcard-sales",
 ): Promise<string[]> => {
     const uploadPromises = files.map((file, index) => {
         return new Promise<string>((resolve, reject) => {
@@ -80,13 +80,13 @@ interface FileAttachment {
  * Uploads support chat attachments to Cloudinary
  * @param files - Array of files from multer
  * @param userId - ID of the user or admin uploading
- * @param folder - Cloudinary folder path (default: 'trade-aviator/support-attachments')
+ * @param folder - Cloudinary folder path (default: 'my-viel/support-attachments')
  * @returns Array of FileAttachment objects with URLs and metadata
  */
 const uploadSupportAttachments = async (
     files: Express.Multer.File[],
     userId: string,
-    folder: string = "trade-aviator/support-attachments",
+    folder: string = "my-viel/support-attachments",
 ): Promise<FileAttachment[]> => {
     if (!files || files.length === 0) {
         return [];
