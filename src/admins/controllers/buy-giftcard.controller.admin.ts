@@ -168,7 +168,7 @@ const getOrder = Asyncly(async (req: Request, res: Response) => {
 
     const transaction = await prisma.transaction.findFirst({
         where: {
-            id: orderId,
+            id: orderId as string,
             category: "GIFTCARDS",
         },
         include: {
@@ -277,7 +277,7 @@ const retryOrder = Asyncly(async (req: Request, res: Response) => {
 
     const transaction = await prisma.transaction.findFirst({
         where: {
-            id: orderId,
+            id: orderId as string,
             category: "GIFTCARDS",
         },
         include: {
@@ -430,7 +430,7 @@ const getOrderStatus = Asyncly(async (req: Request, res: Response) => {
     const adminId = req.currentAdmin!.id;
     logger.info(`Admin ${adminId} requesting order status for ${orderId}`);
 
-    const numericOrderId = parseFloat(orderId);
+    const numericOrderId = parseFloat(orderId as string);
     const status = await reloadlyService.getOrderStatus(numericOrderId);
 
     res.status(httpStatus.OK).json({

@@ -34,7 +34,7 @@ const getAcceptedCardById = Asyncly(async (req: Request, res: Response) => {
     logger.info(`User ${userId} fetching accepted card ${acceptedCardId}`);
 
     const card =
-        await giftCardSellingService.getAcceptedCardByIdForUser(acceptedCardId);
+        await giftCardSellingService.getAcceptedCardByIdForUser(acceptedCardId as string);
 
     res.status(httpStatus.OK).json({
         success: true,
@@ -52,7 +52,7 @@ const getSellExchangeRate = Asyncly(async (req: Request, res: Response) => {
     );
 
     const exchangeRate =
-        await giftCardSellingService.getSellExchangeRate(acceptedCardId);
+        await giftCardSellingService.getSellExchangeRate(acceptedCardId as string);
 
     res.status(httpStatus.OK).json({
         success: true,
@@ -280,7 +280,7 @@ const getSale = Asyncly(async (req: Request, res: Response) => {
 
     logger.info(`User ${userId} requesting sale ${saleId}`);
 
-    const sale = await giftCardSellingService.getUserSaleById(saleId, userId);
+    const sale = await giftCardSellingService.getUserSaleById(saleId as string, userId);
 
     res.status(httpStatus.OK).json({
         success: true,
@@ -295,7 +295,7 @@ const cancelSale = Asyncly(async (req: Request, res: Response) => {
 
     logger.info(`User ${userId} cancelling sale ${saleId}`);
 
-    await giftCardSellingService.cancelSale(saleId, userId);
+    await giftCardSellingService.cancelSale(saleId as string, userId);
 
     res.status(httpStatus.OK).json({
         success: true,
