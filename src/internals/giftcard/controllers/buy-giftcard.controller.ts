@@ -157,7 +157,7 @@ const getSingleProduct = Asyncly(async (req: Request, res: Response) => {
 
     const product = await prisma.giftcardProducts.findUnique({
         where: {
-            reloadlyId: reloadlyId,
+            reloadlyId: reloadlyId as string,
             isActive: true,
         },
         select: {
@@ -231,7 +231,7 @@ const getExchangeRate = Asyncly(async (req: Request, res: Response) => {
 
     logger.info(`Exchange rate requested for product ${reloadlyId}`);
 
-    const result = await giftCardService.getProductExchangeRate(reloadlyId);
+    const result = await giftCardService.getProductExchangeRate(reloadlyId as string);
 
     res.status(httpStatus.OK).json({
         success: true,
@@ -366,7 +366,7 @@ const refreshOrderCodes = Asyncly(async (req: Request, res: Response) => {
     logger.info(
         `User ${userId} requesting code refresh for order ${transactionId}`,
     );
-    const result = await giftCardService.refreshCodes(transactionId, userId);
+    const result = await giftCardService.refreshCodes(transactionId as string, userId);
 
     res.status(httpStatus.OK).json({
         success: true,
