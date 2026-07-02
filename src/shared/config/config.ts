@@ -83,11 +83,11 @@ function createConfig() {
         //     baseUrl: getEnv("SUDO_BASE_URL"),
         //     accountId: getEnv("SUDO_ACCOUNTID"),
         // },
-        // fireBase: {
-        //     projectID: getEnv("FIREBASE_PROJECT_ID"),
-        //     privateKey: getEnvOptional("FIREBASE_PRIVATE_KEY_PATH"),
-        //     serviceAccount: getEnvOptional("FIREBASE_SERVICE_ACCOUNT"),
-        // },
+        fireBase: {
+            projectID: getEnv("FIREBASE_PROJECT_ID"),
+            // privateKey: getEnvOptional("FIREBASE_PRIVATE_KEY_PATH"),
+            serviceAccount: getEnvOptional("FIREBASE_SERVICE_ACCOUNT"),
+        },
         reloadly: {
             clientID: getEnv("RELOADLY_CLIENT_ID"),
             clientSecret: getEnv("RELOADLY_CLIENT_SECRET"),

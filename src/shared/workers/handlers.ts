@@ -1,6 +1,6 @@
 import { logger } from "@/lib/winston";
 import * as ex from "../../externals/index";
-// import * as nf from "../../internals/notification";
+import * as nf from "../../internals/notification";
 // import * as switchX from "../../internals/crypto";
 
 interface JobPayload {
@@ -57,13 +57,13 @@ export async function handleJob(job: JobPayload) {
             //   // Handle profile update notifications
             //   // return await handleProfileUpdateNotification(payload);
 
-            //   case "NOTIFICATION_EVENT":
-            //     logger.info(
-            //       `Worker received NOTIFICATION_EVENT for ${payload.userId}: ${payload.title}`,
-            //     );
-            //     return await nf.NotificationService.processNotificationEvent(
-            //       payload as nf.NotificationEventPayload,
-            //     );
+            case "NOTIFICATION_EVENT":
+                logger.info(
+                    `Worker received NOTIFICATION_EVENT for ${payload.userId}: ${payload.title}`,
+                );
+                return await nf.NotificationService.processNotificationEvent(
+                    payload as nf.NotificationEventPayload,
+                );
 
             //   case "INCOMING_TRANSACTION":
             //     logger.info(

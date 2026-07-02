@@ -2,7 +2,6 @@ import express from "express";
 import { giftcardController } from "../controllers/buy-giftcard.controller";
 import { validate } from "@/shared/middlewares";
 import { giftCardValidation } from "../giftcard.validation";
-import { requireAuth } from "@shared/middlewares/auth.middleware";
 
 const buyGiftcardRoutes = express.Router();
 

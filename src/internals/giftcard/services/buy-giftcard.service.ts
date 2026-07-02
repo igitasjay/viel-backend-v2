@@ -303,8 +303,8 @@ class GiftCardService {
             );
         }
 
-        await useTransactionPin(userId, pin ?? '', reqToken);
-        logger.info("Transaction PIN verified");
+        // await useTransactionPin(userId, pin ?? '', reqToken);
+        // logger.info("Transaction PIN verified");
 
         // await checkTransactionLimits(userId, expectedTotal);
         // logger.info("Transaction limits verified");
