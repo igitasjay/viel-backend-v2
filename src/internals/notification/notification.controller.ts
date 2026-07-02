@@ -65,7 +65,7 @@ const getUnreadNotificationsCount = Asyncly(
 const updateNotificationStatus = Asyncly(
   async (req: Request, res: Response) => {
     const userId = req.currentUser?.id;
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
 
     if (!userId) {
       throw new UnauthorizedException("User not authenticated");
@@ -100,7 +100,7 @@ const markAllAsRead = Asyncly(async (req: Request, res: Response) => {
 
 const deleteNotification = Asyncly(async (req: Request, res: Response) => {
   const userId = req.currentUser?.id;
-  const { id } = req.params;
+  const { id } = req.params as { id: string };
 
   if (!userId) {
     throw new UnauthorizedException("User not authenticated");
