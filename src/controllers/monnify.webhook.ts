@@ -13,6 +13,8 @@ import { giftCardService } from '@/internals/giftcard/services/buy-giftcard.serv
 const MONNIFY_IPS = ['35.242.133.146', '34.89.51.11', '::ffff:35.242.133.146', '::ffff:34.89.51.11'];
 
 export const handleMonnifyWebhook = async (req: Request, res: Response) => {
+  logger.info('monnify webhook body', req.body);
+
   try {
     const clientIp = req.ip || req.socket.remoteAddress;
     if (config.NODE_ENV === 'production' && clientIp && !MONNIFY_IPS.includes(clientIp)) {
@@ -28,8 +30,8 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
     }
 
     if (!body || typeof body.eventType !== 'string' || !body.eventData || typeof body.eventData !== 'object') {
-       logger.warn('Invalid webhook body structure from payload');
-       return res.status(400).json({ message: 'Invalid payload structure' });
+      logger.warn('Invalid webhook body structure from payload');
+      return res.status(400).json({ message: 'Invalid payload structure' });
     }
 
     const computedHash = crypto
@@ -56,43 +58,43 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
     let prismaTx = null;
 
     if (!tx) {
-        // Try Prisma
-        prismaTx = await prisma.transaction.findUnique({
-            where: { reference: paymentReference },
-        });
+      // Try Prisma
+      prismaTx = await prisma.transaction.findUnique({
+        where: { reference: paymentReference },
+      });
 
-        if (!prismaTx) {
-            logger.error(`Transaction not found for reference: ${paymentReference}`);
-            return res.status(200).send('Transaction not found');
-        }
-        isPrismaTx = true;
+      if (!prismaTx) {
+        logger.error(`Transaction not found for reference: ${paymentReference}`);
+        return res.status(200).send('Transaction not found');
+      }
+      isPrismaTx = true;
     }
 
     if (isPrismaTx && prismaTx) {
-        if (prismaTx.status === 'SUCCESS' || prismaTx.status === 'PROCESSING') {
-            logger.info(`Prisma Transaction ${prismaTx.id} already processed`);
-            return res.status(200).send('Already processed');
-        }
+      if (prismaTx.status === 'SUCCESS' || prismaTx.status === 'PROCESSING') {
+        logger.info(`Prisma Transaction ${prismaTx.id} already processed`);
+        return res.status(200).send('Already processed');
+      }
 
-        await prisma.transaction.update({
-            where: { id: prismaTx.id },
-            data: { 
-                status: 'PROCESSING',
-                meta: {
-                    ...(prismaTx.meta as any),
-                    monnify_data: { webhook_event: body }
-                }
-            }
+      await prisma.transaction.update({
+        where: { id: prismaTx.id },
+        data: {
+          status: 'PROCESSING',
+          meta: {
+            ...(prismaTx.meta as any),
+            monnify_data: { webhook_event: body }
+          }
+        }
+      });
+
+      if (prismaTx.category === 'GIFTCARDS' && prismaTx.type === 'DEBIT') {
+        logger.info(`Webhook: Triggering Prisma GiftCard Fulfillment for TX ${prismaTx.id}`);
+        giftCardService.fulfillDirectOrder(prismaTx.id).catch((err: any) => {
+          logger.error(`Failed to fulfill Prisma giftcard order ${prismaTx.id}`, err);
         });
+      }
 
-        if (prismaTx.category === 'GIFTCARDS' && prismaTx.type === 'DEBIT') {
-            logger.info(`Webhook: Triggering Prisma GiftCard Fulfillment for TX ${prismaTx.id}`);
-            giftCardService.fulfillDirectOrder(prismaTx.id).catch((err: any) => {
-                logger.error(`Failed to fulfill Prisma giftcard order ${prismaTx.id}`, err);
-            });
-        }
-        
-        return res.status(200).send('Webhook processed');
+      return res.status(200).send('Webhook processed');
     }
 
     if (tx!.status === 'completed' || tx!.status === 'processing') {
