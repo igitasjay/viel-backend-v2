@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
-import Transaction from '@/models/transaction.model';
-import { fulfillGiftCardPurchase } from '@/giftcard-infra/controllers/purchase.controller';
 import { logger } from '@/lib/winston';
-import { UserService, VolumeType } from '@/services/user.service';
-
 import { CryptoBuyService } from '@/crypto-v2/services/crypto-buy.service';
 import config from '@/config/config';
 import { prisma } from '@/shared/db/prisma';
@@ -52,73 +48,44 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
       return res.status(200).send('Ignored non-success event');
     }
 
-    // Find transaction by reference
-    const tx = await Transaction.findOne({ reference: paymentReference });
-    let isPrismaTx = false;
-    let prismaTx = null;
+    // Find transaction by reference using Prisma
+    const tx = await prisma.transaction.findUnique({
+      where: { reference: paymentReference },
+    });
 
     if (!tx) {
-      // Try Prisma
-      prismaTx = await prisma.transaction.findUnique({
-        where: { reference: paymentReference },
-      });
-
-      if (!prismaTx) {
-        logger.error(`Transaction not found for reference: ${paymentReference}`);
-        return res.status(200).send('Transaction not found');
-      }
-      isPrismaTx = true;
+      logger.error(`Transaction not found for reference: ${paymentReference}`);
+      return res.status(200).send('Transaction not found');
     }
 
-    if (isPrismaTx && prismaTx) {
-      if (prismaTx.status === 'SUCCESS' || prismaTx.status === 'PROCESSING') {
-        logger.info(`Prisma Transaction ${prismaTx.id} already processed`);
-        return res.status(200).send('Already processed');
-      }
-
-      await prisma.transaction.update({
-        where: { id: prismaTx.id },
-        data: {
-          status: 'PROCESSING',
-          meta: {
-            ...(prismaTx.meta as any),
-            monnify_data: { webhook_event: body }
-          }
-        }
-      });
-
-      if (prismaTx.category === 'GIFTCARDS' && prismaTx.type === 'DEBIT') {
-        logger.info(`Webhook: Triggering Prisma GiftCard Fulfillment for TX ${prismaTx.id}`);
-        giftCardService.fulfillDirectOrder(prismaTx.id).catch((err: any) => {
-          logger.error(`Failed to fulfill Prisma giftcard order ${prismaTx.id}`, err);
-        });
-      }
-
-      return res.status(200).send('Webhook processed');
-    }
-
-    if (tx!.status === 'completed' || tx!.status === 'processing') {
-      logger.info(`Transaction ${tx!.id} already processed`);
+    if (tx.status === 'SUCCESS' || tx.status === 'PROCESSING') {
+      logger.info(`Transaction ${tx.id} already processed`);
       return res.status(200).send('Already processed');
     }
 
-    // Mark as processing (pre-fulfillment state)
-    // fulfillBuyCrypto and fulfillGiftCardPurchase now handle their own sessions
-    // and set the final status atomically inside the session.
-    tx!.status = 'processing';
-    tx!.monnify_data = { ...tx!.monnify_data, webhook_event: body };
-    await tx!.save();
+    // Mark as processing
+    await prisma.transaction.update({
+      where: { id: tx.id },
+      data: {
+        status: 'PROCESSING',
+        meta: {
+          ...(tx.meta as any),
+          monnify_data: { webhook_event: body }
+        }
+      }
+    });
 
-    // Trigger Fulfillment (each function manages its own atomic session)
-    if (tx!.type === 'buy_crypto') {
-      logger.info(`Webhook: Triggering Crypto Dispatch/Fulfillment for TX ${tx!.id}`);
-      await CryptoBuyService.handleMonnifyPaymentSuccess(tx!);
-    } else if (tx!.type === 'buy_giftcard') {
-      logger.info(`GiftCard Purchase for TX ${tx!.id} is now PAID. Awaiting Admin Approval.`);
-      // Manual approval required - fulfilling happens via admin API
-      // Set final status for giftcard to 'paid' (not 'completed')
-      tx!.status = 'paid';
-      await tx!.save();
+    if (tx.category === 'GIFTCARDS' && tx.type === 'DEBIT') {
+      logger.info(`Webhook: Triggering Prisma GiftCard Fulfillment for TX ${tx.id}`);
+      giftCardService.fulfillDirectOrder(tx.id).catch((err: any) => {
+        logger.error(`Failed to fulfill Prisma giftcard order ${tx.id}`, err);
+      });
+    } else if (tx.category === 'CRYPTO') {
+      logger.info(`Webhook: Triggering Crypto Dispatch/Fulfillment for TX ${tx.id}`);
+      // Pass the Prisma tx (Note: CryptoBuyService must be updated to accept Prisma model)
+      await CryptoBuyService.handleMonnifyPaymentSuccess(tx as any);
+    } else {
+      logger.info(`Webhook: No automatic fulfillment logic for transaction category ${tx.category}`);
     }
 
     res.status(200).send('Webhook processed');
