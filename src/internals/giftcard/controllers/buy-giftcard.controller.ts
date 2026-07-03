@@ -303,56 +303,7 @@ const placeOrder = Asyncly(async (req: Request, res: Response) => {
                 status: result.status,
             });
 
-            const user = await prisma.user.findUnique({
-                where: { id: userId },
-                select: { email: true, fullname: true },
-            });
-
-            if (user?.email) {
-                const orderCodes = await prisma.giftcardCodes.findMany({
-                    where: { transactionId: result.orderId },
-                });
-
-                const decryptedCodes = orderCodes.map((code) => {
-                    try {
-                        return {
-                            code: decrypt(code.encryptedCode),
-                            pin: code.encryptedPin ? decrypt(code.encryptedPin) : null,
-                            redemptionUrl: code.redemptionUrl,
-                        };
-                    } catch (error) {
-                        logger.error(`Failed to decrypt code ${code.id}:`, { error });
-                        return {
-                            code: "DECRYPTION_FAILED",
-                            pin: null,
-                            redemptionUrl: code.redemptionUrl,
-                        };
-                    }
-                });
-
-                await publishToQueue({
-                    type: "GIFTCARD_PURCHASED",
-                    payload: {
-                        userId,
-                        recipient: user.email,
-                        fullName: user.fullname,
-                        orderDetails: {
-                            orderId: result.orderId,
-                            orderReference: result.orderReference,
-                            productName: result.productName,
-                            quantity: result.quantity,
-                            cardValue: result.cardValue,
-                            totalAmount: result.totalAmount,
-                            status: result.status,
-                            purchasedAt: new Date().toISOString(),
-                            codes: decryptedCodes,
-                        },
-                    },
-                });
-                logger.info(
-                    `Purchase email queued for user ${userId} with ${decryptedCodes.length} codes`,
-                );
-            }
+            // GIFTCARD_PURCHASED email dispatch has been moved to the fulfillDirectOrder service method
         } catch (error) {
             logger.error("Failed to queue purchase email:", { error, userId });
         }

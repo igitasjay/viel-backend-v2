@@ -39,6 +39,7 @@ export class PlaceOrderResponseDTO {
     status: string;
     transactionId: string;
     message: string;
+    paymentDetails?: any;
     createdAt: string;
 
     constructor(data: {
@@ -52,6 +53,7 @@ export class PlaceOrderResponseDTO {
         status: string;
         transactionId: string;
         message: string;
+        paymentDetails?: any;
         createdAt: Date;
     }) {
         this.orderId = data.orderId;
@@ -64,6 +66,7 @@ export class PlaceOrderResponseDTO {
         this.status = data.status;
         this.transactionId = data.transactionId;
         this.message = data.message;
+        this.paymentDetails = data.paymentDetails;
         this.createdAt = data.createdAt.toISOString();
     }
 }

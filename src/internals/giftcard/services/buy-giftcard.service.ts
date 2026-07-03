@@ -5,7 +5,7 @@ import {
 } from "@/shared/exceptions/exceptions";
 import { logger } from "@/lib/winston";
 import { reloadlyService } from "@/externals/reloadly/reloadly";
-import { encrypt } from "@/shared/utils/encryption";
+import { encrypt, decrypt } from "@/shared/utils/encryption";
 import { prisma } from "@/shared/db/prisma";
 import { GIFTCARD_CONSTRAINTS, GIFTCARD_FEE_PER_CARD, GIFTCARD_FEE_TYPE, RESPONSE_MESSAGES } from "../constants";
 import { PlaceOrderResponseDTO } from "../giftcard.dto";
@@ -16,8 +16,41 @@ import { ReloadlyOrderResponse } from "@/externals/reloadly/interface";
 import { initMonnifyBankTransfer, initMonnifyTransaction } from "@/monnify-infra/services/monnify.service";
 import config from "@/config/config";
 import { useTransactionPin } from "@/internals/account/account.utils";
+import { publishToQueue } from "@/shared/workers/publisher";
 
+async function sendGiftcardEmail(transaction: any, user: any, rawCodes: any[]) {
+    try {
+        const giftcardMeta = getGiftcardMeta(transaction);
+        const codesForEmail = rawCodes.map((code) => ({
+            code: code.cardNumber || code.code,
+            pin: code.pinCode || null,
+            redemptionUrl: code.redemptionUrl,
+        }));
 
+        await publishToQueue({
+            type: "GIFTCARD_PURCHASED",
+            payload: {
+                userId: transaction.userId,
+                recipient: user.email,
+                fullName: user.fullname,
+                orderDetails: {
+                    orderId: transaction.id,
+                    orderReference: giftcardMeta?.orderReference || transaction.reference,
+                    productName: giftcardMeta?.cardType || transaction.giftCardType,
+                    quantity: giftcardMeta?.quantity || transaction.giftCardQuantity,
+                    cardValue: giftcardMeta?.denomination || transaction.giftCardValue,
+                    totalAmount: transaction.amount,
+                    status: "SUCCESS",
+                    purchasedAt: new Date().toISOString(),
+                    codes: codesForEmail,
+                },
+            },
+        });
+        logger.info(`Purchase email queued for user ${transaction.userId} with ${codesForEmail.length} codes`);
+    } catch (e) {
+        logger.error("Failed to send purchase email", { error: e });
+    }
+}
 class GiftCardService {
     async getProductExchangeRate(reloadlyId: string): Promise<{
         reloadlyId: string;
@@ -78,8 +111,22 @@ class GiftCardService {
         }
 
         const denominationType = reloadlyData.denominationType;
-        const exchangeRate =
-            reloadlyData.recipientCurrencyToSenderCurrencyExchangeRate || 1700;
+        const senderCurrency = (reloadlyData.senderCurrencyCode || "NGN").toUpperCase();
+        const isNonNgnSender = senderCurrency !== "NGN";
+        const ngnConversionRate = GIFTCARD_CONSTRAINTS.DEFAULT_NGN_RATE;
+
+        const rawRate = reloadlyData.recipientCurrencyToSenderCurrencyExchangeRate;
+        let exchangeRate: number;
+
+        if (isNonNgnSender) {
+            exchangeRate = (rawRate || 1) * ngnConversionRate;
+            logger.warn(
+                `Product ${reloadlyId}: sender currency is ${senderCurrency}. ` +
+                `Converting exchange rate to NGN (×${ngnConversionRate})`,
+            );
+        } else {
+            exchangeRate = rawRate || ngnConversionRate;
+        }
 
         const response: any = {
             reloadlyId: product.reloadlyId,
@@ -87,15 +134,23 @@ class GiftCardService {
             exchangeRate,
             denominationType,
             recipientCurrency: reloadlyData.recipientCurrencyCode || product.currency,
-            senderCurrency: reloadlyData.senderCurrencyCode || "NGN",
+            senderCurrency: "NGN",
             lastUpdated: product.updatedAt,
         };
 
         if (denominationType === "FIXED") {
             response.fixedDenominations =
                 reloadlyData.fixedRecipientDenominations || [];
-            response.fixedDenominationsMap =
-                reloadlyData.fixedRecipientToSenderDenominationsMap || {};
+            const rawMap = reloadlyData.fixedRecipientToSenderDenominationsMap || {};
+            if (isNonNgnSender) {
+                const ngnMap: Record<string, number> = {};
+                for (const [key, value] of Object.entries(rawMap)) {
+                    ngnMap[key] = (value as number) * ngnConversionRate;
+                }
+                response.fixedDenominationsMap = ngnMap;
+            } else {
+                response.fixedDenominationsMap = rawMap;
+            }
         } else if (denominationType === "RANGE") {
             response.minAmount = reloadlyData.minRecipientDenomination;
             response.maxAmount = reloadlyData.maxRecipientDenomination;
@@ -196,6 +251,10 @@ class GiftCardService {
             }
         }
 
+        const senderCurrency = (reloadlyData.senderCurrencyCode || "NGN").toUpperCase();
+        const isNonNgnSender = senderCurrency !== "NGN";
+        const ngnConversionRate = GIFTCARD_CONSTRAINTS.DEFAULT_NGN_RATE;
+
         let expectedBasePrice: number;
         if (denominationType === "FIXED") {
             const denominationKey = cardValue.toFixed(2);
@@ -212,10 +271,28 @@ class GiftCardService {
                     `Price mapping not found for denomination ${cardValue}`,
                 );
             }
+
+            if (isNonNgnSender) {
+                logger.warn(
+                    `Sender currency is ${senderCurrency}. Converting FIXED base price ` +
+                    `${expectedBasePrice} to NGN (×${ngnConversionRate})`,
+                );
+                expectedBasePrice = expectedBasePrice * ngnConversionRate;
+            }
         } else {
-            const exchangeRate =
-                reloadlyData.recipientCurrencyToSenderCurrencyExchangeRate || 1700;
-            expectedBasePrice = cardValue * exchangeRate;
+            const rawRate = reloadlyData.recipientCurrencyToSenderCurrencyExchangeRate;
+
+            if (isNonNgnSender) {
+                const senderRate = rawRate || 1;
+                expectedBasePrice = cardValue * senderRate * ngnConversionRate;
+                logger.warn(
+                    `Sender currency is ${senderCurrency}. Converting RANGE base price to NGN ` +
+                    `(${cardValue} × ${senderRate} × ${ngnConversionRate} = ${expectedBasePrice.toFixed(2)})`,
+                );
+            } else {
+                const exchangeRate = rawRate || ngnConversionRate;
+                expectedBasePrice = cardValue * exchangeRate;
+            }
         }
 
         const feeConfig = await prisma.feeConfiguration.findFirst({
@@ -280,11 +357,17 @@ class GiftCardService {
         //   promoCodeId = promo.id;
         // }
 
-        const expectedTotal = expectedSubtotal + expectedTotalFee - promoDiscount;
+        const expectedTotal = expectedSubtotal + expectedTotalFee;
 
         const tolerance = 1;
+
+        // The client might send the subtotal in the native currency (e.g. USD) instead of NGN
+        const expectedSubtotalNative = (expectedBasePrice / (isNonNgnSender ? ngnConversionRate : 1)) * quantity;
+
         const subtotalMatch =
-            Math.abs(calculatedSubtotal - expectedSubtotal) <= tolerance;
+            Math.abs(calculatedSubtotal - expectedSubtotal) <= tolerance ||
+            Math.abs(calculatedSubtotal - expectedSubtotalNative) <= tolerance;
+
         const feeMatch = Math.abs(calculatedFee - expectedTotalFee) <= tolerance;
         const totalMatch = Math.abs(calculatedTotal - expectedTotal) <= tolerance;
 
@@ -293,13 +376,14 @@ class GiftCardService {
                 client: { calculatedSubtotal, calculatedFee, calculatedTotal },
                 server: {
                     expectedSubtotal,
+                    expectedSubtotalNative,
                     expectedTotalFee,
                     expectedTotal,
                     promoDiscount,
                 },
             });
             throw new BadRequestException(
-                "Price calculation mismatch. Please refresh and try again.",
+                `Price calculation mismatch. Expected Total: ${expectedTotal}, Got Total: ${calculatedTotal} | Expected Subtotal: ${expectedSubtotal} (or ${expectedSubtotalNative}), Got Subtotal: ${calculatedSubtotal}. Please refresh and try again.`,
             );
         }
 
@@ -323,14 +407,14 @@ class GiftCardService {
             paymentDescription: `Giftcard Purchase - ${quantity}x ${product.name} (${product.currency}${Number(cardValue)})`,
             currencyCode: 'NGN',
             contractCode: config.MONNIFY_CONTRACT_CODE!,
-            redirectUrl: 'https://MyViel.com', // Optional redirect
+            redirectUrl: 'https://MyViel.com',
             paymentMethods: ['ACCOUNT_TRANSFER'],
         });
 
         const monnifyRef = initTxResponse.responseBody.transactionReference;
 
         // Initialize Monnify Bank Transfer
-        await initMonnifyBankTransfer({
+        const monnifyBankTransferDetails = await initMonnifyBankTransfer({
             transactionReference: monnifyRef,
             amount: expectedTotal,
             customerName: fullname,
@@ -404,182 +488,13 @@ class GiftCardService {
                     countryCode: product.countryCode,
                     cardCurrency: product.currency,
                     promoCode: promoCode,
+                    bankTransferDetails: monnifyBankTransferDetails,
                 } as any,
             },
         });
 
-        logger.info("Placing Reloadly order (direct):", {
-            userId,
-            transactionId: transaction.id,
-            productId: product.reloadlyId,
-            cardValue: Number(cardValue),
-            quantity: quantity,
-            orderReference,
-        });
-
-        let reloadlyOrder: ReloadlyOrderResponse;
-        try {
-            reloadlyOrder = await reloadlyService.placeOrder({
-                productId: parseInt(product.reloadlyId),
-                countryCode: product.countryCode,
-                quantity: quantity,
-                unitPrice: Number(cardValue),
-                customIdentifier: orderReference,
-            });
-
-            await prisma.transaction.update({
-                where: { id: transaction.id },
-                data: {
-                    providerRef: reloadlyOrder.transactionId?.toString(),
-                    externalRef: reloadlyOrder.transactionId?.toString(),
-                    meta: updateGiftcardMeta(transaction.meta, {
-                        reloadlyOrderId: reloadlyOrder.transactionId?.toString(),
-                        reloadlyData: reloadlyOrder as any,
-                    }),
-                },
-            });
-
-            await prisma.platformRevenue.create({
-                data: {
-                    source: "GIFTCARD_FEE",
-                    amount: Number(expectedTotalFee),
-                    currency: "NGN",
-                    transactionId: transaction.id,
-                    userId,
-                    description: `Fee from gift card order - ${requestId}`,
-                },
-            });
-
-            logger.info("Platform fee recorded:", {
-                amount: Number(expectedTotalFee),
-                transactionId: transaction.id,
-            });
-
-            logger.info("Reloadly order ID saved to transaction:", {
-                transactionId: transaction.id,
-                reloadlyOrderId: reloadlyOrder.transactionId,
-            });
-        } catch (error: any) {
-            logger.error("Reloadly order failed:", {
-                error: error.message,
-                stack: error.stack,
-                response: error.response?.data,
-                userId,
-                productId: product.reloadlyId,
-                cardValue: Number(cardValue),
-                quantity: quantity,
-            });
-
-            await prisma.transaction.update({
-                where: { id: transaction.id },
-                data: {
-                    status: "FAILED",
-                    meta: updateGiftcardMeta(transaction.meta, {
-                        orderStatus: "FAILED",
-                        failureReason: error.message || "Reloadly order failed",
-                    }),
-                },
-            });
-
-            // try {
-            //   await processRefund(
-            //     userId,
-            //     paymentResult,
-            //     expectedTotal,
-            //     currency,
-            //     orderReference,
-            //     `Refund for failed gift card order - ${error.message}`,
-            //   );
-
-            //   logger.info(`Refunded ${expectedTotal} to user ${userId}`);
-            // } catch (refundError) {
-            //   logger.error("Critical: Refund failed after order failure", {
-            //     error: refundError,
-            //     userId,
-            //     transactionId: transaction.id,
-            //     amount: expectedTotal,
-            //   });
-            // }
-
-            // try {
-            //     await publishToQueue({
-            //         type: "NOTIFICATION_EVENT",
-            //         payload: {
-            //             userId,
-            //             notificationType: "GIFTCARD",
-            //             priority: "high",
-            //             title: "Order Failed",
-            //             message: `Your gift card order couldn't be completed. ₦${Number(
-            //                 expectedTotal,
-            //             ).toLocaleString()} has been refunded.`,
-            //             metadata: {
-            //                 transactionId: transaction.id,
-            //                 orderReference: orderReference,
-            //                 refundAmount: expectedTotal,
-            //                 failureReason: error.message,
-            //                 action: "giftcard_order_failed",
-            //             },
-            //             deliveryChannels: ["in_app", "push"],
-            //         },
-            //     });
-            // } catch (error) {
-            //     logger.error("Failed to send failure notification:", { error });
-            // }
-
-            throw new BadRequestException(
-                error.message || RESPONSE_MESSAGES.ERRORS.ORDER_FAILED,
-            );
-        }
-
-        let codes: any[] = [];
-        try {
-            const reloadlyOrderId = reloadlyOrder.transactionId;
-            await new Promise((resolve) =>
-                setTimeout(resolve, GIFTCARD_CONSTRAINTS.CODE_FETCH_DELAY_MS),
-            );
-            const codesResponse =
-                await reloadlyService.getRedeemCodes(reloadlyOrderId);
-            if (codesResponse && Array.isArray(codesResponse)) {
-                codes = codesResponse;
-            }
-        } catch (error) {
-            logger.error("Failed to fetch codes immediately:", error as any);
-        }
-
-        if (codes.length > 0) {
-            const giftcardPurchaseCodes = codes.map((code) => ({
-                codeId: `${transaction.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                code: encrypt(code.cardNumber || code.code),
-                pin: code.pinCode ? encrypt(code.pinCode) : null,
-                redemptionUrl: code.redemptionUrl,
-                status: "DELIVERED",
-                deliveredAt: new Date().toISOString(),
-            }));
-
-            await prisma.transaction.update({
-                where: { id: transaction.id },
-                data: {
-                    status: "SUCCESS",
-                    meta: updateGiftcardMeta(transaction.meta, {
-                        orderStatus: "SUCCESS",
-                        giftcardPurchaseCodes,
-                    }),
-                },
-            });
-        } else {
-            await prisma.transaction.update({
-                where: { id: transaction.id },
-                data: {
-                    status: "PROCESSING",
-                    meta: updateGiftcardMeta(transaction.meta, {
-                        orderStatus: "PROCESSING",
-                    }),
-                },
-            });
-            logger.info(
-                `Transaction ${transaction.id} marked as PROCESSING - codes not yet available`,
-            );
-        }
+        // Order placement has been removed from here. 
+        // Reloadly order should be placed by the Monnify Webhook after successful payment.
 
         // PROMO CODE DISABLED FOR GIFTCARD BUY
         // if (promoCodeId) {
@@ -604,14 +519,11 @@ class GiftCardService {
             userId,
             amount: expectedTotal,
             status: finalTransaction?.status,
-            codesDelivered: codes.length,
+            codesDelivered: 0,
             paymentMethod: paymentMethod,
         });
 
-        const message =
-            codes.length > 0
-                ? RESPONSE_MESSAGES.GIFTCARD.ORDER_COMPLETED
-                : RESPONSE_MESSAGES.GIFTCARD.ORDER_PENDING;
+        const message = RESPONSE_MESSAGES.GIFTCARD.ORDER_PENDING;
 
         return new PlaceOrderResponseDTO({
             orderId: transaction.id,
@@ -621,10 +533,10 @@ class GiftCardService {
             quantity: quantity,
             totalAmount: expectedTotal,
             paymentMethod: paymentMethod,
-            status:
-                giftcardMeta?.orderStatus || finalTransaction?.status || "PROCESSING",
+            status: finalTransaction?.status || "PENDING",
             transactionId: transaction.id,
             message,
+            paymentDetails: monnifyBankTransferDetails,
             createdAt: finalTransaction?.createdAt || new Date(),
         });
     }
@@ -715,6 +627,15 @@ class GiftCardService {
             },
         });
 
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { email: true, fullname: true },
+        });
+
+        if (user?.email) {
+            await sendGiftcardEmail(transaction, user, codes);
+        }
+
         logger.info(`Codes refreshed for transaction ${transactionId}:`, {
             userId,
             codesDelivered: codes.length,
@@ -724,6 +645,218 @@ class GiftCardService {
             message: RESPONSE_MESSAGES.GIFTCARD.CODES_REFRESHED,
             codesDelivered: codes.length,
         };
+    }
+
+    async fulfillDirectOrder(transactionId: string): Promise<void> {
+        const transaction = await prisma.transaction.findUnique({
+            where: { id: transactionId },
+        });
+
+        if (!transaction) throw new NotFoundException("Transaction not found");
+
+        const giftcardMeta = getGiftcardMeta(transaction);
+
+        if (!giftcardMeta) throw new BadRequestException("Not a gift card transaction");
+
+        logger.info("Fulfilling Reloadly order (webhook):", {
+            userId: transaction.userId,
+            transactionId: transaction.id,
+            productId: giftcardMeta.productId,
+            cardValue: Number(giftcardMeta.denomination),
+            quantity: giftcardMeta.quantity,
+            orderReference: giftcardMeta.orderReference,
+        });
+
+        const product = await prisma.giftcardProducts.findUnique({
+            where: { reloadlyId: giftcardMeta.productId }
+        });
+
+        if (!product) throw new NotFoundException("Gift card product not found");
+
+        let reloadlyOrder: ReloadlyOrderResponse;
+        try {
+            reloadlyOrder = await reloadlyService.placeOrder({
+                productId: parseInt(giftcardMeta.productId!),
+                countryCode: product.countryCode,
+                quantity: giftcardMeta.quantity!,
+                unitPrice: Number(giftcardMeta.denomination!),
+                customIdentifier: giftcardMeta.orderReference!,
+            });
+
+            await prisma.transaction.update({
+                where: { id: transaction.id },
+                data: {
+                    providerRef: reloadlyOrder.transactionId?.toString(),
+                    externalRef: reloadlyOrder.transactionId?.toString(),
+                    meta: updateGiftcardMeta(transaction.meta, {
+                        reloadlyOrderId: reloadlyOrder.transactionId?.toString(),
+                        reloadlyData: reloadlyOrder as any,
+                    }),
+                },
+            });
+
+            await prisma.platformRevenue.create({
+                data: {
+                    source: "GIFTCARD_FEE",
+                    amount: Number(giftcardMeta.fee!),
+                    currency: "NGN",
+                    transactionId: transaction.id,
+                    userId: transaction.userId,
+                    description: `Fee from gift card order`,
+                },
+            });
+
+        } catch (error: any) {
+            logger.error("Reloadly order failed (webhook):", {
+                error: error.message,
+                stack: error.stack,
+                userId: transaction.userId,
+                productId: giftcardMeta.productId,
+                cardValue: Number(giftcardMeta.denomination),
+                quantity: giftcardMeta.quantity,
+            });
+
+            await prisma.transaction.update({
+                where: { id: transaction.id },
+                data: {
+                    status: "FAILED",
+                    meta: updateGiftcardMeta(transaction.meta, {
+                        orderStatus: "FAILED",
+                        failureReason: error.message || "Reloadly order failed",
+                    }),
+                },
+            });
+
+            throw error;
+        }
+
+        let codes: any[] = [];
+        try {
+            const reloadlyOrderId = reloadlyOrder.transactionId;
+            await new Promise((resolve) =>
+                setTimeout(resolve, GIFTCARD_CONSTRAINTS.CODE_FETCH_DELAY_MS),
+            );
+            const codesResponse =
+                await reloadlyService.getRedeemCodes(reloadlyOrderId);
+            if (codesResponse && Array.isArray(codesResponse)) {
+                codes = codesResponse;
+            }
+        } catch (error) {
+            logger.error("Failed to fetch codes immediately (webhook):", error as any);
+        }
+
+        if (codes.length > 0) {
+            const giftcardPurchaseCodes = codes.map((code) => ({
+                codeId: `${transaction.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                code: encrypt(code.cardNumber || code.code),
+                pin: code.pinCode ? encrypt(code.pinCode) : null,
+                redemptionUrl: code.redemptionUrl,
+                status: "DELIVERED",
+                deliveredAt: new Date().toISOString(),
+            }));
+
+            await prisma.transaction.update({
+                where: { id: transaction.id },
+                data: {
+                    status: "SUCCESS",
+                    meta: updateGiftcardMeta(transaction.meta, {
+                        orderStatus: "SUCCESS",
+                        giftcardPurchaseCodes,
+                    }),
+                },
+            });
+
+            const user = await prisma.user.findUnique({
+                where: { id: transaction.userId },
+                select: { email: true, fullname: true },
+            });
+
+            if (user?.email) {
+                await sendGiftcardEmail(transaction, user, codes);
+            }
+
+            await publishToQueue({
+                type: "NOTIFICATION_EVENT",
+                payload: {
+                    userId: transaction.userId,
+                    notificationType: "GIFTCARD",
+                    priority: "high",
+                    title: "Gift Card Ready! 🎁",
+                    message: `Your ${giftcardMeta.cardType} gift card codes are ready! Check your email or tap to view.`,
+                    metadata: {
+                        orderId: transaction.id,
+                        orderReference: giftcardMeta.orderReference,
+                        productName: giftcardMeta.cardType,
+                        totalAmount: transaction.amount,
+                        status: "SUCCESS",
+                        action: "giftcard_order",
+                    },
+                    deliveryChannels: ["in_app", "push"],
+                },
+            });
+        } else {
+            await prisma.transaction.update({
+                where: { id: transaction.id },
+                data: {
+                    status: "PROCESSING",
+                    meta: updateGiftcardMeta(transaction.meta, {
+                        orderStatus: "PROCESSING",
+                    }),
+                },
+            });
+            logger.info(
+                `Transaction ${transaction.id} marked as PROCESSING - codes not yet available`,
+            );
+
+            // Still notify user their payment was received and order is being processed
+            const user = await prisma.user.findUnique({
+                where: { id: transaction.userId },
+                select: { email: true, fullname: true },
+            });
+
+            if (user?.email) {
+                await publishToQueue({
+                    type: "GIFTCARD_PURCHASED",
+                    payload: {
+                        userId: transaction.userId,
+                        recipient: user.email,
+                        fullName: user.fullname,
+                        orderDetails: {
+                            orderId: transaction.id,
+                            orderReference: giftcardMeta.orderReference,
+                            productName: giftcardMeta.cardType,
+                            quantity: giftcardMeta.quantity,
+                            cardValue: giftcardMeta.denomination,
+                            totalAmount: transaction.amount,
+                            status: "PROCESSING",
+                            purchasedAt: new Date().toISOString(),
+                            codes: [],
+                        },
+                    },
+                });
+                logger.info(`Processing email queued for user ${transaction.userId} (codes pending)`);
+            }
+
+            await publishToQueue({
+                type: "NOTIFICATION_EVENT",
+                payload: {
+                    userId: transaction.userId,
+                    notificationType: "GIFTCARD",
+                    priority: "high",
+                    title: "Payment Received ✅",
+                    message: `Your payment for ${giftcardMeta.cardType} has been received. Your gift card codes are being prepared.`,
+                    metadata: {
+                        orderId: transaction.id,
+                        orderReference: giftcardMeta.orderReference,
+                        productName: giftcardMeta.cardType,
+                        totalAmount: transaction.amount,
+                        status: "PROCESSING",
+                        action: "giftcard_order",
+                    },
+                    deliveryChannels: ["in_app", "push"],
+                },
+            });
+        }
     }
 }
 
