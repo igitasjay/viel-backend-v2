@@ -121,8 +121,8 @@ const getProducts = Asyncly(async (req: Request, res: Response) => {
         },
     });
 
-    const feePercentage =
-        feeConfig?.feeType === "PERCENTAGE" ? Number(feeConfig.feeValue) : 2;
+    const feeType = feeConfig?.feeType || "FIXED";
+    const feeValue = feeConfig ? Number(feeConfig.feeValue) : 150;
 
     const rates = await prisma.exchangeRate.findMany();
     const exchangeRatesMap = Object.fromEntries(rates.map(r => [r.currency, Number(r.rate)]));
@@ -151,7 +151,9 @@ const getProducts = Asyncly(async (req: Request, res: Response) => {
                 minAmount,
                 maxAmount,
                 exchangeRate: calculateExchangeRate(reloadlyData, exchangeRatesMap),
-                feePercentage: feePercentage,
+                feeType: feeType,
+                feeValue: feeValue,
+                feePercentage: feeType === "PERCENTAGE" ? feeValue : 2, // kept for backward compatibility if needed temporarily
                 lastRateUpdate: product.updatedAt.toISOString(),
                 redeemInstructions: {
                     concise: reloadlyData?.redeemInstruction?.concise || null,
@@ -203,8 +205,8 @@ const getSingleProduct = Asyncly(async (req: Request, res: Response) => {
         },
     });
 
-    const feePercentage =
-        feeConfig?.feeType === "PERCENTAGE" ? Number(feeConfig.feeValue) : 2;
+    const feeType = feeConfig?.feeType || "FIXED";
+    const feeValue = feeConfig ? Number(feeConfig.feeValue) : 150;
 
     const reloadlyData = product.reloadlyData as any;
     const { minAmount, maxAmount } = getMinMaxAmounts(reloadlyData);
@@ -226,7 +228,9 @@ const getSingleProduct = Asyncly(async (req: Request, res: Response) => {
         minAmount,
         maxAmount,
         exchangeRate: calculateExchangeRate(reloadlyData, exchangeRatesMap),
-        feePercentage: feePercentage,
+        feeType: feeType,
+        feeValue: feeValue,
+        feePercentage: feeType === "PERCENTAGE" ? feeValue : 2, // kept for backward compatibility
         lastRateUpdate: product.updatedAt.toISOString(),
         redeemInstructions: {
             concise: reloadlyData?.redeemInstruction?.concise || null,
