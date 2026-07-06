@@ -39,7 +39,7 @@ const createOrUpdateExchangeRate = Asyncly(async (req: Request, res: Response) =
 });
 
 const deleteExchangeRate = Asyncly(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     logger.info(`Admin ${req.currentAdmin?.id} deleting exchange rate ${id}`);
 
