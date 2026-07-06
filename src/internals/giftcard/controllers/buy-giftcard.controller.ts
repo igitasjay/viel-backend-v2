@@ -5,7 +5,7 @@ import { prisma } from "@/shared/db/prisma";
 import { httpStatus } from "@shared/exceptions/statusCodes";
 import { logger } from "@/lib/winston";
 // import { publishToQueue } from "@/shared/workers";
-import { RESPONSE_MESSAGES } from "../constants";
+import { RESPONSE_MESSAGES, GIFTCARD_CONSTRAINTS } from "../constants";
 import { giftCardValidation } from "../giftcard.validation";
 // import { withPagination } from "@/shared/helpers/pagination";
 import { giftCardService } from "../services/buy-giftcard.service";
@@ -35,6 +35,20 @@ const getMinMaxAmounts = (
         minAmount: reloadlyData?.minRecipientDenomination || null,
         maxAmount: reloadlyData?.maxRecipientDenomination || null,
     };
+};
+
+const calculateExchangeRate = (reloadlyData: any, exchangeRatesMap: Record<string, number>): number => {
+    const senderCurrency = (reloadlyData?.senderCurrencyCode || "NGN").toUpperCase();
+    const isNonNgnSender = senderCurrency !== "NGN";
+    const ngnConversionRate = exchangeRatesMap[senderCurrency] || GIFTCARD_CONSTRAINTS.DEFAULT_NGN_RATE;
+
+    const rawRate = reloadlyData?.recipientCurrencyToSenderCurrencyExchangeRate;
+
+    if (isNonNgnSender) {
+        return (rawRate || 1) * ngnConversionRate;
+    }
+
+    return rawRate || ngnConversionRate;
 };
 
 const ALLOWED_COUNTRIES = [
@@ -110,6 +124,9 @@ const getProducts = Asyncly(async (req: Request, res: Response) => {
     const feePercentage =
         feeConfig?.feeType === "PERCENTAGE" ? Number(feeConfig.feeValue) : 2;
 
+    const rates = await prisma.exchangeRate.findMany();
+    const exchangeRatesMap = Object.fromEntries(rates.map(r => [r.currency, Number(r.rate)]));
+
     const result = await withPagination({
         model: "giftcardProducts",
         req,
@@ -133,8 +150,7 @@ const getProducts = Asyncly(async (req: Request, res: Response) => {
                 fixedDenominations: reloadlyData?.fixedRecipientDenominations || null,
                 minAmount,
                 maxAmount,
-                exchangeRate:
-                    reloadlyData?.recipientCurrencyToSenderCurrencyExchangeRate || 1700,
+                exchangeRate: calculateExchangeRate(reloadlyData, exchangeRatesMap),
                 feePercentage: feePercentage,
                 lastRateUpdate: product.updatedAt.toISOString(),
                 redeemInstructions: {
@@ -193,6 +209,9 @@ const getSingleProduct = Asyncly(async (req: Request, res: Response) => {
     const reloadlyData = product.reloadlyData as any;
     const { minAmount, maxAmount } = getMinMaxAmounts(reloadlyData);
 
+    const rates = await prisma.exchangeRate.findMany();
+    const exchangeRatesMap = Object.fromEntries(rates.map(r => [r.currency, Number(r.rate)]));
+
     const transformedProduct = {
         id: product.id,
         reloadlyId: product.reloadlyId,
@@ -206,8 +225,7 @@ const getSingleProduct = Asyncly(async (req: Request, res: Response) => {
         fixedDenominations: reloadlyData?.fixedRecipientDenominations || null,
         minAmount,
         maxAmount,
-        exchangeRate:
-            reloadlyData?.recipientCurrencyToSenderCurrencyExchangeRate || 1700,
+        exchangeRate: calculateExchangeRate(reloadlyData, exchangeRatesMap),
         feePercentage: feePercentage,
         lastRateUpdate: product.updatedAt.toISOString(),
         redeemInstructions: {

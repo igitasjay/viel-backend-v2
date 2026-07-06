@@ -113,7 +113,16 @@ class GiftCardService {
         const denominationType = reloadlyData.denominationType;
         const senderCurrency = (reloadlyData.senderCurrencyCode || "NGN").toUpperCase();
         const isNonNgnSender = senderCurrency !== "NGN";
-        const ngnConversionRate = GIFTCARD_CONSTRAINTS.DEFAULT_NGN_RATE;
+        
+        let ngnConversionRate = GIFTCARD_CONSTRAINTS.DEFAULT_NGN_RATE;
+        if (isNonNgnSender) {
+            const exchangeRateRecord = await prisma.exchangeRate.findUnique({
+                where: { currency: senderCurrency }
+            });
+            if (exchangeRateRecord) {
+                ngnConversionRate = Number(exchangeRateRecord.rate);
+            }
+        }
 
         const rawRate = reloadlyData.recipientCurrencyToSenderCurrencyExchangeRate;
         let exchangeRate: number;
@@ -253,7 +262,16 @@ class GiftCardService {
 
         const senderCurrency = (reloadlyData.senderCurrencyCode || "NGN").toUpperCase();
         const isNonNgnSender = senderCurrency !== "NGN";
-        const ngnConversionRate = GIFTCARD_CONSTRAINTS.DEFAULT_NGN_RATE;
+        
+        let ngnConversionRate = GIFTCARD_CONSTRAINTS.DEFAULT_NGN_RATE;
+        if (isNonNgnSender) {
+            const exchangeRateRecord = await prisma.exchangeRate.findUnique({
+                where: { currency: senderCurrency }
+            });
+            if (exchangeRateRecord) {
+                ngnConversionRate = Number(exchangeRateRecord.rate);
+            }
+        }
 
         let expectedBasePrice: number;
         if (denominationType === "FIXED") {

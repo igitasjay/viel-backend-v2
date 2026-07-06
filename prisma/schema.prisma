@@ -842,3 +842,13 @@ enum SupportMessageSender {
   USER
   ADMIN
 }
+
+model ExchangeRate {
+  id        String   @id @default(ulid())
+  currency  String   @unique
+  rate      Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("exchange_rates")
+}
