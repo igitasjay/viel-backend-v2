@@ -117,12 +117,14 @@ export async function seedCryptoAssets() {
                 name: asset.name,
                 imageUrl: asset.image,
                 isActive: true,
+                buyRate: 1000,
             },
             create: {
                 code: asset.code,
                 name: asset.name,
                 imageUrl: asset.image,
                 isActive: true,
+                buyRate: 1000,
             },
         });
     }
