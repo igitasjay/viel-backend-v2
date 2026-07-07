@@ -153,6 +153,7 @@ import { httpStatus } from "./shared/exceptions/statusCodes";
 // Routes & Controllers
 // import router from "./routes/v1/health.route";
 import v2router from "./routes/v1/routes.v2";
+import { cryptoWalletController } from "./internals/crypto/crypto.controller";
 // import { webhookRoutes } from "./internals/webhooks";
 
 // App Initialization
@@ -300,7 +301,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 // app.use("/haven", transferController.webhookHandler);
 
 // 2. Obiex Webhook Handler
-// app.use("/obi", cryptoWalletController.webhookHandler);
+app.use("/obi", cryptoWalletController.webhookHandler);
 
 //  Swagger Documentation
 // setupSwagger(app);
