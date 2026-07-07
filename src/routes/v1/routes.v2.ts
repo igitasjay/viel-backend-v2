@@ -5,10 +5,12 @@ import express from 'express'
 import { authRoutes } from '@/internals/authentication/auth.route';
 import { handleMonnifyWebhook } from '@/controllers/monnify.webhook';
 import monnifyRoutes from '@/monnify-infra/routes/monnify.route';
+import { cryptoRoutes } from '@/internals/crypto';
 const v2router = express.Router()
 
 v2router.use('/auth', authRoutes)
 v2router.use('/giftcards', giftcardroutes);
+v2router.use('/crypto', cryptoRoutes)
 v2router.use('/monnify', monnifyRoutes);
 v2router.post('/monnify/webhook', handleMonnifyWebhook);
 
