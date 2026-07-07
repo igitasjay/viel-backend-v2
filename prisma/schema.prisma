@@ -46,6 +46,7 @@ model User {
   security                    UserSecurity?
   referredBy                  User?                         @relation("UserReferrals", fields: [referredById], references: [id])
   referredUsers               User[]                        @relation("UserReferrals")
+  wallets                     Wallet[]
 
   @@index([email])
   @@index([referralCode])
@@ -54,6 +55,25 @@ model User {
   @@index([referredById])
   @@index([deletedAt])
   @@map("users")
+}
+
+model Wallet {
+  id                     String        @id @default(ulid())
+  userId                 String
+  currency               String        @default("NGN")
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  sellVolume             Decimal       @default(0) @db.Decimal(15, 2)
+  buyVolume              Decimal       @default(0) @db.Decimal(10, 2)
+  totalTransactionVolume Decimal       @default(0) @db.Decimal(15, 2)
+  referralBalance        Decimal       @default(0) @db.Decimal(10, 2)
+  transactions           Transaction[]
+  user                   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, currency])
+  @@index([userId])
+  @@index([currency])
+  @@map("wallets")
 }
 
 model CryptoWallet {
@@ -194,6 +214,7 @@ model Transaction {
   ReferralEarning      ReferralEarning[]
   giftcardSale         GiftcardSales?      @relation(fields: [giftcardSaleId], references: [id])
   user                 User                @relation(fields: [userId], references: [id])
+  wallet               Wallet?             @relation(fields: [walletId], references: [id])
 
   @@unique([userId, idempotencyKey])
   @@index([userId])
