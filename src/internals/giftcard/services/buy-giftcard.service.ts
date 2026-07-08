@@ -113,7 +113,7 @@ class GiftCardService {
         const denominationType = reloadlyData.denominationType;
         const senderCurrency = (reloadlyData.senderCurrencyCode || "NGN").toUpperCase();
         const isNonNgnSender = senderCurrency !== "NGN";
-        
+
         let ngnConversionRate = GIFTCARD_CONSTRAINTS.DEFAULT_NGN_RATE;
         if (isNonNgnSender) {
             const exchangeRateRecord = await prisma.exchangeRate.findUnique({
@@ -262,7 +262,7 @@ class GiftCardService {
 
         const senderCurrency = (reloadlyData.senderCurrencyCode || "NGN").toUpperCase();
         const isNonNgnSender = senderCurrency !== "NGN";
-        
+
         let ngnConversionRate = GIFTCARD_CONSTRAINTS.DEFAULT_NGN_RATE;
         if (isNonNgnSender) {
             const exchangeRateRecord = await prisma.exchangeRate.findUnique({
@@ -478,7 +478,7 @@ class GiftCardService {
                 giftCardType: product.name,
                 giftCardValue: cardValue,
                 giftCardReceipt: orderReference,
-                provider: "Trade Aviator",
+                provider: "My Viel",
                 providerRef: null,
                 externalRef: null,
                 internalRef: requestId,

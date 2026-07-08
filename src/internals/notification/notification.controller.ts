@@ -169,7 +169,7 @@ const testPushNotification = Asyncly(async (req: Request, res: Response) => {
     throw new UnauthorizedException("User not authenticated");
   }
 
-  const notificationTitle = title || "Welcome to Trade Aviator! 🎉";
+  const notificationTitle = title || "Welcome to My Viel! 🎉";
   const notificationMessage =
     message ||
     `We are glad to have you on board${req.currentUser?.name ? `, ${req.currentUser.name}` : ""}!\n\nStart exploring our features and enjoy a seamless trading experience.`;

@@ -535,7 +535,7 @@ class GiftCardSellingService {
           narration:
             data.userNotes ||
             `Gift card sale - ${sale.cardType} (${sale.quantity}x ${sale.cardCurrency}${sale.cardValue}) - Pending Review`,
-          provider: "Trade Aviator",
+          provider: "My Viel",
           internalRef: `GCSALE-${sale.id.slice(-8).toUpperCase()}`,
           giftcardSaleId: sale.id,
           channel: sale.paymentMethod,

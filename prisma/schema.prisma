@@ -47,6 +47,7 @@ model User {
   referredBy                  User?                         @relation("UserReferrals", fields: [referredById], references: [id])
   referredUsers               User[]                        @relation("UserReferrals")
   wallets                     Wallet[]
+  rewards                     Rewards[]
 
   @@index([email])
   @@index([referralCode])
@@ -69,6 +70,7 @@ model Wallet {
   referralBalance        Decimal       @default(0) @db.Decimal(10, 2)
   transactions           Transaction[]
   user                   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewards                Rewards[]
 
   @@unique([userId, currency])
   @@index([userId])
@@ -215,6 +217,7 @@ model Transaction {
   giftcardSale         GiftcardSales?      @relation(fields: [giftcardSaleId], references: [id])
   user                 User                @relation(fields: [userId], references: [id])
   wallet               Wallet?             @relation(fields: [walletId], references: [id])
+  rewards              Rewards[]
 
   @@unique([userId, idempotencyKey])
   @@index([userId])
@@ -726,6 +729,48 @@ model SupportMessage {
   @@map("support_messages")
 }
 
+model Rewards {
+  id            String        @id @default(ulid())
+  userId        String
+  walletId      String?
+  narration     String?
+  provider      String?
+  reference     String?       @unique
+  sessionId     String?
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String?
+  channel       String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  internalRef   String?
+  expiresAt     DateTime?
+  redeemedAt    DateTime?
+  transactionId String?       @unique
+  status        RewardStatus?
+  type          RewardType?
+  user          User          @relation(fields: [userId], references: [id])
+  wallet        Wallet?       @relation(fields: [walletId], references: [id])
+  transaction   Transaction?  @relation(fields: [transactionId], references: [id])
+
+  @@index([userId])
+  @@index([walletId])
+  @@index([status])
+  @@index([type])
+  @@index([reference])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@map("rewards")
+}
+
+enum RewardStatus {
+  PENDING
+  ACTIVE
+  REDEEMED
+  EXPIRED
+  CANCELLED
+}
+
 enum AlertRateType {
   SELL
   BUY
@@ -872,4 +917,12 @@ model ExchangeRate {
   updatedAt DateTime @updatedAt
 
   @@map("exchange_rates")
+}
+
+enum RewardType {
+  CASHBACK
+  VOUCHER
+  REFERRAL_BONUS
+  PROMOTIONAL
+  CONTEST_WIN
 }
