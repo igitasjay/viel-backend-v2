@@ -34,6 +34,17 @@ const generateCryptoWallet = Asyncly(async (req: Request, res: Response) => {
     throw new UnauthorizedException("Authentication required");
   }
 
+  // Enforce bank account requirement
+  const externalAccount = await prisma.externalAccount.findFirst({
+    where: { userId },
+  });
+
+  if (!externalAccount) {
+    throw new BadRequestException(
+      "You must add a bank account before generating a crypto wallet.",
+    );
+  }
+
   // Check if wallet already exists for this asset and chain
   const existingWallet = await prisma.cryptoWallet.findUnique({
     where: {

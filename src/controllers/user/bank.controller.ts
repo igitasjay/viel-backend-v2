@@ -1,22 +1,23 @@
-import User from '@/models/user.model';
-import BankAccount from '@/models/bank.model';
 import type { Request, Response } from 'express';
 import { logger } from '@/lib/winston';
-import { Types } from 'mongoose';
 import crypto from 'crypto';
+import { prisma } from '@shared/db/prisma';
 
 const generateReferralCode = async (): Promise<string> => {
   let referralCode: string;
   let codeExists: boolean;
   do {
     referralCode = crypto.randomBytes(4).toString('hex').toUpperCase();
-    codeExists = (await User.exists({ myReferralCode: referralCode })) !== null;
+    const existing = await prisma.user.findUnique({
+      where: { referralCode },
+    });
+    codeExists = !!existing;
   } while (codeExists);
   return referralCode;
 };
 
 const addBankAccount = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.userId;
+  const userId = (req.currentUser?.id || req.userId) as unknown as string;
   const { accountNumber, accountName, bankName, bankCode } = req.body;
 
   if (!accountNumber || !accountName || !bankName || !bankCode) {
@@ -29,7 +30,10 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const user = await User.findById(userId).exec();
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
     if (!user) {
       res.status(404).json({
         code: 'NotFound',
@@ -38,7 +42,7 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    if (!user.verifiedUser) {
+    if (!user.isVerified) {
       res.status(403).json({
         code: 'VerificationRequired',
         message: 'You must be a verified user to add a bank account.',
@@ -46,7 +50,10 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const existingBank = await BankAccount.findOne({ userId }).exec();
+    const existingBank = await prisma.externalAccount.findFirst({
+      where: { userId },
+    });
+
     if (existingBank) {
       res.status(400).json({
         code: 'DuplicateError',
@@ -55,27 +62,34 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const bankAccount = await BankAccount.create({
-      userId: new Types.ObjectId(userId),
-      accountNumber,
-      accountName,
-      bankName,
-      bankCode,
+    const externalAccount = await prisma.externalAccount.create({
+      data: {
+        userId,
+        accountNumber,
+        accountName,
+        bankName,
+        providerCode: bankCode,
+        isPrimary: true,
+      },
     });
 
     // Generate referral code if user doesn't have one
-    if (!user.myReferralCode) {
-      user.myReferralCode = await generateReferralCode();
-      await user.save();
-      logger.info(`Generated referral code ${user.myReferralCode} for user ${userId}`);
+    let myReferralCode = user.referralCode;
+    if (!myReferralCode) {
+      myReferralCode = await generateReferralCode();
+      await prisma.user.update({
+        where: { id: userId },
+        data: { referralCode: myReferralCode },
+      });
+      logger.info(`Generated referral code ${myReferralCode} for user ${userId}`);
     }
 
     logger.info('User bank account added successfully', { userId });
 
     res.status(201).json({
       message: 'Bank account added successfully.',
-      bankAccount,
-      myReferralCode: user.myReferralCode,
+      bankAccount: externalAccount,
+      myReferralCode,
     });
   } catch (error) {
     logger.error('Error adding bank account', { userId, error });
@@ -87,12 +101,15 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
 };
 
 const updateBankAccount = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.userId;
+  const userId = (req.currentUser?.id || req.userId) as unknown as string;
   const { accountNumber, accountName, bankName, bankCode } = req.body;
 
   try {
-    const bankAccount = await BankAccount.findOne({ userId }).exec();
-    if (!bankAccount) {
+    const externalAccount = await prisma.externalAccount.findFirst({
+      where: { userId },
+    });
+
+    if (!externalAccount) {
       res.status(404).json({
         code: 'NotFound',
         message: 'Bank account not found.',
@@ -100,17 +117,21 @@ const updateBankAccount = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    if (accountNumber) bankAccount.accountNumber = accountNumber;
-    if (accountName) bankAccount.accountName = accountName;
-    if (bankName) bankAccount.bankName = bankName;
-    if (bankCode) bankAccount.bankCode = bankCode;
+    const updatedAccount = await prisma.externalAccount.update({
+      where: { id: externalAccount.id },
+      data: {
+        accountNumber: accountNumber || externalAccount.accountNumber,
+        accountName: accountName || externalAccount.accountName,
+        bankName: bankName || externalAccount.bankName,
+        providerCode: bankCode || externalAccount.providerCode,
+      },
+    });
 
-    await bankAccount.save();
     logger.info('User bank account updated', { userId });
 
     res.status(200).json({
       message: 'Bank account updated successfully.',
-      bankAccount,
+      bankAccount: updatedAccount,
     });
   } catch (error) {
     logger.error('Error updating bank account', { userId, error });

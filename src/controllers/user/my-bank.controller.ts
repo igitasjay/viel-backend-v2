@@ -1,18 +1,20 @@
 // src/controllers/bank/getCurrentUserBank.ts
 import type { Request, Response } from 'express';
 import { logger } from '@/lib/winston';
-import BankAccount from '@/models/bank.model';
-import User from '@/models/user.model';
+import { prisma } from '@shared/db/prisma';
 
 const getCurrentUserBank = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  const userId = req.userId!; // set by `authenticate` middleware
+  const userId = (req.currentUser?.id || req.userId) as unknown as string; // set by `requireAuth` or `authenticate` middleware
 
   try {
     // Verify user exists (optional – defensive)
-    const user = await User.findById(userId).lean().exec();
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
     if (!user) {
       res.status(404).json({
         code: 'NotFound',
@@ -22,10 +24,9 @@ const getCurrentUserBank = async (
     }
 
     // Find the linked bank account (one-to-one)
-    const bankAccount = await BankAccount.findOne({ userId })
-      .select('-__v -createdAt -updatedAt')
-      .lean()
-      .exec();
+    const bankAccount = await prisma.externalAccount.findFirst({
+      where: { userId },
+    });
 
     if (!bankAccount) {
       res.status(404).json({
@@ -39,11 +40,11 @@ const getCurrentUserBank = async (
 
     res.status(200).json({
       bankAccount: {
-        id: bankAccount._id,
+        id: bankAccount.id,
         accountNumber: bankAccount.accountNumber,
         accountName: bankAccount.accountName,
         bankName: bankAccount.bankName,
-        bankCode: bankAccount.bankCode,
+        bankCode: bankAccount.providerCode,
       },
     });
   } catch (error) {

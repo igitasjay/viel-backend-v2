@@ -6,18 +6,19 @@ import authenticate from '@/middlewares/authenticate.middleware';
 import getBanks, { resolveBankAccount } from '@/services/banks.service';
 import { addBankAccount, updateBankAccount } from '@/controllers/user/bank.controller';
 import getCurrentUserBank from '@/controllers/user/my-bank.controller';
+import { requireAuth } from '@/shared/middlewares';
 
-const router = Router();
+const bankingroutes = Router();
 
-router.use(authenticate);
+bankingroutes.use(requireAuth);
 
 // Public endpoint to get bank list (or protect if preferred)
-router.get('/list', getBanks);
+bankingroutes.get('/list', getBanks);
 
-router.get('/resolve', resolveBankAccount);
+bankingroutes.get('/resolve', resolveBankAccount);
 
 // Protected endpoint to add bank account
-router.post(
+bankingroutes.post(
   '/add',
   body('accountNumber')
     .trim()
@@ -31,9 +32,9 @@ router.post(
   addBankAccount,
 );
 
-router.put('/update', updateBankAccount);
+bankingroutes.put('/update', updateBankAccount);
 
-router.get('/my-bank', getCurrentUserBank);
+bankingroutes.get('/my-bank', getCurrentUserBank);
 
 // router.post(
 //   '/verify',
@@ -42,4 +43,4 @@ router.get('/my-bank', getCurrentUserBank);
 //   verifyBankDetails,
 // );
 
-export default router;
+export default bankingroutes;

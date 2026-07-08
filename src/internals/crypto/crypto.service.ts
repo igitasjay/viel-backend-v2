@@ -15,6 +15,7 @@ import {
 import { ReferralConstants } from "@shared/types/enums";
 import { ObiexEvent } from "./interface";
 import { ObiexService } from "../../externals";
+import { disburseFunds } from "@/monnify-infra/services/monnify.service";
 // import { emitVirtualWalletUpdate } from "../wallets";
 // import { spinService } from "../spin";
 
@@ -159,6 +160,11 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
       },
     });
 
+    const bankAccount = await prisma.externalAccount.findFirst({
+      where: { userId: cryptoWallet.userId },
+      orderBy: { createdAt: "desc" },
+    });
+
     if (event.status === "PENDING") {
       const transaction = await prisma.transaction.create({
         data: {
@@ -267,6 +273,76 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
     logger.info(`   NGN Value: ₦${ngnValue.toFixed(2)}`);
     logger.info(`   New Balance: ₦${updatedWallet.sellVolume}`);
 
+    // Attempt auto-payout to Monnify if bank account exists
+    let payoutSuccessful = false;
+    let payoutError = "";
+
+    if (bankAccount && bankAccount.providerCode) {
+      try {
+        const payoutRef = `PAYOUT|${transactionTxRef}`;
+        logger.info(
+          `Attempting to disburse ₦${ngnValue.toFixed(2)} to ${bankAccount.accountNumber} (${bankAccount.bankName})`
+        );
+
+        const payoutResponse = await disburseFunds({
+          amount: ngnValue,
+          reference: payoutRef,
+          narration: `Crypto Deposit Payout - ${normalizedAsset}`,
+          destinationBankCode: bankAccount.providerCode,
+          destinationAccountNumber: bankAccount.accountNumber,
+          currency: "NGN",
+        });
+
+        if (payoutResponse.requestSuccessful) {
+          payoutSuccessful = true;
+
+          // Deduct from wallet and record payout transaction
+          await prisma.$transaction([
+            prisma.transaction.create({
+              data: {
+                userId: cryptoWallet.userId,
+                walletId: ngnWallet?.id,
+                category: TransactionCategory.CRYPTO,
+                type: TransactionType.DEBIT,
+                amount: ngnValue,
+                reference: payoutRef,
+                externalRef: payoutResponse.responseBody?.transactionReference,
+                currency: "NGN",
+                provider: "Monnify",
+                channel: "bank_transfer",
+                narration: `Auto-payout for ${normalizedAsset} deposit`,
+                status: TransactionStatus.SUCCESS,
+              },
+            }),
+            prisma.wallet.update({
+              where: { id: updatedWallet.id },
+              data: { sellVolume: { decrement: ngnValue } },
+            }),
+          ]);
+          logger.info(`✅ Auto-payout successful for transaction ${transactionTxRef}`);
+        } else {
+          payoutError = payoutResponse.responseMessage || "Unknown Monnify error";
+          logger.error(`❌ Auto-payout failed from Monnify response: ${payoutError}`);
+        }
+      } catch (error: any) {
+        payoutError = error.message || "Failed to connect to Monnify";
+        logger.error(`❌ Auto-payout failed:`, error);
+      }
+    } else {
+      logger.warn(`No valid bank account found for user ${cryptoWallet.userId}, skipping auto-payout`);
+    }
+
+    // Prepare success notification message based on payout status
+    let successMessage = `Your deposit of ${depositAmount} ${normalizedAsset} has been confirmed.`;
+    if (payoutSuccessful) {
+      successMessage += ` ₦${ngnValue.toFixed(2)} has been automatically transferred to your bank account (${bankAccount?.bankName} - ${bankAccount?.accountNumber}).`;
+    } else {
+      successMessage += ` ₦${ngnValue.toFixed(2)} has been credited to your internal wallet.`;
+      if (payoutError) {
+        successMessage += ` Automatic bank transfer failed: ${payoutError}. You can manually withdraw these funds at any time.`;
+      }
+    }
+
     // Emit real-time wallet update via Socket.IO
     // emitVirtualWalletUpdate(
     //   cryptoWallet.userId,
@@ -290,7 +366,7 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
             notificationType: "TRANSACTION",
             priority: "high",
             title: "Crypto Deposit Confirmed",
-            message: `Your deposit of ${depositAmount} ${normalizedAsset} has been confirmed and ₦${ngnValue.toFixed(2)} has been credited to your wallet.`,
+            message: successMessage,
             deliveryChannels: ["push", "in_app"],
             meta: {
               transactionId: transaction.id,
