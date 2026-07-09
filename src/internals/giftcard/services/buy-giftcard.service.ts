@@ -15,7 +15,7 @@ import { createGiftcardMeta, getGiftcardMeta, updateGiftcardMeta } from "../type
 import { ReloadlyOrderResponse } from "@/externals/reloadly/interface";
 import { initMonnifyBankTransfer, initMonnifyTransaction } from "@/monnify-infra/services/monnify.service";
 import config from "@/config/config";
-import { useTransactionPin } from "@/internals/account/account.utils";
+import { useTransactionPin } from "@/internals/accounts/account.utils";
 import { publishToQueue } from "@/shared/workers/publisher";
 
 async function sendGiftcardEmail(transaction: any, user: any, rawCodes: any[]) {
