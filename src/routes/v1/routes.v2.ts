@@ -9,10 +9,12 @@ import { cryptoRoutes } from '@/internals/crypto';
 import bankingroutes from './banks.route';
 import { historyRoutes } from '@/internals/histories';
 import { accountRoutes } from '@/internals/accounts';
+import { profileRoutes } from '@/internals/profile';
 const v2router = express.Router()
 
 v2router.use('/auth', authRoutes)
 v2router.use('/account', accountRoutes)
+v2router.use('/profile', profileRoutes)
 v2router.use('/giftcards', giftcardroutes);
 v2router.use('/crypto', cryptoRoutes)
 v2router.use('/bank', bankingroutes)
