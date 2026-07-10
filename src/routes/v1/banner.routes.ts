@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import * as bannerCtrl from '@/controllers/banner.controller';
 
-const router = Router();
+const bannerrouter = Router();
 
-router.get('/', bannerCtrl.getBanners);
+bannerrouter.get('/', bannerCtrl.getBanners);
 
-export default router;
+export default bannerrouter;

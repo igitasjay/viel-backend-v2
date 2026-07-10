@@ -37,5 +37,6 @@ profileRoutes.delete(
 );
 
 // profileRoutes.get("/tagline", requireAuth, profileController.getTagline);
+profileRoutes.get("/net-trading-volume", requireAuth, profileController.getNetTradingVolume);
 
 export { profileRoutes };

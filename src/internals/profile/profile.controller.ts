@@ -472,11 +472,56 @@ const deleteAccount = Asyncly(async (req: Request, res: Response) => {
 //   });
 // });
 
+const getNetTradingVolume = Asyncly(async (req: Request, res: Response) => {
+  const userId = req.currentUser?.id;
+  logger.info(`Fetching net trading volume for user ID: ${userId}`);
+
+  const aggregations = await prisma.transaction.groupBy({
+    by: ['type'],
+    where: {
+      userId,
+      status: 'SUCCESS',
+      category: {
+        in: ['GIFTCARDS', 'CRYPTO'],
+      },
+      type: {
+        not: null,
+      },
+    },
+    _sum: {
+      amount: true,
+    },
+  });
+
+  let totalBuyVolume = 0;
+  let totalSellVolume = 0;
+
+  aggregations.forEach((agg) => {
+    if (agg.type === 'DEBIT') {
+      totalBuyVolume = Number(agg._sum.amount || 0);
+    } else if (agg.type === 'CREDIT') {
+      totalSellVolume = Number(agg._sum.amount || 0);
+    }
+  });
+
+  const netVolume = totalBuyVolume + totalSellVolume;
+
+  res.status(httpStatus.OK).json({
+    message: "Net trading volume retrieved successfully",
+    data: {
+      buyVolume: totalBuyVolume.toString(),
+      sellVolume: totalSellVolume.toString(),
+      netVolume: netVolume.toString(),
+    },
+  });
+});
+
 export const profileController = {
   getProfile,
   updateProfile,
   uploadProfilePicture,
   removeProfilePicture,
   deleteAccount,
+  getNetTradingVolume,
   // getTagline,
 };
