@@ -322,11 +322,14 @@ class GiftCardService {
 
         let expectedFeePerCard = 0;
         if (feeConfig) {
-            if (feeConfig.feeType === GIFTCARD_FEE_TYPE.PERCENTAGE) {
-                const feePercentage = Number(feeConfig.feeValue);
+            const feeType = feeConfig.feeType?.toUpperCase();
+            if (feeType === GIFTCARD_FEE_TYPE.PERCENTAGE) {
+                const feePercentage = (Number(feeConfig.feeValue) > 0) ? Number(feeConfig.feeValue) : 2; // fallback percentage
                 expectedFeePerCard = (expectedBasePrice * feePercentage) / 100;
-            } else if (feeConfig.feeType === GIFTCARD_FEE_TYPE.FIXED) {
-                expectedFeePerCard = Number(feeConfig.feeValue);
+            } else if (feeType === GIFTCARD_FEE_TYPE.FIXED) {
+                expectedFeePerCard = (Number(feeConfig.feeValue) > 0) ? Number(feeConfig.feeValue) : GIFTCARD_FEE_PER_CARD.VALUE;
+            } else {
+                expectedFeePerCard = GIFTCARD_FEE_PER_CARD.VALUE;
             }
         } else {
             expectedFeePerCard = GIFTCARD_FEE_PER_CARD.VALUE;

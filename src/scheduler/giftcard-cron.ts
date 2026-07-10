@@ -140,3 +140,57 @@ export function startGiftcardCodePolling() {
     "✅ Giftcard code polling cron job started (runs every 5 minutes)",
   );
 }
+
+export function startPendingGiftcardExpiration() {
+  cron.schedule("*/10 * * * *", async () => {
+    try {
+      logger.info("Starting pending giftcard expiration job...");
+
+      const fortyMinutesAgo = new Date(Date.now() - 40 * 60 * 1000);
+
+      const expiredTransactions = await prisma.transaction.findMany({
+        where: {
+          category: "GIFTCARDS",
+          status: "PENDING",
+          createdAt: {
+            lte: fortyMinutesAgo,
+          },
+        },
+      });
+
+      if (expiredTransactions.length === 0) {
+        logger.info("No expired pending gift card transactions found");
+        return;
+      }
+
+      logger.info(
+        `Found ${expiredTransactions.length} pending gift card transactions older than 40 minutes. Marking as FAILED.`,
+      );
+
+      for (const txn of expiredTransactions) {
+        const currentMeta = (txn.meta as any) || {};
+        await prisma.transaction.update({
+          where: { id: txn.id },
+          data: {
+            status: "FAILED",
+            meta: {
+              ...currentMeta,
+              orderStatus: "FAILED",
+              failureReason: "Payment not completed within 40 minutes timeframe",
+            },
+          },
+        });
+        
+        logger.info(`✅ Marked transaction ${txn.id} as FAILED due to timeout.`);
+      }
+
+      logger.info("Pending giftcard expiration job completed.");
+    } catch (error: any) {
+      logger.error("Error in pending giftcard expiration job:", error.message);
+    }
+  });
+
+  logger.info(
+    "✅ Pending giftcard expiration cron job started (runs every 10 minutes)",
+  );
+}

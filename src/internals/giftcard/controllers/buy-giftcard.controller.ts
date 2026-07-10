@@ -121,8 +121,8 @@ const getProducts = Asyncly(async (req: Request, res: Response) => {
         },
     });
 
-    const feeType = feeConfig?.feeType || "FIXED";
-    const feeValue = feeConfig ? Number(feeConfig.feeValue) : 150;
+    const feeType = feeConfig?.feeType?.toUpperCase() || "FIXED";
+    const feeValue = (feeConfig && Number(feeConfig.feeValue) > 0) ? Number(feeConfig.feeValue) : 150;
 
     const rates = await prisma.exchangeRate.findMany();
     const exchangeRatesMap = Object.fromEntries(rates.map(r => [r.currency, Number(r.rate)]));

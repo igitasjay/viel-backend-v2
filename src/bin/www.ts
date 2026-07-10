@@ -6,6 +6,7 @@ import { logger } from '@/lib/winston';
 import {
   startAllNotificationJobs,
   startGiftcardCodePolling,
+  startPendingGiftcardExpiration,
 } from '../scheduler';
 import { initPublisher, closePublisher } from '@shared/workers/publisher';
 import { startWorker } from '@/shared/workers/consumer';
@@ -42,6 +43,7 @@ const startApp = async () => {
     startAllNotificationJobs();
     // startPriceAlertMonitoring();
     startGiftcardCodePolling();
+    startPendingGiftcardExpiration();
     logger.info('Scheduled jobs initialized');
 
     // Start RabbitMQ Worker
