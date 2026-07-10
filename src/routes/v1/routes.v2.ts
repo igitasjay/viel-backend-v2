@@ -21,8 +21,8 @@ v2router.use('/giftcards', giftcardroutes);
 v2router.use('/crypto', cryptoRoutes)
 v2router.use('/bank', bankingroutes)
 v2router.use('/history', historyRoutes)
-v2router.use('/monnify', monnifyRoutes);
 v2router.post('/monnify/webhook', handleMonnifyWebhook);
+v2router.use('/monnify', monnifyRoutes);
 
 v2router.use('/admin/giftcards', adminGiftcardRoutes)
 v2router.use('/admin/exchange-rates', adminExchangeRateRoutes)

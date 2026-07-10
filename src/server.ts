@@ -204,13 +204,13 @@ const corsOptions = {
     callback: (err: Error | null, allow?: boolean) => void,
   ) => {
     const allowedOrigins = [
-      "http://localhost:6001",
-      "http://localhost:5000",
-      "https://your-mobile-app.com",
-      "capacitor://localhost",
-      "ionic://localhost",
+      // "http://localhost:6001",
+      // "http://localhost:5000",
+      // "https://your-mobile-app.com",
+      // "capacitor://localhost",
+      // "ionic://localhost",
       "http://localhost",
-      "http://localhost:3000",
+      "http://localhost:5001",
     ];
 
     if (
@@ -259,7 +259,7 @@ app.set("trust proxy", true);
 
 //  7. Content-Type Validation
 app.use((req: Request, res: Response, next: NextFunction): void => {
-  if (req.path.startsWith("/webhook/")) return next();
+  if (req.path.startsWith("/webhook/") || req.path.includes("/monnify/webhook")) return next();
 
   if (["POST", "PUT", "PATCH"].includes(req.method)) {
     const contentType = req.headers["content-type"];
