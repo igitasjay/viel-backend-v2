@@ -135,7 +135,7 @@ export const startInactivityReminderJob = () => {
           distinct: ["userId"],
         });
 
-        const inactiveUsers = deviceSessions.map((session) => session.user);
+        const inactiveUsers = deviceSessions.map((session: any) => session.user);
 
         logger.info(
           `Found ${inactiveUsers.length} users inactive for ${days} days`,
@@ -211,7 +211,7 @@ export const startAnniversaryNotificationJob = () => {
       });
 
       // Filter users with anniversaries today (1 year or more)
-      const anniversaryUsers = allUsers.filter((user) => {
+      const anniversaryUsers = allUsers.filter((user: any) => {
         const registeredDate = new Date(user.createdAt);
         const registeredYear = registeredDate.getFullYear();
         const registeredMonth = registeredDate.getMonth() + 1;
@@ -486,7 +486,7 @@ export const startScheduledNotificationDeliveryJob = () => {
 
       for (const notification of scheduledNotifications) {
         try {
-          await prisma.$transaction(async (tx) => {
+          await prisma.$transaction(async (tx: any) => {
             // Update status to processing
             await tx.scheduledNotification.update({
               where: { id: notification.id },
@@ -592,7 +592,7 @@ export const startScheduledNotificationDeliveryJob = () => {
             // Handle recurring notifications
             if (notification.isRecurring && notification.recurringPattern) {
               const { calculateNextScheduledDate } =
-                await import("@shared/utils/recurring-pattern");
+                await import("@shared/utils/recurring-pattern.js");
               const nextScheduledFor = calculateNextScheduledDate(
                 new Date(notification.scheduledFor),
                 notification.recurringPattern,
