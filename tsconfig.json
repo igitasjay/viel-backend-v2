@@ -23,7 +23,28 @@
       ]
     },
     "typeRoots": [
+      "./node_modules/@types",
       "./src/@types"
+    ],
+    "types": [
+      "node",
+      "express",
+      "bcrypt",
+      "compression",
+      "cookie-parser",
+      "cors",
+      "express-sslify",
+      "hpp",
+      "jsonwebtoken",
+      "morgan",
+      "ms",
+      "multer",
+      "node-cron",
+      "pg",
+      "qrcode",
+      "react",
+      "react-dom",
+      "sanitize-html"
     ],
     "jsx": "react-jsx"
   },
