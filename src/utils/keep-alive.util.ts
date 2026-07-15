@@ -7,11 +7,11 @@ let intervalId: NodeJS.Timeout | null = null;
 /**
  * Pings the server's own /health endpoint every 4 minutes
  * to prevent idle shutdown on platforms like Render free tier.
- * Only runs in production when SERVER_URL is configured.
+ * Only runs when SERVER_URL is configured.
  */
 export function startKeepAlive(): void {
-  if (config.env !== 'production' || !config.serverUrl) {
-    logger.info('Keep-alive disabled (non-production or SERVER_URL not set)');
+  if (!config.serverUrl) {
+    logger.info('Keep-alive disabled (SERVER_URL not set)');
     return;
   }
 
