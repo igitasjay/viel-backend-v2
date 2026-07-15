@@ -1,8 +1,11 @@
 import { ethers } from 'ethers';
+// @ts-expect-error - bitcoinjs-lib v7 is ESM-only; runtime interop handled by ts-node
 import * as bitcoin from 'bitcoinjs-lib';
 import * as solana from '@solana/web3.js';
 import * as bip39 from 'bip39';
+// @ts-expect-error - tiny-secp256k1 v2 is ESM-only; runtime interop handled by ts-node
 import * as ecc from 'tiny-secp256k1';
+// @ts-expect-error - bip32 v5 is ESM-only; runtime interop handled by ts-node
 import { BIP32Factory } from 'bip32';
 import { Wallet } from '../models/wallet.model';
 import { Currency } from '../models/currency.model';

@@ -592,7 +592,7 @@ export const startScheduledNotificationDeliveryJob = () => {
             // Handle recurring notifications
             if (notification.isRecurring && notification.recurringPattern) {
               const { calculateNextScheduledDate } =
-                await import("@shared/utils/recurring-pattern");
+                await import("@shared/utils/recurring-pattern.js");
               const nextScheduledFor = calculateNextScheduledDate(
                 new Date(notification.scheduledFor),
                 notification.recurringPattern,

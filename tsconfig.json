@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "target": "ES2023",
     "strict": true,
     "esModuleInterop": true,
@@ -11,15 +11,28 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "removeComments": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@shared/*": ["src/shared/*"],
-      "@shared": ["src/shared"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
+      ],
+      "@shared": [
+        "./src/shared"
+      ]
     },
-    "typeRoots": ["./src/@types"],
+    "typeRoots": [
+      "./src/@types"
+    ],
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*", "src/**/*.ts", "src/**/*.d.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    "src/**/*.ts",
+    "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
