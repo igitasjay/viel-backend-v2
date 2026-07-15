@@ -98,6 +98,8 @@ function createConfig() {
         encryption: {
             key: getEnv("ENCRYPTION_KEY"),
         },
+        serverUrl: getEnvOptional("SERVER_URL"),
+
         cloudinary: {
             name: getEnv("CLOUDINARY_CLOUD_NAME"),
             apiKey: getEnv("CLOUDINARY_API_KEY"),

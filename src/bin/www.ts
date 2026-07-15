@@ -12,6 +12,7 @@ import { initPublisher, closePublisher } from '@shared/workers/publisher';
 import { startWorker } from '@/shared/workers/consumer';
 import { startProductSyncJob } from '@/internals/giftcard/sync-giftcard-product-job';
 import { initializeFirebase } from '@/shared/config/firebase';
+import { startKeepAlive, stopKeepAlive } from '@/utils/keep-alive.util';
 // import { startPriceAlertMonitoring } from "../scheduler/price-alert-job";
 // import { initializeSocketIO } from "@shared/lib/socket";
 // import { initializeSupportSocket } from "../internals/support/support.socket";
@@ -68,6 +69,7 @@ const startApp = async () => {
       logger.info(
         `\x1b[36mServer:\x1b[0m Running on http://localhost:${config.port}`,
       );
+      startKeepAlive();
     });
   } catch (error: any) {
     logger.error(
@@ -83,6 +85,8 @@ const startApp = async () => {
 const gracefulShutdown = async () => {
   logger.info(`\x1b[33mServer:\x1b[0m Shutting down...`);
   try {
+    stopKeepAlive();
+
     await closePublisher();
     logger.info(`\x1b[31mRabbitMQ:\x1b[0m Publisher closed`);
 
