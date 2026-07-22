@@ -20,11 +20,11 @@ authRoutes.post(
   authController.verifyAccount,
 );
 
-authRoutes.post(
-  "/resend",
-  validate(authValidation.resendVerificationCodeSchema),
-  authController.resendOtp,
-);
+// authRoutes.post(
+//   "/resend",
+//   validate(authValidation.resendVerificationCodeSchema),
+//   authController.resendOtp,
+// );
 
 
 authRoutes.post(
@@ -38,6 +38,14 @@ authRoutes.post(
   validate(authValidation.forgotPasswordSchema),
   authController.forgotPasswordUser,
 );
+
+
+authRoutes.post(
+  "/verify-reset-password-otp",
+  validate(authValidation.verifyResetPasswordOTPSchema),
+  authController.verifyResetPasswordOTP,
+);
+
 
 authRoutes.patch(
   "/reset-password",

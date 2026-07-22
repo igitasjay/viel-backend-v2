@@ -16,7 +16,7 @@ const forgotPassword = async (req: Request, res: Response) => {
       // I'll stick to a standard response but maybe log it.
       res.status(200).json({
         code: 'OTPSENT',
-        message: 'If an account with that email exists, we\'ve sent a password reset OTP.',
+        message: 'OTP Sent Successfully.',
       });
       return;
     }
