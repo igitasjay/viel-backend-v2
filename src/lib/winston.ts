@@ -4,25 +4,23 @@ import config from '@/config/config';
 const { combine, timestamp, json, errors, align, printf, colorize } =
   winston.format;
 
-const transports: winston.transport[] = [];
+const devConsoleFormat = combine(
+  colorize({ all: true }),
+  timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  align(),
+  printf(({ timestamp, level, message, ...meta }) => {
+    const metaString = Object.keys(meta).length
+      ? `\n${JSON.stringify(meta)}`
+      : '';
+    return `${timestamp} [${level}]: ${message} ${metaString}`;
+  }),
+);
 
-if (config.NODE_ENV !== 'production') {
-  transports.push(
-    new winston.transports.Console({
-      format: combine(
-        colorize({ all: true }),
-        timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        align(),
-        printf(({ timestamp, level, message, ...meta }) => {
-          const metaString = Object.keys(meta).length
-            ? `\n${JSON.stringify(meta)}`
-            : '';
-          return `${timestamp} [${level}]: ${message} ${metaString}`;
-        }),
-      ),
-    }),
-  );
-}
+const transports: winston.transport[] = [
+  new winston.transports.Console({
+    format: config.NODE_ENV !== 'production' ? devConsoleFormat : undefined,
+  }),
+];
 
 const logger = winston.createLogger({
   level: config.LOG_LEVEL || 'info',
