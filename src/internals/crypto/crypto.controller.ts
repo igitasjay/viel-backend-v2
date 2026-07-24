@@ -204,6 +204,7 @@ const webhookHandler = Asyncly(async (req: Request, res: Response) => {
   const signatureSecret = config.obiex.webhookSecret;
 
   logger.info("=== OBIEX WEBHOOK RECEIVED ===");
+  console.log("=== OBIEX WEBHOOK RECEIVED ===")
 
   const receivedSignature = req.headers["x-obiex-signature"] as string;
 
