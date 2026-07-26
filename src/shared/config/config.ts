@@ -29,7 +29,7 @@ function getEnvNumber(key: string): number {
 function createConfig() {
     return {
         port: getEnvNumber("PORT"),
-        env: getEnvOptional("env", "development") as
+        env: getEnvOptional("NODE_ENV", "development") as
             | "production"
             | "development"
             | "test",

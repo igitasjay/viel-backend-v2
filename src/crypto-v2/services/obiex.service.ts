@@ -67,4 +67,8 @@ export class ObiexService {
   static async createWithdrawal(params: ObiexWithdrawalParams) {
     return this.request<any>('POST', '/withdrawals', params);
   }
+
+  static async withdrawFiat(params: any) {
+    return this.request<any>('POST', '/wallets/ext/debit/fiat', params);
+  }
 }

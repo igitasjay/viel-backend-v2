@@ -8,7 +8,6 @@ import TransactionModel from '@/models/transaction.model';
 import { Currency } from '@/crypto-infra/models/currency.model';
 import User from '@/models/user.model';
 import BankAccount from '@/models/bank.model';
-import { disburseFunds } from '@/monnify-infra/services/monnify.service';
 
 export class CryptoSellService {
   static async generateWallet(userId: string, params: GenerateWalletDto) {
@@ -73,12 +72,28 @@ export class CryptoSellService {
     const currencyConfig = await Currency.findOne({ symbol: currency, network, isActive: true });
     if (!currencyConfig || !currencyConfig.buyRate) return;
 
-    // Convert crypto -> USD -> NGN
-    const usdValue = currencyConfig.is_stable
-      ? amount
-      : (await ObiexService.getTradeQuote({ sourceId: currency, targetId: 'USDT', amount, side: 'SELL' })).amountReceived;
+    // Pre-Flight Rate Check & Loss Prevention Guard
+    const obiexQuote = await ObiexService.getTradeQuote({ sourceId: currency, targetId: 'NGN', amount, side: 'SELL' });
+    const obiexNgnAmount = obiexQuote.data?.amountReceived ?? obiexQuote.amountReceived;
+    const obiexLiveRate = obiexQuote.data?.rate ?? obiexQuote.rate ?? (obiexNgnAmount / amount);
+
+    let usdValue = amount;
+    if (!currencyConfig.is_stable) {
+      const usdtQuote = await ObiexService.getTradeQuote({ sourceId: currency, targetId: 'USDT', amount, side: 'SELL' });
+      usdValue = usdtQuote.data?.amountReceived ?? usdtQuote.amountReceived;
+    }
     
-    const amountNGN = usdValue * currencyConfig.buyRate;
+    const customNgnAmount = usdValue * currencyConfig.buyRate;
+    const customRate = customNgnAmount / amount;
+
+    let amountNGN = customNgnAmount;
+
+    // Validation: Ensure Our Custom Rate <= Obiex Live Rate
+    if (customRate > obiexLiveRate) {
+      console.warn(`[Loss Prevention] Custom rate (${customRate}) > Obiex rate (${obiexLiveRate}). Adjusting payout.`);
+      // Fallback to Obiex Rate - 1% margin
+      amountNGN = obiexNgnAmount * 0.99;
+    }
 
     if (status === 'PENDING') {
       const existing = await TransactionModel.findOne({ reference: `SELL-${hash}` });
@@ -142,13 +157,14 @@ export class CryptoSellService {
 
         // Disbursement to user's bank
         try {
-          await disburseFunds({
+          await ObiexService.withdrawFiat({
             amount: amountNGN,
+            currency: 'NGN',
+            bankCode: bankAccount.bankCode,
+            accountNumber: bankAccount.accountNumber,
+            accountName: (bankAccount as any).accountName,
             reference: `DISB-${hash}`,
             narration: `Crypto Sell Payout - ${amount} ${currency}`,
-            destinationBankCode: bankAccount.bankCode,
-            destinationAccountNumber: bankAccount.accountNumber,
-            currency: 'NGN',
           });
 
           currentTx.status = 'completed';
