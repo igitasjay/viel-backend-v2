@@ -141,10 +141,12 @@ export class ObiexService {
             {
                 amount: params.amount,
                 currency: "NGN",
+                narration: params.narration,
                 destination: {
                     bankCode: params.bankCode,
                     accountNumber: params.accountNumber,
                     accountName: params.accountName,
+                    bankName: params.bankName,
                 },
             },
             `Obiex Fiat Withdrawal (₦${params.amount})`,

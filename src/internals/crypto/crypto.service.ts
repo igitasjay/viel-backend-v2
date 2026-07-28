@@ -323,6 +323,8 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
           bankCode: bankAccount.providerCode,
           accountNumber: bankAccount.accountNumber,
           accountName: bankAccount.accountName,
+          bankName: bankAccount.bankName,
+          narration: `Viel - ${normalizedAsset} Deposit`,
         });
 
         logger.info(`Obiex withdrawal response:`, {

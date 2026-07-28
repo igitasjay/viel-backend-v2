@@ -56,6 +56,8 @@ export interface ObiexFiatWithdrawalParams {
     bankCode: string;
     accountNumber: string;
     accountName: string;
+    bankName: string;
+    narration: string;
 }
 
 export interface ObiexFiatWithdrawalResponse {
