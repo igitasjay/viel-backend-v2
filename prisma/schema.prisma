@@ -926,3 +926,18 @@ enum RewardType {
   PROMOTIONAL
   CONTEST_WIN
 }
+
+model Banner {
+  id        String   @id @default(ulid())
+  imageUrl  String
+  publicId  String?
+  title     String?
+  link      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("banners")
+}

@@ -1,9 +1,10 @@
-import authenticate from "@/middlewares/authenticate.middleware";
+
 import { isAdmin } from "@/middlewares/role-check.middleware";
 import { Router } from "express";
 import { giftcardBuyAdminController } from "../controllers/buy-giftcard.controller.admin";
 import { validate } from "@/utils/validate.util";
 import { giftCardValidation } from "../validations/giftcard.validation";
+import { requireAuth } from "@/shared/middlewares";
 
 const giftcardRoutes = Router();
 
@@ -11,45 +12,45 @@ const giftcardRoutes = Router();
 
 giftcardRoutes.post(
     "/sync",
-    authenticate,
-    //   isAdmin,
+    requireAuth,
+    isAdmin,
     giftcardBuyAdminController.syncProducts,
 );
 
 giftcardRoutes.get(
     "/products",
-    authenticate,
-    //   isAdmin,
+    requireAuth,
+    isAdmin,
     giftcardBuyAdminController.getAllProducts,
 );
 
 giftcardRoutes.get(
     "/orders",
-    authenticate,
-    //   isAdmin,
+    requireAuth,
+    isAdmin,
     giftcardBuyAdminController.getAllOrders,
 );
 
 
 giftcardRoutes.get(
     "/orders/:orderId",
-    authenticate,
-    //   isAdmin,
+    requireAuth,
+    isAdmin,
     giftcardBuyAdminController.getOrder,
 );
 
 
 giftcardRoutes.post(
     "/orders/:orderId/retry",
-    authenticate,
-    //   isAdmin,
+    requireAuth,
+    isAdmin,
     giftcardBuyAdminController.retryOrder,
 );
 
 giftcardRoutes.get(
     "/orders/:orderId/status",
-    authenticate,
-    //   isAdmin,
+    requireAuth,
+    isAdmin,
     giftcardBuyAdminController.getOrderStatus,
 );
 
