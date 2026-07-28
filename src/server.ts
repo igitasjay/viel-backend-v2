@@ -34,7 +34,7 @@ import { httpStatus } from "./shared/exceptions/statusCodes";
 
 // Routes & Controllers
 // import router from "./routes/v1/health.route";
-import v2router from "./routes/v1/routes.v2";
+import v2router from "./routes/v2/routes";
 import { cryptoWalletController } from "./internals/crypto/crypto.controller";
 // import { webhookRoutes } from "./internals/webhooks";
 

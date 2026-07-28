@@ -209,36 +209,36 @@ const submitSale = Asyncly(async (req: Request, res: Response) => {
                 saleId: result.id,
             });
 
-            // const user = await prisma.user.findUnique({
-            //   where: { id: userId },
-            //   select: { email: true, fullname: true },
-            // });
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { email: true, fullname: true },
+            });
 
-            // if (user?.email) {
-            //   await publishToQueue({
-            //     type: "GIFTCARD_SUBMITTED",
-            //     payload: {
-            //       userId,
-            //       recipient: user.email,
-            //       fullName: user.fullname,
-            //       saleDetails: {
-            //         saleId: result.id,
-            //         cardType: result.cardType,
-            //         country: result.country,
-            //         cardRange: result.cardRange,
-            //         cardValue: result.cardValue,
-            //         cardCurrency: result.cardCurrency,
-            //         quantity: result.quantity,
-            //         receiptType: result.receiptType,
-            //         payoutAmount: result.payoutAmount,
-            //         buyingRate: result.buyingRate,
-            //         submittedAt: result.createdAt,
-            //       },
-            //     },
-            //   });
+            if (user?.email) {
+                await publishToQueue({
+                    type: "GIFTCARD_SUBMITTED",
+                    payload: {
+                        userId,
+                        recipient: user.email,
+                        fullName: user.fullname,
+                        saleDetails: {
+                            saleId: result.id,
+                            cardType: result.cardType,
+                            country: result.country,
+                            cardRange: result.cardRange,
+                            cardValue: result.cardValue,
+                            cardCurrency: result.cardCurrency,
+                            quantity: result.quantity,
+                            receiptType: result.receiptType,
+                            payoutAmount: result.payoutAmount,
+                            buyingRate: result.buyingRate,
+                            submittedAt: result.createdAt,
+                        },
+                    },
+                });
 
-            //   logger.info(`Sale submission email queued for user ${userId}`);
-            // }
+                logger.info(`Sale submission email queued for user ${userId}`);
+            }
         } catch (error) {
             logger.error("Failed to queue sale submission email:", { error, userId });
         }
