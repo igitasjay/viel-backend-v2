@@ -140,7 +140,7 @@ export class ObiexService {
             "/wallets/ext/debit/fiat",
             {
                 amount: params.amount,
-                currency: "NGN",
+                currency: "NGNX",
                 narration: params.narration,
                 destination: {
                     bankCode: params.bankCode,
