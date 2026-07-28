@@ -59,7 +59,7 @@ export const getAllBannersAdmin = asyncHandler(async (req: Request, res: Respons
  * @access  Admin
  */
 export const toggleBannerStatus = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
 
   const banner = await prisma.banner.findUnique({
     where: { id },
@@ -94,7 +94,7 @@ export const toggleBannerStatus = asyncHandler(async (req: Request, res: Respons
  * @access  Admin
  */
 export const deleteBanner = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
 
   const banner = await prisma.banner.findUnique({
     where: { id },
