@@ -290,7 +290,7 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
         try {
           const ngnQuote = await ObiexService.getTradeQuote({
             sourceId: normalizedAsset,
-            targetId: "NGN",
+            targetId: "NGNX",
             amount: depositAmount,
             side: "SELL",
           });

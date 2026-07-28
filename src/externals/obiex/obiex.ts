@@ -141,7 +141,7 @@ export class ObiexService {
             {
                 amount: params.amount,
                 currency: "NGN",
-                bank: {
+                destination: {
                     bankCode: params.bankCode,
                     accountNumber: params.accountNumber,
                     accountName: params.accountName,
