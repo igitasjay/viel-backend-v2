@@ -256,12 +256,17 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
             status: TransactionStatus.SUCCESS,
           },
         }),
-      // Credit wallet with NGN value
-      prisma.wallet.update({
+      // Credit wallet with NGN value (upsert — creates volume tracker if first transaction)
+      prisma.wallet.upsert({
         where: {
           userId_currency: { userId: cryptoWallet.userId, currency: "NGN" },
         },
-        data: { sellVolume: { increment: ngnValue } },
+        create: {
+          userId: cryptoWallet.userId,
+          currency: "NGN",
+          sellVolume: ngnValue,
+        },
+        update: { sellVolume: { increment: ngnValue } },
       }),
     ]);
 
@@ -471,7 +476,7 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
 
     return { success: true, message: "Deposit processed successfully" };
   } catch (err) {
-    logger.error("❌ Webhook processing failed:");
+    logger.error("❌ Webhook processing failed:", { error: err instanceof Error ? { message: err.message, stack: err.stack } : err });
     throw err;
   }
 }

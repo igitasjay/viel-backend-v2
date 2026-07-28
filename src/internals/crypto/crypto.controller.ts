@@ -257,7 +257,7 @@ const webhookHandler = Asyncly(async (req: Request, res: Response) => {
     logger.info("✅ Obiex Event successfully processed");
     return res.status(200).json({ ok: true, message: "Event processed" });
   } catch (err) {
-    logger.error(`❌ Webhook processing failed: ${err}`);
+    logger.error(`❌ Webhook processing failed:`, { error: err instanceof Error ? { message: err.message, stack: err.stack } : err });
     return res.status(500).json({ error: "Failed to process webhook" });
   }
 });
