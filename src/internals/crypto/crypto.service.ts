@@ -15,7 +15,6 @@ import {
 import { ReferralConstants } from "@shared/types/enums";
 import { ObiexEvent } from "./interface";
 import { ObiexService } from "../../externals";
-import { disburseFunds } from "@/monnify-infra/services/monnify.service";
 // import { emitVirtualWalletUpdate } from "../wallets";
 // import { spinService } from "../spin";
 
@@ -278,27 +277,62 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
     logger.info(`   NGN Value: ₦${ngnValue.toFixed(2)}`);
     logger.info(`   New Balance: ₦${updatedWallet.sellVolume}`);
 
-    // Attempt auto-payout to Monnify if bank account exists
+    // Attempt auto-payout via Obiex fiat off-ramping if bank account exists
     let payoutSuccessful = false;
     let payoutError = "";
 
     if (bankAccount && bankAccount.providerCode) {
       try {
         const payoutRef = `PAYOUT|${transactionTxRef}`;
+
+        // Rate guard: fetch Obiex live NGN rate for this asset
+        let payoutAmount = ngnValue;
+        try {
+          const ngnQuote = await ObiexService.getTradeQuote({
+            sourceId: normalizedAsset,
+            targetId: "NGN",
+            amount: depositAmount,
+            side: "SELL",
+          });
+
+          const obiexNgnAmount = Number(ngnQuote?.data?.amountReceived || 0);
+          if (obiexNgnAmount > 0 && payoutAmount > obiexNgnAmount) {
+            // Our custom rate exceeds Obiex's live rate — cap at 99% of Obiex rate to retain 1% margin
+            const cappedAmount = Math.round(obiexNgnAmount * 0.99 * 100) / 100;
+            logger.warn(
+              `⚠️ Rate guard triggered: Custom ₦${payoutAmount.toFixed(2)} > Obiex ₦${obiexNgnAmount.toFixed(2)}. Capping payout at ₦${cappedAmount.toFixed(2)} (1% margin)`
+            );
+            payoutAmount = cappedAmount;
+          } else {
+            logger.info(
+              `✅ Rate guard passed: Custom ₦${payoutAmount.toFixed(2)} <= Obiex ₦${obiexNgnAmount.toFixed(2)}`
+            );
+          }
+        } catch (quoteErr) {
+          logger.warn(`⚠️ Rate guard quote failed, proceeding with custom rate ₦${payoutAmount.toFixed(2)}`, {
+            error: quoteErr instanceof Error ? quoteErr.message : quoteErr,
+          });
+        }
+
         logger.info(
-          `Attempting to disburse ₦${ngnValue.toFixed(2)} to ${bankAccount.accountNumber} (${bankAccount.bankName})`
+          `Attempting Obiex fiat withdrawal: ₦${payoutAmount.toFixed(2)} to ${bankAccount.accountNumber} (${bankAccount.bankName})`
         );
 
-        const payoutResponse = await disburseFunds({
-          amount: ngnValue,
-          reference: payoutRef,
-          narration: `Crypto Deposit Payout - ${normalizedAsset}`,
-          destinationBankCode: bankAccount.providerCode,
-          destinationAccountNumber: bankAccount.accountNumber,
-          currency: "NGN",
+        const payoutResponse = await ObiexService.withdrawFiat({
+          amount: payoutAmount,
+          bankCode: bankAccount.providerCode,
+          accountNumber: bankAccount.accountNumber,
+          accountName: bankAccount.accountName,
         });
 
-        if (payoutResponse.requestSuccessful) {
+        logger.info(`Obiex withdrawal response:`, {
+          message: payoutResponse.message,
+          payoutStatus: payoutResponse.data?.payout?.status,
+          payoutAmount: payoutResponse.data?.payout?.payoutAmount,
+          reference: payoutResponse.data?.reference,
+        });
+
+        if (payoutResponse.data?.payout?.status === "APPROVED") {
           payoutSuccessful = true;
 
           // Deduct from wallet and record payout transaction
@@ -309,11 +343,11 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
                 walletId: ngnWallet?.id,
                 category: TransactionCategory.CRYPTO,
                 type: TransactionType.DEBIT,
-                amount: ngnValue,
+                amount: payoutAmount,
                 reference: payoutRef,
-                externalRef: payoutResponse.responseBody?.transactionReference,
+                externalRef: payoutResponse.data.reference,
                 currency: "NGN",
-                provider: "Monnify",
+                provider: "Obiex",
                 channel: "bank_transfer",
                 narration: `Auto-payout for ${normalizedAsset} deposit`,
                 status: TransactionStatus.SUCCESS,
@@ -321,17 +355,17 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
             }),
             prisma.wallet.update({
               where: { id: updatedWallet.id },
-              data: { sellVolume: { decrement: ngnValue } },
+              data: { sellVolume: { decrement: payoutAmount } },
             }),
           ]);
-          logger.info(`✅ Auto-payout successful for transaction ${transactionTxRef}`);
+          logger.info(`✅ Obiex auto-payout successful for transaction ${transactionTxRef}`);
         } else {
-          payoutError = payoutResponse.responseMessage || "Unknown Monnify error";
-          logger.error(`❌ Auto-payout failed from Monnify response: ${payoutError}`);
+          payoutError = `Obiex payout status: ${payoutResponse.data?.payout?.status || "unknown"}`;
+          logger.error(`❌ Obiex auto-payout not approved: ${payoutError}`);
         }
       } catch (error: any) {
-        payoutError = error.message || "Failed to connect to Monnify";
-        logger.error(`❌ Auto-payout failed:`, error);
+        payoutError = error.message || "Failed to process Obiex withdrawal";
+        logger.error(`❌ Obiex auto-payout failed:`, { error: error instanceof Error ? { message: error.message, stack: error.stack } : error });
       }
     } else {
       logger.warn(`No valid bank account found for user ${cryptoWallet.userId}, skipping auto-payout`);
