@@ -105,9 +105,9 @@ function createConfig() {
             apiKey: getEnv("CLOUDINARY_API_KEY"),
             secretKey: getEnv("CLOUDINARY_API_SECRET"),
         },
-        // admin: {
-        //     superPass: getEnv("SUPER_ADMIN_PASS"),
-        // },
+        admin: {
+            superPass: getEnv("SUPER_ADMIN_PASS"),
+        },
     } as const;
 }
 
