@@ -49,7 +49,7 @@ const getAllAcceptedCards = Asyncly(async (req: Request, res: Response) => {
 });
 
 const getAcceptedCard = Asyncly(async (req: Request, res: Response) => {
-    const { cardId } = req.params;
+    const cardId = req.params.cardId as string;
 
     const card = await giftCardSellingService.getAcceptedCardById(cardId);
 
@@ -138,7 +138,7 @@ const createAcceptedCard = Asyncly(async (req: Request, res: Response) => {
 });
 
 const updateAcceptedCard = Asyncly(async (req: Request, res: Response) => {
-    const { cardId } = req.params;
+    const cardId = req.params.cardId as string;
 
     let imageUrl: string | undefined;
     if (req.file) {
@@ -215,7 +215,7 @@ const updateAcceptedCard = Asyncly(async (req: Request, res: Response) => {
 });
 
 const deleteAcceptedCard = Asyncly(async (req: Request, res: Response) => {
-    const { cardId } = req.params;
+    const cardId = req.params.cardId as string;
 
     logger.info(`Admin ${req.currentAdmin?.id} deleting accepted card ${cardId}`);
 
@@ -278,7 +278,7 @@ const getAllSales = Asyncly(async (req: Request, res: Response) => {
 });
 
 const getSale = Asyncly(async (req: Request, res: Response) => {
-    const { saleId } = req.params;
+    const saleId = req.params.saleId as string;
 
     const transaction: any = await prisma.transaction.findFirst({
         where: {
@@ -360,7 +360,7 @@ const getSale = Asyncly(async (req: Request, res: Response) => {
 });
 
 const reviewSale = Asyncly(async (req: Request, res: Response) => {
-    const { saleId } = req.params;
+    const saleId = req.params.saleId as string;
     const adminId = req.currentAdmin!.id;
 
     logger.info(`Admin ${adminId} starting review of sale ${saleId}`);
