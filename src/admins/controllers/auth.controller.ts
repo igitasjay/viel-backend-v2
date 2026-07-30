@@ -208,7 +208,7 @@ const getAllAdmin = Asyncly(async (_req, res) => {
 });
 
 const suspendAdmin = Asyncly(async (req, res) => {
-    const { adminId } = req.params;
+    const adminId = req.params.adminId as string;
     const data = adminAuthValidation.suspendAdminSchema.parse(req.body);
 
     const admin = await prisma.admin.findUnique({
@@ -245,7 +245,7 @@ const suspendAdmin = Asyncly(async (req, res) => {
 });
 
 const deleteAdmin = Asyncly(async (req, res) => {
-    const { adminId } = req.params;
+    const adminId = req.params.adminId as string;
 
     const admin = await prisma.admin.findUnique({
         where: { id: adminId },
@@ -272,7 +272,7 @@ const deleteAdmin = Asyncly(async (req, res) => {
 });
 
 const resetAdminPassword = Asyncly(async (req, res) => {
-    const { adminId } = req.params;
+    const adminId = req.params.adminId as string;
     const data = adminAuthValidation.superAdminResetPasswordSchema.parse(
         req.body,
     );
