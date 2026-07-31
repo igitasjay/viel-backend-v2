@@ -12,6 +12,7 @@ import {
   ReferralEarningType,
   ReferralEarningStatus,
 } from "@prisma/client";
+import { resolveObiexBankCode } from "@/services/obiex-bank-resolver.service";
 import { ReferralConstants } from "@shared/types/enums";
 import { ObiexEvent } from "./interface";
 import { ObiexService } from "../../externals";
@@ -318,9 +319,22 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
           `Attempting Obiex fiat withdrawal: ₦${payoutAmount.toFixed(2)} to ${bankAccount.accountNumber} (${bankAccount.bankName})`
         );
 
+        let obiexBankCode = bankAccount.obiexBankCode;
+        if (!obiexBankCode && bankAccount.providerCode) {
+          logger.info(`Obiex bank code missing for ${bankAccount.bankName}, resolving...`);
+          obiexBankCode = await resolveObiexBankCode(bankAccount.bankName, bankAccount.providerCode);
+          if (obiexBankCode) {
+            // Optimistically update the database for future transactions
+            await prisma.externalAccount.update({
+              where: { id: bankAccount.id },
+              data: { obiexBankCode }
+            });
+          }
+        }
+
         const payoutResponse = await ObiexService.withdrawFiat({
           amount: payoutAmount,
-          bankCode: bankAccount.providerCode,
+          bankCode: obiexBankCode || bankAccount.providerCode,
           accountNumber: bankAccount.accountNumber,
           accountName: bankAccount.accountName,
           bankName: bankAccount.bankName,

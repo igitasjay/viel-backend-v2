@@ -83,6 +83,18 @@ export class ObiexService {
     }
 
     /**
+     * Get supported fiat banks
+     */
+    static async getBankCodes() {
+        return this.request(
+            "POST",
+            "/getbankscode",
+            null,
+            "Obiex Get Bank Codes",
+        );
+    }
+
+    /**
      * Create a broker deposit address
      * uniqueUserIdentifier = unique identifier for the user (e.g., userId)
      * (previously called "purpose", both names work but uniqueUserIdentifier is preferred)

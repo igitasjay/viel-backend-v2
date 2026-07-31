@@ -107,6 +107,7 @@ model ExternalAccount {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   providerCode  String?
+  obiexBankCode String?
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])

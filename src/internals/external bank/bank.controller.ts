@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { logger } from '@/lib/winston';
 import crypto from 'crypto';
 import { prisma } from '@shared/db/prisma';
+import { resolveObiexBankCode } from '@/services/obiex-bank-resolver.service';
 
 const generateReferralCode = async (): Promise<string> => {
   let referralCode: string;
@@ -62,6 +63,8 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    const obiexBankCode = await resolveObiexBankCode(bankName, bankCode);
+
     const externalAccount = await prisma.externalAccount.create({
       data: {
         userId,
@@ -69,6 +72,7 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
         accountName,
         bankName,
         providerCode: bankCode,
+        obiexBankCode,
         isPrimary: true,
       },
     });
@@ -117,6 +121,14 @@ const updateBankAccount = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
+    let newObiexBankCode = externalAccount.obiexBankCode;
+    if (bankName || bankCode) {
+      newObiexBankCode = await resolveObiexBankCode(
+        bankName || externalAccount.bankName, 
+        bankCode || externalAccount.providerCode!
+      ) || newObiexBankCode;
+    }
+
     const updatedAccount = await prisma.externalAccount.update({
       where: { id: externalAccount.id },
       data: {
@@ -124,6 +136,7 @@ const updateBankAccount = async (req: Request, res: Response): Promise<void> => 
         accountName: accountName || externalAccount.accountName,
         bankName: bankName || externalAccount.bankName,
         providerCode: bankCode || externalAccount.providerCode,
+        obiexBankCode: newObiexBankCode,
       },
     });
 
