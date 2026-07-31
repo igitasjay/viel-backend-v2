@@ -188,14 +188,35 @@ export async function disburseFunds(payload: {
   narration: string;
   destinationBankCode: string;
   destinationAccountNumber: string;
+  destinationAccountName?: string;
+  sourceAccountNumber?: string;
   currency: string;
 }): Promise<any> {
   const accessToken = await getMonnifyAccessToken();
 
+  const sourceAccountNumber =
+    payload.sourceAccountNumber ||
+    process.env.MONNIFY_WALLET_ACCOUNT_NUMBER ||
+    process.env.MONNIFY_SOURCE_ACCOUNT_NUMBER ||
+    "";
+
+  const sanitizedReference = payload.reference.replace(/[^a-zA-Z0-9_-]/g, "_");
+
+  const requestBody = {
+    amount: payload.amount,
+    reference: sanitizedReference,
+    narration: payload.narration,
+    destinationBankCode: payload.destinationBankCode,
+    destinationAccountNumber: payload.destinationAccountNumber,
+    destinationAccountName: payload.destinationAccountName || "",
+    sourceAccountNumber: sourceAccountNumber,
+    currency: payload.currency || "NGN",
+  };
+
   try {
     const response = await axios.post(
-      `https://${MONNIFY_BASE_URL}/api/v1/disbursements/single`,
-      payload,
+      `https://${MONNIFY_BASE_URL}/api/v2/disbursements/single`,
+      requestBody,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -205,8 +226,14 @@ export async function disburseFunds(payload: {
     );
     return response.data;
   } catch (error: any) {
-    console.error('Monnify Disbursement API error:', error.message);
-    const safeError = new Error(error.response?.data?.responseMessage || error.message || 'Monnify disbursement failed') as any;
+    console.error('Monnify Disbursement API error:', error.response?.data || error.message);
+    const safeError = new Error(
+      error.response?.data?.responseMessage ||
+      error.response?.data?.responseBody?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      'Monnify disbursement failed'
+    ) as any;
     safeError.status = error.response?.status;
     safeError.monnifyResponse = error.response?.data;
     throw safeError;

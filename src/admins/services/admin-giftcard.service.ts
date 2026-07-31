@@ -5,6 +5,7 @@ import {
     BadRequestException,
     ConflictException,
 } from "@shared/exceptions/exceptions";
+import { publishToQueue } from "@shared/workers/publisher";
 import {
     CreateAcceptedCardDto,
     UpdateAcceptedCardDto,
@@ -224,6 +225,19 @@ class GiftCardSellingService {
             throw new NotFoundException("User wallet not found");
         }
 
+        const bankAccount = await prisma.externalAccount.findFirst({
+            where: { userId: transaction.userId },
+            orderBy: { createdAt: "desc" },
+        });
+
+        if (!bankAccount) {
+            throw new NotFoundException("User bank details not found");
+        }
+
+        if (!bankAccount.providerCode || !bankAccount.accountNumber) {
+            throw new BadRequestException("User bank details are incomplete");
+        }
+
         const result = await prisma.$transaction(async (tx) => {
             await tx.wallet.update({
                 where: { id: wallet.id },
@@ -258,6 +272,21 @@ class GiftCardSellingService {
             });
 
             return updatedTransaction;
+        });
+
+        await publishToQueue({
+            type: "MONNIFY_DISBURSEMENT",
+            payload: {
+                amount: payoutAmount,
+                reference: (transaction.reference || transaction.id).replace(/[^a-zA-Z0-9_-]/g, "_"),
+                narration: `Payout for gift card sale`,
+                destinationBankCode: bankAccount.providerCode,
+                destinationAccountNumber: bankAccount.accountNumber,
+                destinationAccountName: bankAccount.accountName,
+                currency: "NGN",
+                userId: transaction.userId,
+                saleId,
+            },
         });
 
         // Award spin if giftcard is in USD and value >= threshold
