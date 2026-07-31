@@ -196,7 +196,6 @@ export async function disburseFunds(payload: {
 
   const sourceAccountNumber =
     payload.sourceAccountNumber ||
-    process.env.MONNIFY_WALLET_ACCOUNT_NUMBER ||
     process.env.MONNIFY_SOURCE_ACCOUNT_NUMBER ||
     "";
 
