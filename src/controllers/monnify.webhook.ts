@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import { logger } from '@/lib/winston';
-import { CryptoBuyService } from '@/crypto-v2/services/crypto-buy.service';
 import config from '@/config/config';
 import { prisma } from '@/shared/db/prisma';
 import { giftCardService } from '@/internals/giftcard/services/buy-giftcard.service';
@@ -80,10 +79,6 @@ export const handleMonnifyWebhook = async (req: Request, res: Response) => {
       giftCardService.fulfillDirectOrder(tx.id).catch((err: any) => {
         logger.error(`Failed to fulfill Prisma giftcard order ${tx.id}`, err);
       });
-    } else if (tx.category === 'CRYPTO') {
-      logger.info(`Webhook: Triggering Crypto Dispatch/Fulfillment for TX ${tx.id}`);
-      // Pass the Prisma tx (Note: CryptoBuyService must be updated to accept Prisma model)
-      await CryptoBuyService.handleMonnifyPaymentSuccess(tx as any);
     } else {
       logger.info(`Webhook: No automatic fulfillment logic for transaction category ${tx.category}`);
     }

@@ -50,3 +50,36 @@ export const COINS = {
     // SHIB: "Shiba Inu",
     // DOGE: "Dogecoin",
 };
+
+export interface ObiexFiatWithdrawalParams {
+    amount: number;
+    bankCode: string;
+    accountNumber: string;
+    accountName: string;
+    bankName: string;
+    narration: string;
+}
+
+export interface ObiexFiatWithdrawalResponse {
+    message: string;
+    data: {
+        id: string;
+        reference: string;
+        type: string;
+        category: string;
+        amount: number;
+        payout: {
+            id: string;
+            status: string;
+            fee: number;
+            payoutAmount: number;
+            payoutCurrency: string;
+            bankAccount: {
+                accountNumber: string;
+                accountName: string;
+                bankName: string;
+            };
+            transactionId: string;
+        };
+    };
+}

@@ -2,7 +2,7 @@ import { createHmac } from "crypto";
 import { config } from "@shared/config/config";
 import { ApiClient } from "../apiclient";
 import { logger } from "@/lib/winston";
-import { COIN_GECKO_IDS, CoinGeckoResponse } from "./interface";
+import { COIN_GECKO_IDS, CoinGeckoResponse, ObiexFiatWithdrawalParams, ObiexFiatWithdrawalResponse } from "./interface";
 
 export class ObiexService {
     private static readonly baseUrl = config.obiex.baseUrl;
@@ -83,6 +83,18 @@ export class ObiexService {
     }
 
     /**
+     * Get supported fiat banks
+     */
+    static async getBankCodes() {
+        return this.request(
+            "POST",
+            "/getbankscode",
+            null,
+            "Obiex Get Bank Codes",
+        );
+    }
+
+    /**
      * Create a broker deposit address
      * uniqueUserIdentifier = unique identifier for the user (e.g., userId)
      * (previously called "purpose", both names work but uniqueUserIdentifier is preferred)
@@ -128,5 +140,28 @@ export class ObiexService {
         const response = await ApiClient.get<CoinGeckoResponse[]>(url);
 
         return response.data;
+    }
+
+    /**
+     * Withdraw fiat (NGN) to a user's bank account via Obiex off-ramping
+     * Endpoint: POST /wallets/ext/debit/fiat
+     */
+    static async withdrawFiat(params: ObiexFiatWithdrawalParams): Promise<ObiexFiatWithdrawalResponse> {
+        return this.request<ObiexFiatWithdrawalResponse>(
+            "POST",
+            "/wallets/ext/debit/fiat",
+            {
+                amount: params.amount,
+                currency: "NGNX",
+                narration: params.narration,
+                destination: {
+                    bankCode: params.bankCode,
+                    accountNumber: params.accountNumber,
+                    accountName: params.accountName,
+                    bankName: params.bankName,
+                },
+            },
+            `Obiex Fiat Withdrawal (₦${params.amount})`,
+        );
     }
 }

@@ -1,9 +1,9 @@
-import authenticate from "@/middlewares/authenticate.middleware";
-import { isAdmin } from "@/middlewares/role-check.middleware";
 import { Router } from "express";
 import { giftcardBuyAdminController } from "../controllers/buy-giftcard.controller.admin";
 import { validate } from "@/utils/validate.util";
 import { giftCardValidation } from "../validations/giftcard.validation";
+import { requireAdmin, requireAdminAuth, uploadMiddleware } from "@/shared/middlewares";
+import { giftcardSellAdminController } from "../controllers/sell-giftcard.controller";
 
 const giftcardRoutes = Router();
 
@@ -11,137 +11,137 @@ const giftcardRoutes = Router();
 
 giftcardRoutes.post(
     "/sync",
-    authenticate,
-    //   isAdmin,
+    requireAdminAuth,
+    requireAdmin,
     giftcardBuyAdminController.syncProducts,
 );
 
 giftcardRoutes.get(
     "/products",
-    authenticate,
-    //   isAdmin,
+    requireAdminAuth,
+    requireAdmin,
     giftcardBuyAdminController.getAllProducts,
 );
 
 giftcardRoutes.get(
     "/orders",
-    authenticate,
-    //   isAdmin,
+    requireAdminAuth,
+    requireAdmin,
     giftcardBuyAdminController.getAllOrders,
 );
 
 
 giftcardRoutes.get(
     "/orders/:orderId",
-    authenticate,
-    //   isAdmin,
+    requireAdminAuth,
+    requireAdmin,
     giftcardBuyAdminController.getOrder,
 );
 
 
 giftcardRoutes.post(
     "/orders/:orderId/retry",
-    authenticate,
-    //   isAdmin,
+    requireAdminAuth,
+    requireAdmin,
     giftcardBuyAdminController.retryOrder,
 );
 
 giftcardRoutes.get(
     "/orders/:orderId/status",
-    authenticate,
-    //   isAdmin,
+    requireAdminAuth,
+    requireAdmin,
     giftcardBuyAdminController.getOrderStatus,
 );
 
 
 // giftcardRoutes.post(
 //     "/orders/:orderId/refund",
-//     authenticate,
-//     //   isAdmin,
+//     requireAuth,
+//     isAdmin,
 //     validate(giftCardValidation.RefundOrderSchema),
 //     giftcardBuyAdminController.refundOrder,
 // );
 
 //  =======SELL========
 
-// giftcardRoutes.get(
-//   "/accepted-cards",
-//   requireAdminAuth,
-//   requireAdmin,
-//   giftcardSellAdminController.getAllAcceptedCards,
-// );
+giftcardRoutes.get(
+    "/accepted-cards",
+    requireAdminAuth,
+    requireAdmin,
+    giftcardSellAdminController.getAllAcceptedCards,
+);
 
 
-// giftcardRoutes.get(
-//   "/accepted-cards/:cardId",
-//   requireAdminAuth,
-//   requireAdmin,
-//   giftcardSellAdminController.getAcceptedCard,
-// );
+giftcardRoutes.get(
+    "/accepted-cards/:cardId",
+    requireAdminAuth,
+    requireAdmin,
+    giftcardSellAdminController.getAcceptedCard,
+);
 
 
-// giftcardRoutes.post(
-//   "/accepted-card",
-//   requireAdminAuth,
-//   requireAdmin,
-//   uploadMiddleware.single("image"),
-//   giftcardSellAdminController.createAcceptedCard,
-// );
+giftcardRoutes.post(
+    "/accepted-card",
+    requireAdminAuth,
+    requireAdmin,
+    uploadMiddleware.single("image"),
+    giftcardSellAdminController.createAcceptedCard,
+);
 
 
-// giftcardRoutes.patch(
-//   "/accepted-cards/:cardId",
-//   requireAdminAuth,
-//   requireAdmin,
-//   uploadMiddleware.single("image"),
-//   giftcardSellAdminController.updateAcceptedCard,
-// );
+giftcardRoutes.patch(
+    "/accepted-cards/:cardId",
+    requireAdminAuth,
+    requireAdmin,
+    uploadMiddleware.single("image"),
+    giftcardSellAdminController.updateAcceptedCard,
+);
 
 
-// giftcardRoutes.delete(
-//   "/accepted-cards/:cardId",
-//   requireAdminAuth,
-//   requireAdmin,
-//   giftcardSellAdminController.deleteAcceptedCard,
-// );
+giftcardRoutes.delete(
+    "/accepted-cards/:cardId",
+    requireAdminAuth,
+    requireAdmin,
+    giftcardSellAdminController.deleteAcceptedCard,
+);
 
-// giftcardRoutes.get(
-//   "/sales",
-//   requireAdminAuth,
-//   requireAdmin,
-//   giftcardSellAdminController.getAllSales,
-// );
+giftcardRoutes.get(
+    "/sales",
+    requireAdminAuth,
+    requireAdmin,
+    giftcardSellAdminController.getAllSales,
+);
 
-// giftcardRoutes.get(
-//   "/sales/:saleId",
-//   requireAdminAuth,
-//   requireAdmin,
-//   giftcardSellAdminController.getSale,
-// );
-
-
-// giftcardRoutes.post(
-//   "/sales/:saleId/review",
-//   requireAdminAuth,
-//   requireAdmin,
-//   giftcardSellAdminController.reviewSale,
-// );
-
-// giftcardRoutes.post(
-//   "/sales/process-payout",
-//   requireAdminAuth,
-//   requireAdmin,
-//   validate(giftCardValidation.processSalePayout),
-//   giftcardSellAdminController.processSalePayout,
-// );
+giftcardRoutes.get(
+    "/sales/:saleId",
+    requireAdminAuth,
+    requireAdmin,
+    giftcardSellAdminController.getSale,
+);
 
 
-// giftcardRoutes.post(
-//   "/sales/reject",
-//   requireAdminAuth,
-//   requireAdmin,
-//   validate(giftCardValidation.rejectSaleSchema),
-//   giftcardSellAdminController.rejectSale,
-// );
+giftcardRoutes.post(
+    "/sales/:saleId/review",
+    requireAdminAuth,
+    requireAdmin,
+    giftcardSellAdminController.reviewSale,
+);
+
+giftcardRoutes.post(
+    "/sales/process-payout",
+    requireAdminAuth,
+    requireAdmin,
+    validate(giftCardValidation.processSalePayout),
+    giftcardSellAdminController.processSalePayout,
+);
+
+
+giftcardRoutes.post(
+    "/sales/reject",
+    requireAdminAuth,
+    requireAdmin,
+    validate(giftCardValidation.rejectSaleSchema),
+    giftcardSellAdminController.rejectSale,
+);
 
 export { giftcardRoutes };

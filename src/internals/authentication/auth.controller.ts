@@ -869,6 +869,35 @@ const refreshToken = Asyncly(async (req, res) => {
   });
 });
 
+const verifyResetPasswordOTP = Asyncly(async (req, res) => {
+  const data = authValidation.verifyResetPasswordOTPSchema.parse(req.body);
+  logger.info("Attempting reset password verification", data);
+
+  const user = await prisma.user.findUnique({
+    where: { email: data.email },
+    include: { security: true },
+  });
+
+  if (!user) throw new NotFoundException("User not found");
+  if (!user.security) throw new NotFoundException("User security not found");
+  if (user.security.action !== OtpAction.PASSWORD_RESET) {
+    throw new BadRequestException("Invalid verification code action");
+  }
+  if (!user.security.code || user.security.code !== data.otp) {
+    throw new BadRequestException("Invalid verification code");
+  }
+  if (!user.security.createdAt || !user.security.expiresAt) {
+    throw new BadRequestException("OTP metadata is incomplete.");
+  }
+  if (new Date() > user.security.expiresAt) {
+    throw new BadRequestException("OTP has expired");
+  }
+
+  res.status(httpStatus.OK).json({
+    message: "OTP verified successfully",
+  });
+});
+
 // const checkUsername = Asyncly(async (req, res) => {
 //   let { username } = req.params;
 
@@ -894,6 +923,7 @@ const refreshToken = Asyncly(async (req, res) => {
 export const authController = {
   registerUser,
   loginUser,
+  verifyResetPasswordOTP,
   // checkUsername,
   changePasswordUser,
   verifyAccount,

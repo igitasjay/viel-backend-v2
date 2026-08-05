@@ -107,6 +107,7 @@ model ExternalAccount {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   providerCode  String?
+  obiexBankCode String?
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -925,4 +926,19 @@ enum RewardType {
   REFERRAL_BONUS
   PROMOTIONAL
   CONTEST_WIN
+}
+
+model Banner {
+  id        String   @id @default(ulid())
+  imageUrl  String
+  publicId  String?
+  title     String?
+  link      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("banners")
 }

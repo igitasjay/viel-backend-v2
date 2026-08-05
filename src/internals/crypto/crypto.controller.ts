@@ -204,6 +204,7 @@ const webhookHandler = Asyncly(async (req: Request, res: Response) => {
   const signatureSecret = config.obiex.webhookSecret;
 
   logger.info("=== OBIEX WEBHOOK RECEIVED ===");
+  console.log("=== OBIEX WEBHOOK RECEIVED ===")
 
   const receivedSignature = req.headers["x-obiex-signature"] as string;
 
@@ -256,7 +257,7 @@ const webhookHandler = Asyncly(async (req: Request, res: Response) => {
     logger.info("✅ Obiex Event successfully processed");
     return res.status(200).json({ ok: true, message: "Event processed" });
   } catch (err) {
-    logger.error("❌ Webhook processing failed:");
+    logger.error(`❌ Webhook processing failed:`, { error: err instanceof Error ? { message: err.message, stack: err.stack } : err });
     return res.status(500).json({ error: "Failed to process webhook" });
   }
 });

@@ -29,7 +29,7 @@ function getEnvNumber(key: string): number {
 function createConfig() {
     return {
         port: getEnvNumber("PORT"),
-        env: getEnvOptional("env", "development") as
+        env: getEnvOptional("NODE_ENV", "development") as
             | "production"
             | "development"
             | "test",
@@ -105,9 +105,9 @@ function createConfig() {
             apiKey: getEnv("CLOUDINARY_API_KEY"),
             secretKey: getEnv("CLOUDINARY_API_SECRET"),
         },
-        // admin: {
-        //     superPass: getEnv("SUPER_ADMIN_PASS"),
-        // },
+        admin: {
+            superPass: getEnv("SUPER_ADMIN_PASS"),
+        },
     } as const;
 }
 

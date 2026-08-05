@@ -1,29 +1,30 @@
 import multer from "multer";
 import { Request } from "express";
 import { BadRequestException } from "@shared/exceptions/exceptions";
+import { PROFILE_PICTURE_CONSTRAINTS } from "@/internals/profile";
 
 
 
-// const fileFilter = (
-//   _req: Request,
-//   file: Express.Multer.File,
-//   cb: multer.FileFilterCallback,
-// ) => {
-//   if (PROFILE_PICTURE_CONSTRAINTS.ALLOWED_TYPES.includes(file.mimetype)) {
-//     cb(null, true);
-//   } else {
-//     cb(new BadRequestException("Only image files are allowed"));
-//   }
-// };
+const fileFilter = (
+  _req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+) => {
+  if (PROFILE_PICTURE_CONSTRAINTS.ALLOWED_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new BadRequestException("Only image files are allowed"));
+  }
+};
 
-// export const uploadMiddleware = multer({
-//   storage: multer.memoryStorage(),
-//   limits: {
-//     fileSize: PROFILE_PICTURE_CONSTRAINTS.MAX_SIZE,
-//     files: 1,
-//   },
-//   fileFilter,
-// });
+export const uploadMiddleware = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: PROFILE_PICTURE_CONSTRAINTS.MAX_SIZE,
+    files: 1,
+  },
+  fileFilter,
+});
 
 const giftCardFileFilter = (
   _req: Request,

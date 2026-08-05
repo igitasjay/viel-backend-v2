@@ -19,7 +19,7 @@ const passwordValidation = z
 //   .regex(/^\d+$/, "Phone number must contain only digits");
 
 const emailValidation = z
-  .email("Invalid email address here")
+  .email("Invalid email address")
   .transform((email) => email.toLowerCase());
 
 const usernameValidation = z
@@ -98,6 +98,15 @@ const forgotPasswordSchema = z.object({
   email: emailValidation,
 });
 
+const verifyResetPasswordOTPSchema = z.object({
+  email: emailValidation,
+  otp: z
+    .string()
+    .min(1, "Verification code is required")
+    .length(6, "OTP must be exactly 6 characters")
+    .regex(/^\d+$/, "OTP must contain only numbers"),
+});
+
 const resetPasswordSchema = z
   .object({
     email: emailValidation,
@@ -174,6 +183,7 @@ export const authValidation = {
   generateChallenge,
   enableBiometric,
   reAuthenticateSchema,
+  verifyResetPasswordOTPSchema,
 };
 
 // Types for TypeScript support

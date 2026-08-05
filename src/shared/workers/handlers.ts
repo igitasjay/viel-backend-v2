@@ -1,6 +1,7 @@
 import { logger } from "@/lib/winston";
 import * as ex from "../../externals/index";
 import * as nf from "../../internals/notification";
+import { disburseFunds } from "@/monnify-infra/services/monnify.service";
 // import * as switchX from "../../internals/crypto";
 
 interface JobPayload {
@@ -150,6 +151,21 @@ export async function handleJob(job: JobPayload) {
                     payload.fullName,
                     payload.notificationDetails,
                 );
+
+            case "MONNIFY_DISBURSEMENT":
+                logger.info(
+                    `Worker received MONNIFY_DISBURSEMENT for ${payload.userId} (amount: ${payload.amount})`,
+                );
+                return await disburseFunds({
+                    amount: payload.amount,
+                    reference: payload.reference,
+                    narration: payload.narration,
+                    destinationBankCode: payload.destinationBankCode,
+                    destinationAccountNumber: payload.destinationAccountNumber,
+                    destinationAccountName: payload.destinationAccountName,
+                    sourceAccountNumber: payload.sourceAccountNumber,
+                    currency: payload.currency || "NGN",
+                });
 
             default:
                 logger.warn(`Unknown job type: ${type}`);
