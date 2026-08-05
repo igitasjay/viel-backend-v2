@@ -4,11 +4,6 @@ import { asyncHandler } from '@/utils/async-handler.util';
 import { logger } from '@/lib/winston';
 import cloudinary from '@/config/cloudinary.config';
 
-/**
- * @desc    Upload a new promotion banner
- * @route   POST /api/v1/admin/banners/upload
- * @access  Admin
- */
 export const uploadBanner = asyncHandler(async (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({
@@ -37,11 +32,6 @@ export const uploadBanner = asyncHandler(async (req: Request, res: Response) => 
   });
 });
 
-/**
- * @desc    Get all promotion banners (including inactive ones)
- * @route   GET /api/v1/admin/banners
- * @access  Admin
- */
 export const getAllBannersAdmin = asyncHandler(async (req: Request, res: Response) => {
   const banners = await prisma.banner.findMany({
     orderBy: { createdAt: 'desc' },
@@ -53,11 +43,6 @@ export const getAllBannersAdmin = asyncHandler(async (req: Request, res: Respons
   });
 });
 
-/**
- * @desc    Toggle banner active status
- * @route   PATCH /api/v1/admin/banners/:id/toggle
- * @access  Admin
- */
 export const toggleBannerStatus = asyncHandler(async (req: Request, res: Response) => {
   const id = req.params.id as string;
 
@@ -88,11 +73,6 @@ export const toggleBannerStatus = asyncHandler(async (req: Request, res: Respons
   });
 });
 
-/**
- * @desc    Delete a promotion banner
- * @route   DELETE /api/v1/admin/banners/:id
- * @access  Admin
- */
 export const deleteBanner = asyncHandler(async (req: Request, res: Response) => {
   const id = req.params.id as string;
 
