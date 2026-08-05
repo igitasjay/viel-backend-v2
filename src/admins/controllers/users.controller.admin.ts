@@ -25,7 +25,7 @@ const getUsers = Asyncly(async (req: Request, res: Response) => {
 });
 
 const updateUserStatus = Asyncly(async (req: Request, res: Response) => {
-    const userId = req.params.userId;
+    const userId = req.params.userId as string;
     const body = adminUsersValidation.updateUserStatusSchema.parse(req.body);
 
     await adminUsersService.updateUserStatus(userId, body.isActive);
