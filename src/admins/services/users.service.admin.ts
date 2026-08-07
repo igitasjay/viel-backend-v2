@@ -42,7 +42,6 @@ export class AdminUsersService {
                 take: limit,
                 orderBy: { createdAt: "desc" },
                 include: {
-                    wallets: true,
                     _count: {
                         select: { transactions: true }
                     }
@@ -51,13 +50,17 @@ export class AdminUsersService {
             prisma.user.count({ where })
         ]);
 
-        const mappedUsers = users.map((u) => {
+        const mappedUsers = await Promise.all(users.map(async (u) => {
             const nameParts = u.fullname.split(' ');
             const firstName = nameParts[0] || '';
             const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
 
-            // Replace balance with netTradingVolume
-            const netTradingVolume = u.wallets.reduce((acc, wallet) => acc + Number(wallet.totalTransactionVolume || 0), 0);
+            // Aggregate directly from transactions to handle users without wallets
+            const volumeResult = await prisma.transaction.aggregate({
+                _sum: { amount: true },
+                where: { userId: u.id, status: 'SUCCESS' }
+            });
+            const netTradingVolume = Number(volumeResult._sum.amount || 0);
 
             return {
                 id: u.id,
@@ -71,7 +74,7 @@ export class AdminUsersService {
                 totalTxns: u._count.transactions,
                 netTradingVolume,
             };
-        });
+        }));
 
         return {
             users: mappedUsers,
