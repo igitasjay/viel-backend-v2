@@ -130,7 +130,7 @@ export class AdminUsersService {
         }
 
         const crypto = await import('crypto');
-        const tempPassword = crypto.randomBytes(4).toString('hex'); // 8 characters
+        const tempPassword = `T3mp@${crypto.randomBytes(4).toString('hex')}`; // Meets all validation rules
 
         const { AuthTokens } = await import('@shared/guards/hash.js');
         const hashedPassword = await AuthTokens.hashPassword(tempPassword);
