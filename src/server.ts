@@ -36,6 +36,7 @@ import { httpStatus } from "./shared/exceptions/statusCodes";
 // import router from "./routes/v1/health.route";
 import v2router from "./routes/v2/routes";
 import { cryptoWalletController } from "./internals/crypto/crypto.controller";
+import { profileController } from "./internals/profile/profile.controller";
 // import { webhookRoutes } from "./internals/webhooks";
 
 // App Initialization
@@ -184,6 +185,9 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 // 2. Obiex Webhook Handler
 app.post("/obi", cryptoWalletController.webhookHandler);
+
+// 3. Didit Webhook Handler
+app.post("/didit", profileController.handleDiditWebhook);
 
 //  Swagger Documentation
 // setupSwagger(app);

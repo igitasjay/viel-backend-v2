@@ -40,6 +40,5 @@ profileRoutes.delete(
 profileRoutes.get("/net-trading-volume", requireAuth, profileController.getNetTradingVolume);
 
 profileRoutes.post("/didit/session", requireAuth, profileController.createDiditSession);
-profileRoutes.post("/didit/webhook", profileController.handleDiditWebhook);
 
 export { profileRoutes };
