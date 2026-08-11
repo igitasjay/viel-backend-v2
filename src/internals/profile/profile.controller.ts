@@ -516,6 +516,110 @@ const getNetTradingVolume = Asyncly(async (req: Request, res: Response) => {
   });
 });
 
+const DIDIT_WORKFLOW_ID = "63c4964d-0c99-4071-8b51-a300c2b7000b";
+
+const createDiditSession = Asyncly(async (req: Request, res: Response) => {
+  const userId = req.currentUser?.id;
+  if (!userId) throw new UnauthorizedException("Not authorized");
+
+  logger.info(`Creating Didit verification session for user ID: ${userId}`);
+
+  const axios = require('axios');
+  try {
+    const response = await axios.post("https://verification.didit.me/v3/session/", {
+      workflow_id: DIDIT_WORKFLOW_ID,
+      vendor_data: userId,
+    }, {
+      headers: {
+        "x-api-key": process.env.DIDIT_API_KEY!,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const session = response.data;
+    
+    res.status(httpStatus.CREATED).json({
+      message: "Session created successfully",
+      data: {
+        session_token: session.session_token,
+        url: session.url,
+        session_id: session.session_id,
+      }
+    });
+  } catch (error: any) {
+    logger.error(`Failed to create Didit session for ${userId}: ${error.response?.data || error.message}`);
+    throw new InternalServerErrorException("Failed to initiate verification session.");
+  }
+});
+
+import crypto from "node:crypto";
+
+function shortenFloats(v: unknown): unknown {
+  if (Array.isArray(v)) return v.map(shortenFloats);
+  if (v && typeof v === "object") {
+    return Object.fromEntries(
+      Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, shortenFloats(x)]),
+    );
+  }
+  if (typeof v === "number" && !Number.isInteger(v) && v % 1 === 0) return Math.trunc(v);
+  return v;
+}
+
+function sortKeys(v: unknown): unknown {
+  if (Array.isArray(v)) return v.map(sortKeys);
+  if (v && typeof v === "object") {
+    return Object.keys(v as object)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, k) => {
+        acc[k] = sortKeys((v as Record<string, unknown>)[k]);
+        return acc;
+      }, {});
+  }
+  return v;
+}
+
+const handleDiditWebhook = Asyncly(async (req: Request, res: Response) => {
+  const sig = req.headers["x-signature-v2"] as string ?? "";
+  const ts = Number(req.headers["x-timestamp"]);
+
+  if (!ts || Math.abs(Date.now() / 1000 - ts) > 300) {
+    res.status(401).send("stale");
+    return;
+  }
+
+  const canonical = JSON.stringify(sortKeys(shortenFloats(req.body)));
+
+  const expected = crypto
+    .createHmac("sha256", process.env.DIDIT_WEBHOOK_SECRET!)
+    .update(canonical, "utf8")
+    .digest("hex");
+    
+  if (
+    sig.length !== expected.length ||
+    !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sig))
+  ) {
+    res.status(401).send("bad sig");
+    return;
+  }
+
+  const parsed = req.body;
+  const userId = parsed.vendor_data;
+  
+  if (parsed.status === "Approved") {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { isVerified: true, isKycVerified: true }
+    });
+  } else if (parsed.status === "Declined" || parsed.status === "Kyc Expired") {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { isVerified: false, isKycVerified: false }
+    });
+  }
+
+  res.status(200).send("ok");
+});
+
 export const profileController = {
   getProfile,
   updateProfile,
@@ -523,5 +627,6 @@ export const profileController = {
   removeProfilePicture,
   deleteAccount,
   getNetTradingVolume,
-  // getTagline,
+  createDiditSession,
+  handleDiditWebhook,
 };
