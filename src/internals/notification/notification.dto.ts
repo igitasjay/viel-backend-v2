@@ -2,12 +2,16 @@ export class NotificationResponseDTO {
   id: string;
   title: string;
   message: string;
+  isRead: boolean;
+  type: string;
   createdAt: string;
 
   constructor(notification: any) {
     this.id = notification.id;
     this.title = notification.title;
     this.message = notification.message;
+    this.isRead = notification.isRead ?? false;
+    this.type = notification.type ?? 'SYSTEM';
 
     const createdAt = notification.createdAt;
     if (createdAt instanceof Date) {
