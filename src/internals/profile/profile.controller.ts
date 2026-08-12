@@ -610,10 +610,56 @@ const handleDiditWebhook = Asyncly(async (req: Request, res: Response) => {
       where: { id: userId },
       data: { isVerified: true, isKycVerified: true }
     });
+
+    setImmediate(async () => {
+      try {
+        await publishToQueue({
+          type: "NOTIFICATION_EVENT",
+          payload: {
+            userId,
+            notificationType: "SYSTEM",
+            priority: "high",
+            title: "Identity Verified",
+            message: "Your identity has been successfully verified. You now have full access to all Viel features.",
+            metadata: {
+              action: "kyc_approved",
+              verifiedAt: new Date().toISOString(),
+            },
+            deliveryChannels: ["in_app", "push", "email"],
+          },
+        });
+        logger.info(`KYC approval notification queued for user ${userId}`);
+      } catch (error) {
+        logger.error(`Failed to queue KYC approval notification for ${userId}:`, error as object);
+      }
+    });
   } else if (parsed.status === "Declined" || parsed.status === "Kyc Expired") {
     await prisma.user.update({
       where: { id: userId },
       data: { isVerified: false, isKycVerified: false }
+    });
+
+    setImmediate(async () => {
+      try {
+        await publishToQueue({
+          type: "NOTIFICATION_EVENT",
+          payload: {
+            userId,
+            notificationType: "SYSTEM",
+            priority: "high",
+            title: "Verification Unsuccessful",
+            message: `Your identity verification was ${parsed.status === "Declined" ? "declined" : "expired"}. Please try again or contact support.`,
+            metadata: {
+              action: "kyc_declined",
+              reason: parsed.status,
+            },
+            deliveryChannels: ["in_app", "push", "email"],
+          },
+        });
+        logger.info(`KYC decline notification queued for user ${userId}`);
+      } catch (error) {
+        logger.error(`Failed to queue KYC decline notification for ${userId}:`, error as object);
+      }
     });
   }
 

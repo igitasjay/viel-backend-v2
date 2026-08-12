@@ -10,6 +10,7 @@ import { profileRoutes } from '@/internals/profile';
 import { bannerRoutes } from '@/internals/banner';
 import bankingroutes from '../../internals/external bank/banks.route';
 import adminRouter from '@/admins/routes';
+import { notificationRoutes } from '@/internals/notification';
 const v2router = express.Router()
 
 v2router.use('/auth', authRoutes)
@@ -22,6 +23,7 @@ v2router.use('/crypto', cryptoRoutes)
 v2router.use('/history', historyRoutes)
 v2router.post('/monnify/webhook', handleMonnifyWebhook);
 v2router.use('/monnify', monnifyRoutes);
+v2router.use('/notifications', notificationRoutes);
 
 v2router.use('/admin', adminRouter)
 
