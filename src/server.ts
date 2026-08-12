@@ -124,7 +124,14 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// 6. Body Parsing & Security
+// 6a. Didit webhook needs a larger payload limit (face/document images)
+app.post(
+  "/didit",
+  express.json({ limit: "1mb" }),
+  profileController.handleDiditWebhook,
+);
+
+// 6b. Body Parsing & Security (global 10kb limit)
 app.use(
   express.json({
     limit: "10kb",
@@ -185,9 +192,6 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 // 2. Obiex Webhook Handler
 app.post("/obi", cryptoWalletController.webhookHandler);
-
-// 3. Didit Webhook Handler
-app.post("/didit", profileController.handleDiditWebhook);
 
 //  Swagger Documentation
 // setupSwagger(app);
