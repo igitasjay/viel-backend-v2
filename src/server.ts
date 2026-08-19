@@ -36,6 +36,7 @@ import { httpStatus } from "./shared/exceptions/statusCodes";
 // import router from "./routes/v1/health.route";
 import v2router from "./routes/v2/routes";
 import { cryptoWalletController } from "./internals/crypto/crypto.controller";
+import { profileController } from "./internals/profile/profile.controller";
 // import { webhookRoutes } from "./internals/webhooks";
 
 // App Initialization
@@ -123,7 +124,14 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// 6. Body Parsing & Security
+// 6a. Didit webhook needs a larger payload limit (face/document images)
+app.post(
+  "/didit",
+  express.json({ limit: "1mb" }),
+  profileController.handleDiditWebhook,
+);
+
+// 6b. Body Parsing & Security (global 10kb limit)
 app.use(
   express.json({
     limit: "10kb",

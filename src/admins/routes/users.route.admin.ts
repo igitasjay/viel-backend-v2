@@ -8,5 +8,7 @@ router.use(requireAdminAuth, requireAdmin);
 
 router.get("/", adminUsersController.getUsers);
 router.patch("/:userId/status", adminUsersController.updateUserStatus);
+router.get("/:userId/transactions", adminUsersController.getUserTransactions);
+router.post("/:userId/reset-password", adminUsersController.resetUserPassword);
 
 export { router as usersRoutesAdmin };

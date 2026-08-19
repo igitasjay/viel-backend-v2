@@ -39,4 +39,6 @@ profileRoutes.delete(
 // profileRoutes.get("/tagline", requireAuth, profileController.getTagline);
 profileRoutes.get("/net-trading-volume", requireAuth, profileController.getNetTradingVolume);
 
+profileRoutes.post("/didit/session", requireAuth, profileController.createDiditSession);
+
 export { profileRoutes };

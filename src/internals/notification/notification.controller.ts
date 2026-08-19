@@ -21,7 +21,10 @@ const getNotifications = Asyncly(async (req: Request, res: Response) => {
 
   logger.info(`Fetching notifications for user ID: ${userId}`);
 
-  const where: Record<string, any> = { userId, isRead: false };
+  const where: Record<string, any> = { userId };
+  if (req.query.isRead !== undefined) {
+    where.isRead = req.query.isRead === 'true';
+  }
 
   const paginatedResult = await withPagination({
     model: "notification",

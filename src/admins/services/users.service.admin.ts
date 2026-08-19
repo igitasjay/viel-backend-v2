@@ -42,7 +42,6 @@ export class AdminUsersService {
                 take: limit,
                 orderBy: { createdAt: "desc" },
                 include: {
-                    wallets: true,
                     _count: {
                         select: { transactions: true }
                     }
@@ -51,16 +50,17 @@ export class AdminUsersService {
             prisma.user.count({ where })
         ]);
 
-        const mappedUsers = users.map((u) => {
+        const mappedUsers = await Promise.all(users.map(async (u) => {
             const nameParts = u.fullname.split(' ');
             const firstName = nameParts[0] || '';
             const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
-            
-            // Assuming wallet.referralBalance or sum of wallets' totalTransactionVolume.
-            // Wait, we need a balance. We can use total transaction volume or a wallet's balance. 
-            // In the DB, there is Wallet.referralBalance and Wallet.buyVolume / sellVolume.
-            // Let's sum up the referralBalance or just return 0 if no specific balance exists.
-            const balance = u.wallets.reduce((acc, wallet) => acc + Number(wallet.referralBalance || 0), 0);
+
+            // Aggregate directly from transactions to handle users without wallets
+            const volumeResult = await prisma.transaction.aggregate({
+                _sum: { amount: true },
+                where: { userId: u.id, status: 'SUCCESS' }
+            });
+            const netTradingVolume = Number(volumeResult._sum.amount || 0);
 
             return {
                 id: u.id,
@@ -72,9 +72,9 @@ export class AdminUsersService {
                 joinedDate: u.createdAt,
                 lastActive: u.updatedAt,
                 totalTxns: u._count.transactions,
-                balance,
+                netTradingVolume,
             };
-        });
+        }));
 
         return {
             users: mappedUsers,
@@ -96,6 +96,65 @@ export class AdminUsersService {
         await prisma.user.update({
             where: { id: userId },
             data: { isActive },
+        });
+
+        return { success: true };
+    }
+
+    async getUserTransactions(userId: string, query: { page?: number; limit?: number }) {
+        const { page = 1, limit = 10 } = query;
+        const skip = (page - 1) * limit;
+
+        const [transactions, totalCount] = await Promise.all([
+            prisma.transaction.findMany({
+                where: { userId },
+                skip,
+                take: limit,
+                orderBy: { createdAt: "desc" },
+            }),
+            prisma.transaction.count({ where: { userId } })
+        ]);
+
+        return {
+            transactions,
+            meta: {
+                totalCount,
+                page,
+                limit,
+                totalPages: Math.ceil(totalCount / limit)
+            }
+        };
+    }
+
+    async resetUserPassword(userId: string) {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const crypto = await import('crypto');
+        const tempPassword = `T3mp@${crypto.randomBytes(4).toString('hex')}`; // Meets all validation rules
+
+        const { AuthTokens } = await import('@shared/guards/hash.js');
+        const hashedPassword = await AuthTokens.hashPassword(tempPassword);
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { password: hashedPassword },
+        });
+
+        const { publishToQueue } = await import('@shared/workers/publisher.js');
+        await publishToQueue({
+            type: "EMAIL_NOTIFICATION",
+            payload: {
+                recipient: user.email,
+                fullName: user.fullname,
+                notificationDetails: {
+                    notificationType: "SECURITY",
+                    title: "Password Reset by Admin",
+                    message: `Your password has been reset by an administrator. Your new temporary password is: ${tempPassword}. Please log in and change your password immediately.`,
+                }
+            }
         });
 
         return { success: true };

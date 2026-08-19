@@ -11,7 +11,16 @@ const updateUserStatusSchema = z.object({
     isActive: z.boolean(),
 });
 
+const getUserTransactionsQuerySchema = z.object({
+    page: z.string().optional(),
+    limit: z.string().optional(),
+});
+
+const resetUserPasswordSchema = z.object({});
+
 export const adminUsersValidation = {
     getUsersQuerySchema,
     updateUserStatusSchema,
+    getUserTransactionsQuerySchema,
+    resetUserPasswordSchema,
 };

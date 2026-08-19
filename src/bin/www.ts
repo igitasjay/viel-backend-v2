@@ -11,7 +11,6 @@ import {
 import { initPublisher, closePublisher } from '@shared/workers/publisher';
 import { startWorker } from '@/shared/workers/consumer';
 import { startProductSyncJob } from '@/internals/giftcard/sync-giftcard-product-job';
-import { initializeFirebase } from '@/shared/config/firebase';
 import { startKeepAlive, stopKeepAlive } from '@/utils/keep-alive.util';
 // import { startPriceAlertMonitoring } from "../scheduler/price-alert-job";
 // import { initializeSocketIO } from "@shared/lib/socket";
@@ -27,8 +26,6 @@ const startApp = async () => {
   try {
     await prisma.$connect();
     logger.info(`\x1b[32mDB:\x1b[0m SQL Connected`);
-
-    initializeFirebase();
 
     // initializeSocketIO(server);
     // logger.info("Socket.IO initialized for real-time chat");

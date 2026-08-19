@@ -1,6 +1,6 @@
 import { prisma } from "@shared/db/prisma";
 import { logger } from "@/lib/winston";
-import { FirebaseService } from "@shared/lib/firebase";
+import { OneSignalService } from "@shared/lib/onesignal";
 import {
   NotFoundException,
   InternalServerErrorException,
@@ -165,7 +165,7 @@ export class NotificationService {
       }
 
       if (deliveryChannels.includes("push")) {
-        await FirebaseService.sendToUser({
+        await OneSignalService.sendToUser({
           userId,
           title,
           message,
