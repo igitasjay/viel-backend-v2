@@ -63,9 +63,9 @@ const resolveBankAccount = async (req: Request, res: Response): Promise<void> =>
       });
     }
   } catch (error: any) {
-    console.error('Resolve bank account failed:', error.message);
-    const message = error.response?.data?.responseMessage || 'Failed to resolve bank account';
-    res.status(error.response?.status || 500).json({
+    console.error('Resolve bank account failed:', error.message, error.monnifyResponse || '');
+    const message = error.message || error.monnifyResponse?.responseMessage || 'Failed to resolve bank account';
+    res.status(error.status || 500).json({
       success: false,
       message,
     });
