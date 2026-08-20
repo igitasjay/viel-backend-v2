@@ -282,7 +282,7 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
     let payoutSuccessful = false;
     let payoutError = "";
 
-    if (bankAccount && bankAccount.providerCode) {
+    if (bankAccount && bankAccount.monnifyBankCode) {
       try {
         const payoutRef = `PAYOUT|${transactionTxRef}`;
 
@@ -320,9 +320,9 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
         );
 
         let obiexBankCode = bankAccount.obiexBankCode;
-        if (!obiexBankCode && bankAccount.providerCode) {
-          logger.info(`Obiex bank code missing for ${bankAccount.bankName}, resolving...`);
-          obiexBankCode = await resolveObiexBankCode(bankAccount.bankName, bankAccount.providerCode);
+        if (!obiexBankCode && bankAccount.monnifyBankCode) {
+          // Attempt to resolve dynamically if missing
+          obiexBankCode = await resolveObiexBankCode(bankAccount.bankName, bankAccount.monnifyBankCode);
           if (obiexBankCode) {
             // Optimistically update the database for future transactions
             await prisma.externalAccount.update({
@@ -334,7 +334,7 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
 
         const payoutResponse = await ObiexService.withdrawFiat({
           amount: payoutAmount,
-          bankCode: obiexBankCode || bankAccount.providerCode,
+          bankCode: obiexBankCode || bankAccount.monnifyBankCode,
           accountNumber: bankAccount.accountNumber,
           accountName: bankAccount.accountName,
           bankName: bankAccount.bankName,

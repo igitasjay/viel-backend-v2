@@ -234,7 +234,7 @@ class GiftCardSellingService {
             throw new NotFoundException("User bank details not found");
         }
 
-        if (!bankAccount.providerCode || !bankAccount.accountNumber) {
+        if (!bankAccount.monnifyBankCode || !bankAccount.accountNumber) {
             throw new BadRequestException("User bank details are incomplete");
         }
 
@@ -280,7 +280,7 @@ class GiftCardSellingService {
                 amount: payoutAmount,
                 reference: (transaction.reference || transaction.id).replace(/[^a-zA-Z0-9_-]/g, "_"),
                 narration: `Payout for gift card sale`,
-                destinationBankCode: bankAccount.providerCode,
+                destinationBankCode: bankAccount.monnifyBankCode,
                 destinationAccountNumber: bankAccount.accountNumber,
                 destinationAccountName: bankAccount.accountName,
                 currency: "NGN",

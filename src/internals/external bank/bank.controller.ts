@@ -71,7 +71,7 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
         accountNumber,
         accountName,
         bankName,
-        providerCode: bankCode,
+        monnifyBankCode: bankCode,
         obiexBankCode,
         isPrimary: true,
       },
@@ -125,7 +125,7 @@ const updateBankAccount = async (req: Request, res: Response): Promise<void> => 
     if (bankName || bankCode) {
       newObiexBankCode = await resolveObiexBankCode(
         bankName || externalAccount.bankName, 
-        bankCode || externalAccount.providerCode!
+        bankCode || externalAccount.monnifyBankCode!
       ) || newObiexBankCode;
     }
 
@@ -135,7 +135,7 @@ const updateBankAccount = async (req: Request, res: Response): Promise<void> => 
         accountNumber: accountNumber || externalAccount.accountNumber,
         accountName: accountName || externalAccount.accountName,
         bankName: bankName || externalAccount.bankName,
-        providerCode: bankCode || externalAccount.providerCode,
+        monnifyBankCode: bankCode || externalAccount.monnifyBankCode,
         obiexBankCode: newObiexBankCode,
       },
     });

@@ -44,7 +44,7 @@ const getCurrentUserBank = async (
         accountNumber: bankAccount.accountNumber,
         accountName: bankAccount.accountName,
         bankName: bankAccount.bankName,
-        bankCode: bankAccount.providerCode,
+        bankCode: bankAccount.monnifyBankCode,
       },
     });
   } catch (error) {

@@ -1,0 +1,2465 @@
+{
+  "success": true,
+  "data": [
+    {
+      "name": "9 PAYMENT SOLUTIONS BANK",
+      "monnifyBankCode": "120001",
+      "obiexBankCode": "120001",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "120001"
+    },
+    {
+      "name": "AB MICROFINANCE BANK ",
+      "monnifyBankCode": "090270",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090270"
+    },
+    {
+      "name": "ABBEY MORTGAGE BANK",
+      "monnifyBankCode": "070010",
+      "obiexBankCode": "070010",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070010"
+    },
+    {
+      "name": "ABOVE ONLY MICROFINANCE BANK ",
+      "monnifyBankCode": "090260",
+      "obiexBankCode": "090260",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090260"
+    },
+    {
+      "name": "ABU MICROFINANCE BANK ",
+      "monnifyBankCode": "090197",
+      "obiexBankCode": "090197",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090197"
+    },
+    {
+      "name": "Access bank",
+      "monnifyBankCode": "044",
+      "obiexBankCode": "044",
+      "ussdTemplate": "*901*Amount*AccountNumber#",
+      "baseUssdCode": "*901#",
+      "transferUssdTemplate": "*901*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000014"
+    },
+    {
+      "name": "ACCESS MONEY",
+      "monnifyBankCode": "927",
+      "obiexBankCode": "927",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100013"
+    },
+    {
+      "name": "ACCESS YELLO & BETA",
+      "monnifyBankCode": "100052",
+      "obiexBankCode": "100052",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100052"
+    },
+    {
+      "name": "ACCION MICROFINANCE BANK",
+      "monnifyBankCode": "090134",
+      "obiexBankCode": "090134",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090134"
+    },
+    {
+      "name": "ADA MICROFINANCE BANK",
+      "monnifyBankCode": "090483",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090483"
+    },
+    {
+      "name": "ADDOSSER MICROFINANCE BANK",
+      "monnifyBankCode": "090160",
+      "obiexBankCode": "090160",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090160"
+    },
+    {
+      "name": "ADEYEMI COLLEGE STAFF MICROFINANCE BANK",
+      "monnifyBankCode": "090268",
+      "obiexBankCode": "090268",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090268"
+    },
+    {
+      "name": "AELLA MFB",
+      "monnifyBankCode": "50315",
+      "obiexBankCode": "090291",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090614"
+    },
+    {
+      "name": "AG MORTGAGE BANK",
+      "monnifyBankCode": "100028",
+      "obiexBankCode": "100028",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100028"
+    },
+    {
+      "name": "AKSU MICROFINANCE BANK",
+      "monnifyBankCode": "090756",
+      "obiexBankCode": "090197",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090756"
+    },
+    {
+      "name": "AKU Microfinance Bank",
+      "monnifyBankCode": "090531",
+      "obiexBankCode": "090197",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090531"
+    },
+    {
+      "name": "AL-BARAKAH MICROFINANCE BANK",
+      "monnifyBankCode": "090133",
+      "obiexBankCode": "090133",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090133"
+    },
+    {
+      "name": "ALEKUN MICROFINANCE BANK",
+      "monnifyBankCode": "090259",
+      "obiexBankCode": "090259",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090259"
+    },
+    {
+      "name": "ALERT MICROFINANCE BANK",
+      "monnifyBankCode": "51074",
+      "obiexBankCode": "090259",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090297"
+    },
+    {
+      "name": "ALLWORKERS MICROFINANCE BANK",
+      "monnifyBankCode": "090131",
+      "obiexBankCode": "090131",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090131"
+    },
+    {
+      "name": "ALPHA KAPITAL MICROFINANCE BANK ",
+      "monnifyBankCode": "090169",
+      "obiexBankCode": "090169",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090169"
+    },
+    {
+      "name": "AMML MICROFINANCE BANK ",
+      "monnifyBankCode": "914",
+      "obiexBankCode": "914",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090116"
+    },
+    {
+      "name": "APEKS MICROFINANCE BANK",
+      "monnifyBankCode": "090143",
+      "obiexBankCode": "090143",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090143"
+    },
+    {
+      "name": "ARISE MICROFINANCE BANK",
+      "monnifyBankCode": "090282",
+      "obiexBankCode": "090118",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090282"
+    },
+    {
+      "name": "ASO SAVINGS",
+      "monnifyBankCode": "905",
+      "obiexBankCode": "401",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090001"
+    },
+    {
+      "name": "ASTRAPOLARIS MICROFINANCE BANK",
+      "monnifyBankCode": "090172",
+      "obiexBankCode": "090172",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090172"
+    },
+    {
+      "name": "AUCHI MICROFINANCE BANK ",
+      "monnifyBankCode": "090264",
+      "obiexBankCode": "090264",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090264"
+    },
+    {
+      "name": "BAINES CREDIT MICROFINANCE BANK",
+      "monnifyBankCode": "090188",
+      "obiexBankCode": "090188",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090188"
+    },
+    {
+      "name": "BAM MICROFINANCE BANK",
+      "monnifyBankCode": "090651",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090651"
+    },
+    {
+      "name": "BAOBAB MICROFINANCE BANK",
+      "monnifyBankCode": "090136",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090136"
+    },
+    {
+      "name": "BC KASH MICROFINANCE BANK",
+      "monnifyBankCode": "090127",
+      "obiexBankCode": "090127",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090127"
+    },
+    {
+      "name": "BETHEL MICROFINANCE BANK",
+      "monnifyBankCode": "090683",
+      "obiexBankCode": "090293",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090683"
+    },
+    {
+      "name": "BIPC MICROFINANCE BANK",
+      "monnifyBankCode": "090336",
+      "obiexBankCode": "090336",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090336"
+    },
+    {
+      "name": "BOCTRUST MICROFINANCE BANK LIMITED",
+      "monnifyBankCode": "952",
+      "obiexBankCode": "952",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090117"
+    },
+    {
+      "name": "Bold MFB",
+      "monnifyBankCode": "090753",
+      "obiexBankCode": "090291",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090753"
+    },
+    {
+      "name": "BOOST MICROFINANCE BANK",
+      "monnifyBankCode": "090819",
+      "obiexBankCode": "090176",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090819"
+    },
+    {
+      "name": "BOSAK MICROFINANCE BANK",
+      "monnifyBankCode": "090176",
+      "obiexBankCode": "090176",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090176"
+    },
+    {
+      "name": "Bowen Microfinance Bank",
+      "monnifyBankCode": "50931",
+      "obiexBankCode": "090148",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090148"
+    },
+    {
+      "name": "BRENT MORTGAGE BANK",
+      "monnifyBankCode": "070015",
+      "obiexBankCode": "070015",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070015"
+    },
+    {
+      "name": "BRIGHTWAY MICROFINANCE BANK",
+      "monnifyBankCode": "090308",
+      "obiexBankCode": "090393",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090308"
+    },
+    {
+      "name": "CELLULANT",
+      "monnifyBankCode": "919",
+      "obiexBankCode": "919",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100005"
+    },
+    {
+      "name": "CEMCS Microfinance Bank",
+      "monnifyBankCode": "50823",
+      "obiexBankCode": "090154",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090154"
+    },
+    {
+      "name": "CHAMS MOBILE",
+      "monnifyBankCode": "929",
+      "obiexBankCode": "929",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100015"
+    },
+    {
+      "name": "Chikum Microfinance Bank Ltd",
+      "monnifyBankCode": "50177",
+      "obiexBankCode": "090141",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090141"
+    },
+    {
+      "name": "CONSUMER MICROFINANCE BANK",
+      "monnifyBankCode": "090130",
+      "obiexBankCode": "090130",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090130"
+    },
+    {
+      "name": "CONTEC GLOBAL INFOTECH LIMITED(NOWNOW)",
+      "monnifyBankCode": "100032",
+      "obiexBankCode": "100032",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100032"
+    },
+    {
+      "name": "CREDIT AFRIQUE MICROFINANCE BANK",
+      "monnifyBankCode": "090159",
+      "obiexBankCode": "090159",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090159"
+    },
+    {
+      "name": "CRUST MICROFINANCE BANK",
+      "monnifyBankCode": "51036",
+      "obiexBankCode": "952",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090560"
+    },
+    {
+      "name": "CSD MICROFINANCE BANK",
+      "monnifyBankCode": "090686",
+      "obiexBankCode": "090144",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090686"
+    },
+    {
+      "name": "DAL MFB",
+      "monnifyBankCode": "090596",
+      "obiexBankCode": "090291",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090596"
+    },
+    {
+      "name": "DAYLIGHT MICROFINANCE BANK",
+      "monnifyBankCode": "090167",
+      "obiexBankCode": "090167",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090167"
+    },
+    {
+      "name": "DotMFB",
+      "monnifyBankCode": "090470",
+      "obiexBankCode": "090290",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090470"
+    },
+    {
+      "name": "DW MFB",
+      "monnifyBankCode": "090721",
+      "obiexBankCode": "090290",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090721"
+    },
+    {
+      "name": "E-BARCS MICROFINANCE BANK",
+      "monnifyBankCode": "090156",
+      "obiexBankCode": "090156",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090156"
+    },
+    {
+      "name": "EARTHOLEUM",
+      "monnifyBankCode": "935",
+      "obiexBankCode": "935",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100021"
+    },
+    {
+      "name": "Ecobank Nigeria Plc",
+      "monnifyBankCode": "050",
+      "obiexBankCode": "050",
+      "ussdTemplate": null,
+      "baseUssdCode": "*326#",
+      "transferUssdTemplate": "*326*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000010"
+    },
+    {
+      "name": "ECOBANK XPRESS ACCOUNT",
+      "monnifyBankCode": "922",
+      "obiexBankCode": "050",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100008"
+    },
+    {
+      "name": "ECOMOBILE",
+      "monnifyBankCode": "307",
+      "obiexBankCode": "923",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100030"
+    },
+    {
+      "name": "EJINDU MFB",
+      "monnifyBankCode": "090694",
+      "obiexBankCode": "090097",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090694"
+    },
+    {
+      "name": "EMERALD MICROFINANCE BANK",
+      "monnifyBankCode": "090273",
+      "obiexBankCode": "090273",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090273"
+    },
+    {
+      "name": "EMPIRE TRUST MICROFINANCE BANK",
+      "monnifyBankCode": "913",
+      "obiexBankCode": "913",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090114"
+    },
+    {
+      "name": "ENTERPRISE BANK",
+      "monnifyBankCode": "084",
+      "obiexBankCode": "084",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000019"
+    },
+    {
+      "name": "ESO-E MICROFINANCE BANK",
+      "monnifyBankCode": "090166",
+      "obiexBankCode": "090166",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090166"
+    },
+    {
+      "name": "eTRANZACT",
+      "monnifyBankCode": "700",
+      "obiexBankCode": "920",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100006"
+    },
+    {
+      "name": "EVERGREEN MICROFINANCE BANK",
+      "monnifyBankCode": "090332",
+      "obiexBankCode": "090332",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090332"
+    },
+    {
+      "name": "EXCEL MICROFINANCE BANK",
+      "monnifyBankCode": "090678",
+      "obiexBankCode": "090166",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090678"
+    },
+    {
+      "name": "Eyowo",
+      "monnifyBankCode": "50126",
+      "obiexBankCode": "090328",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090328"
+    },
+    {
+      "name": "FAST MICROFINANCE BANK",
+      "monnifyBankCode": "090179",
+      "obiexBankCode": "090179",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090179"
+    },
+    {
+      "name": "FBNQUEST MERCHANT BANK",
+      "monnifyBankCode": "911",
+      "obiexBankCode": "911",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "060002"
+    },
+    {
+      "name": "FCMB MOBILE",
+      "monnifyBankCode": "100031",
+      "obiexBankCode": "309",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100031"
+    },
+    {
+      "name": "FCT MICROFINANCE BANK",
+      "monnifyBankCode": "090290",
+      "obiexBankCode": "090144",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090290"
+    },
+    {
+      "name": "FETS",
+      "monnifyBankCode": "915",
+      "obiexBankCode": "915",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100001"
+    },
+    {
+      "name": "FFS MICROFINANCE BANK",
+      "monnifyBankCode": "090153",
+      "obiexBankCode": "090153",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090153"
+    },
+    {
+      "name": "Fidelity bank",
+      "monnifyBankCode": "070",
+      "obiexBankCode": "070",
+      "ussdTemplate": "*770*AccountNumber*Amount#",
+      "baseUssdCode": "*770#",
+      "transferUssdTemplate": "*770*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000007"
+    },
+    {
+      "name": "FIDELITY MOBILE",
+      "monnifyBankCode": "933",
+      "obiexBankCode": "933",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100019"
+    },
+    {
+      "name": "FIDFUND MICROFINANCE Bank",
+      "monnifyBankCode": "090126",
+      "obiexBankCode": "090126",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090126"
+    },
+    {
+      "name": "FINATRUST MICROFINANCE BANK",
+      "monnifyBankCode": "090111",
+      "obiexBankCode": "090111",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090111"
+    },
+    {
+      "name": "FINCA MICROFINANCE BANK",
+      "monnifyBankCode": "090400",
+      "obiexBankCode": "090336",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090400"
+    },
+    {
+      "name": "FIRMUS MICROFINANCE BANK",
+      "monnifyBankCode": "090366",
+      "obiexBankCode": "948",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090366"
+    },
+    {
+      "name": "First bank",
+      "monnifyBankCode": "011",
+      "obiexBankCode": "011",
+      "ussdTemplate": "*894*Amount*AccountNumber#",
+      "baseUssdCode": "*894#",
+      "transferUssdTemplate": "*894*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000016"
+    },
+    {
+      "name": "FIRST GENERATION MORTGAGE BANK",
+      "monnifyBankCode": "070014",
+      "obiexBankCode": "070014",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070014"
+    },
+    {
+      "name": "FIRST ROYAL MICROFINANCE BANK",
+      "monnifyBankCode": "090164",
+      "obiexBankCode": "090164",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090164"
+    },
+    {
+      "name": "FIRST TRUST MORTGAGE BANK PLC",
+      "monnifyBankCode": "910",
+      "obiexBankCode": "910",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090107"
+    },
+    {
+      "name": "FIRSTMONIE WALLET",
+      "monnifyBankCode": "928",
+      "obiexBankCode": "928",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100014"
+    },
+    {
+      "name": "FLUTTERWAVE TECHNOLOGY SOLUTIONS LIMITED",
+      "monnifyBankCode": "110002",
+      "obiexBankCode": "110002",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "110002"
+    },
+    {
+      "name": "FOCUS MFB",
+      "monnifyBankCode": "090709",
+      "obiexBankCode": "090290",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": null
+    },
+    {
+      "name": "FORTIS MICROFINANCE BANK",
+      "monnifyBankCode": "948",
+      "obiexBankCode": "948",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070002"
+    },
+    {
+      "name": "FORTIS MOBILE",
+      "monnifyBankCode": "930",
+      "obiexBankCode": "930",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100016"
+    },
+    {
+      "name": "FSDH",
+      "monnifyBankCode": "400001",
+      "obiexBankCode": "601",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "400001"
+    },
+    {
+      "name": "FULLRANGE MICROFINANCE BANK",
+      "monnifyBankCode": "090145",
+      "obiexBankCode": "090145",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090145"
+    },
+    {
+      "name": "FUTO MICROFINANCE BANK",
+      "monnifyBankCode": "090158",
+      "obiexBankCode": "090158",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090158"
+    },
+    {
+      "name": "GATEWAY MORTGAGE BANK",
+      "monnifyBankCode": "070009",
+      "obiexBankCode": "070009",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070009"
+    },
+    {
+      "name": "GDL FINANCE",
+      "monnifyBankCode": "050026",
+      "obiexBankCode": "940",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "050026"
+    },
+    {
+      "name": "Globus",
+      "monnifyBankCode": "00103",
+      "obiexBankCode": "103",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "103"
+    },
+    {
+      "name": "Globus Bank",
+      "monnifyBankCode": "103",
+      "obiexBankCode": "103",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000027"
+    },
+    {
+      "name": "GOODNEWS MICROFINANCE BANK",
+      "monnifyBankCode": "090495",
+      "obiexBankCode": "090495",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090495"
+    },
+    {
+      "name": "GOWANS MICROFINANCE BANK",
+      "monnifyBankCode": "090122",
+      "obiexBankCode": "090122",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090122"
+    },
+    {
+      "name": "GRANTS MICROFINANCE BANK",
+      "monnifyBankCode": "090335",
+      "obiexBankCode": "090122",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090335"
+    },
+    {
+      "name": "GREENBANK MICROFINANCE BANK",
+      "monnifyBankCode": "090178",
+      "obiexBankCode": "090178",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090178"
+    },
+    {
+      "name": "Greenwich Merchant Bank",
+      "monnifyBankCode": "060004",
+      "obiexBankCode": "060004",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "060004"
+    },
+    {
+      "name": "GROOMING MICROFINANCE BANK",
+      "monnifyBankCode": "090195",
+      "obiexBankCode": "090195",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090195"
+    },
+    {
+      "name": "GT MOBILE",
+      "monnifyBankCode": "923",
+      "obiexBankCode": "923",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100009"
+    },
+    {
+      "name": "GTBank",
+      "monnifyBankCode": "058",
+      "obiexBankCode": "315",
+      "ussdTemplate": "*737*2*Amount*AccountNumber#",
+      "baseUssdCode": "*737#",
+      "transferUssdTemplate": "*737*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000013"
+    },
+    {
+      "name": "GTI MICROFINANCE BANK",
+      "monnifyBankCode": "090385",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090385"
+    },
+    {
+      "name": "Hackman Microfinance Bank",
+      "monnifyBankCode": "51251",
+      "obiexBankCode": "090147",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090147"
+    },
+    {
+      "name": "HAGGAI MORTGAGE BANK LIMITED",
+      "monnifyBankCode": "070017",
+      "obiexBankCode": "070017",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070017"
+    },
+    {
+      "name": "HALO MICROFINANCE BANK",
+      "monnifyBankCode": "090539",
+      "obiexBankCode": "090177",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090539"
+    },
+    {
+      "name": "Hasal Microfinance Bank",
+      "monnifyBankCode": "090121",
+      "obiexBankCode": "958",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090121"
+    },
+    {
+      "name": "HEDONMARK",
+      "monnifyBankCode": "931",
+      "obiexBankCode": "931",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100017"
+    },
+    {
+      "name": "Heritage bank",
+      "monnifyBankCode": "030",
+      "obiexBankCode": "030",
+      "ussdTemplate": "*322*030*AccountNumber*Amount#",
+      "baseUssdCode": "*322#",
+      "transferUssdTemplate": "*322*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000020"
+    },
+    {
+      "name": "Ibile Microfinance Bank",
+      "monnifyBankCode": "51244",
+      "obiexBankCode": "090118",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090118"
+    },
+    {
+      "name": "IHIALA MFB",
+      "monnifyBankCode": "090725",
+      "obiexBankCode": "090291",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090725"
+    },
+    {
+      "name": "IKIRE MICROFINANCE BANK",
+      "monnifyBankCode": "090275",
+      "obiexBankCode": "090118",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090275"
+    },
+    {
+      "name": "IKIRE MICROFINANCE BANK",
+      "monnifyBankCode": "090279",
+      "obiexBankCode": "090118",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090279"
+    },
+    {
+      "name": "ILISAN MICROFINANCE BANK",
+      "monnifyBankCode": "090370",
+      "obiexBankCode": "090189",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090370"
+    },
+    {
+      "name": "IMO STATE MICROFINANCE BANK",
+      "monnifyBankCode": "090258",
+      "obiexBankCode": "090258",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090258"
+    },
+    {
+      "name": "IMPERIAL HOMES MORTGAGE BANK",
+      "monnifyBankCode": "90058",
+      "obiexBankCode": "938",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100024"
+    },
+    {
+      "name": "IMSU MICROFINANCE BANK",
+      "monnifyBankCode": "090670",
+      "obiexBankCode": "090197",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090670"
+    },
+    {
+      "name": "INFINITY TRUST MORTGAGE BANK",
+      "monnifyBankCode": "070016",
+      "obiexBankCode": "070016",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070016"
+    },
+    {
+      "name": "INNOVECTIVES KESH",
+      "monnifyBankCode": "100029",
+      "obiexBankCode": "100029",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100029"
+    },
+    {
+      "name": "INTELLFIN",
+      "monnifyBankCode": "941",
+      "obiexBankCode": "941",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100027"
+    },
+    {
+      "name": "IRL MICROFINANCE BANK",
+      "monnifyBankCode": "090149",
+      "obiexBankCode": "090149",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090149"
+    },
+    {
+      "name": "ISUA MFB",
+      "monnifyBankCode": "090701",
+      "obiexBankCode": "090291",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090701"
+    },
+    {
+      "name": "JAIZ BANK",
+      "monnifyBankCode": "301",
+      "obiexBankCode": "301",
+      "ussdTemplate": "*389*301*AccountNumber*Amount#",
+      "baseUssdCode": "*389#",
+      "transferUssdTemplate": "*389*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000006"
+    },
+    {
+      "name": "JUBILEE LIFE",
+      "monnifyBankCode": "906",
+      "obiexBankCode": "906",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090003"
+    },
+    {
+      "name": "KADPOLY MICROFINANCE BANK",
+      "monnifyBankCode": "090320",
+      "obiexBankCode": "090320",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090320"
+    },
+    {
+      "name": "KAYI MICROFINANCE BANK",
+      "monnifyBankCode": "090667",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090667"
+    },
+    {
+      "name": "Keystone bank",
+      "monnifyBankCode": "082",
+      "obiexBankCode": "082",
+      "ussdTemplate": "*7111*Amount*AccountNumber#",
+      "baseUssdCode": "*7111#",
+      "transferUssdTemplate": "*7111*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000002"
+    },
+    {
+      "name": "Kuda MFB",
+      "monnifyBankCode": "090267",
+      "obiexBankCode": "090291",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "50211"
+    },
+    {
+      "name": "Kuda Microfinance Bank",
+      "monnifyBankCode": "50211",
+      "obiexBankCode": "50211",
+      "ussdTemplate": null,
+      "baseUssdCode": "*5573#",
+      "transferUssdTemplate": "*5573*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "090267"
+    },
+    {
+      "name": "Lagos Building Investment Company Plc.",
+      "monnifyBankCode": "90052",
+      "obiexBankCode": "070012",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "90052"
+    },
+    {
+      "name": "LAPO MICROFINANCE BANK",
+      "monnifyBankCode": "090177",
+      "obiexBankCode": "090177",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090177"
+    },
+    {
+      "name": "LAVENDER MICROFINANCE BANK",
+      "monnifyBankCode": "090271",
+      "obiexBankCode": "090271",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090271"
+    },
+    {
+      "name": "LEGEND MICROFINANCE BANK",
+      "monnifyBankCode": "090372",
+      "obiexBankCode": "955",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090372"
+    },
+    {
+      "name": "Letshego MFB",
+      "monnifyBankCode": "216",
+      "obiexBankCode": "090420",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090420"
+    },
+    {
+      "name": "Links Microfinance Bank",
+      "monnifyBankCode": "50549",
+      "obiexBankCode": "090143",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090435"
+    },
+    {
+      "name": "LOMA MICROFINANCE BANK",
+      "monnifyBankCode": "090620",
+      "obiexBankCode": "914",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090620"
+    },
+    {
+      "name": "LOTUS Bank",
+      "monnifyBankCode": "303",
+      "obiexBankCode": "103",
+      "ussdTemplate": "*303#",
+      "baseUssdCode": "",
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000029"
+    },
+    {
+      "name": "LOVONUS MICROFINANCE BANK",
+      "monnifyBankCode": "090265",
+      "obiexBankCode": "090265",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090265"
+    },
+    {
+      "name": "M&M MICROFINANCE BANK",
+      "monnifyBankCode": "090685",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090685"
+    },
+    {
+      "name": "M36",
+      "monnifyBankCode": "100035",
+      "obiexBankCode": "100035",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100035"
+    },
+    {
+      "name": "MAINSTREET MICROFINANCE BANK",
+      "monnifyBankCode": "090171",
+      "obiexBankCode": "014",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090171"
+    },
+    {
+      "name": "MANNY MICROFINANCE BANK",
+      "monnifyBankCode": "090383",
+      "obiexBankCode": "090383",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090383"
+    },
+    {
+      "name": "MAYFRESH MORTGAGE BANK",
+      "monnifyBankCode": "070019",
+      "obiexBankCode": "070019",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070019"
+    },
+    {
+      "name": "MEGAPRAISE MICROFINANCE BANK",
+      "monnifyBankCode": "090280",
+      "obiexBankCode": "090280",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090280"
+    },
+    {
+      "name": "Mint Microfinance Bank",
+      "monnifyBankCode": "51406",
+      "obiexBankCode": "090144",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090763"
+    },
+    {
+      "name": "MONEY BOX",
+      "monnifyBankCode": "934",
+      "obiexBankCode": "934",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100020"
+    },
+    {
+      "name": "MONEY TRUST MICROFINANCE BANK",
+      "monnifyBankCode": "963",
+      "obiexBankCode": "963",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090129"
+    },
+    {
+      "name": "Moniepoint Microfinance Bank",
+      "monnifyBankCode": "50515",
+      "obiexBankCode": "090405",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090405"
+    },
+    {
+      "name": "MUTUAL TRUST MICROFINANCE BANK",
+      "monnifyBankCode": "090151",
+      "obiexBankCode": "090151",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090151"
+    },
+    {
+      "name": "NDDC MICROFINANCE BANK",
+      "monnifyBankCode": "90679",
+      "obiexBankCode": "090336",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "90679"
+    },
+    {
+      "name": "NDIORAH MICROFINANCE BANK",
+      "monnifyBankCode": "090128",
+      "obiexBankCode": "090128",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090128"
+    },
+    {
+      "name": "NET MFB",
+      "monnifyBankCode": "90675",
+      "obiexBankCode": "090290",
+      "ussdTemplate": "0001",
+      "baseUssdCode": "",
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "90675"
+    },
+    {
+      "name": "NET MFB",
+      "monnifyBankCode": "090675",
+      "obiexBankCode": "090290",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090675"
+    },
+    {
+      "name": "NEW DAWN MICROFINANCE BANK",
+      "monnifyBankCode": "090205",
+      "obiexBankCode": "090205",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090205"
+    },
+    {
+      "name": "NIGERIAN NAVY MICROFINANCE BANK ",
+      "monnifyBankCode": "090263",
+      "obiexBankCode": "090263",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090263"
+    },
+    {
+      "name": "NOVA MERCHANT BANK",
+      "monnifyBankCode": "637",
+      "obiexBankCode": "637",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "060003"
+    },
+    {
+      "name": "NOVUS Microfinance Bank",
+      "monnifyBankCode": "51371",
+      "obiexBankCode": "090265",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090734"
+    },
+    {
+      "name": "NPF MICROFINANCE BANK",
+      "monnifyBankCode": "947",
+      "obiexBankCode": "947",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070001"
+    },
+    {
+      "name": "OCHE MICROFINANCE BANK",
+      "monnifyBankCode": "090333",
+      "obiexBankCode": "090264",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090333"
+    },
+    {
+      "name": "OHAFIA MICROFINANCE BANK",
+      "monnifyBankCode": "090119",
+      "obiexBankCode": "090119",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090119"
+    },
+    {
+      "name": "OK MICROFINANCE BANK",
+      "monnifyBankCode": "090567",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090567"
+    },
+    {
+      "name": "OKPOGA MICROFINANCE BANK",
+      "monnifyBankCode": "090161",
+      "obiexBankCode": "090161",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090161"
+    },
+    {
+      "name": "OLABISI ONABANJO UNIVERSITY MICROFINANCE ",
+      "monnifyBankCode": "090272",
+      "obiexBankCode": "090272",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090272"
+    },
+    {
+      "name": "OLIVE MFB",
+      "monnifyBankCode": "090696",
+      "obiexBankCode": "090295",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090696"
+    },
+    {
+      "name": "OMIYE MICROFINANCE BANK",
+      "monnifyBankCode": "090295",
+      "obiexBankCode": "090118",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090295"
+    },
+    {
+      "name": "OMOLUABI",
+      "monnifyBankCode": "950",
+      "obiexBankCode": "950",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070007"
+    },
+    {
+      "name": "OPAY 3",
+      "monnifyBankCode": "999992",
+      "obiexBankCode": "305",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "999992"
+    },
+    {
+      "name": "OTUO MICROFINANCE BANK",
+      "monnifyBankCode": "090542",
+      "obiexBankCode": "090197",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090542"
+    },
+    {
+      "name": "OURS MFB",
+      "monnifyBankCode": "090346",
+      "obiexBankCode": "090333",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090346"
+    },
+    {
+      "name": "PAGA",
+      "monnifyBankCode": "327",
+      "obiexBankCode": "916",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100002"
+    },
+    {
+      "name": "PAGA - 100002",
+      "monnifyBankCode": "100002",
+      "obiexBankCode": "916",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "327"
+    },
+    {
+      "name": "PALMPAY",
+      "monnifyBankCode": "100033",
+      "obiexBankCode": "100033",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100033"
+    },
+    {
+      "name": "PARALLEX",
+      "monnifyBankCode": "907",
+      "obiexBankCode": "526",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000030"
+    },
+    {
+      "name": "Parkway Microfinance Bank",
+      "monnifyBankCode": "090390",
+      "obiexBankCode": "311",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090390"
+    },
+    {
+      "name": "PARKWAY-READYCASH",
+      "monnifyBankCode": "917",
+      "obiexBankCode": "311",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100003"
+    },
+    {
+      "name": "PATRICKGOLD MICROFINANCE BANK",
+      "monnifyBankCode": "090317",
+      "obiexBankCode": "090317",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090317"
+    },
+    {
+      "name": "PAYATTITUDE ONLINE",
+      "monnifyBankCode": "943",
+      "obiexBankCode": "943",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "110001"
+    },
+    {
+      "name": "PAYCOM (OPAY)",
+      "monnifyBankCode": "305",
+      "obiexBankCode": "305",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100004"
+    },
+    {
+      "name": "PEACE MICROFINANCE BANK",
+      "monnifyBankCode": "50743",
+      "obiexBankCode": "951",
+      "ussdTemplate": "*#*##",
+      "baseUssdCode": "*#**#",
+      "transferUssdTemplate": "*#***AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "090402"
+    },
+    {
+      "name": "PECANTRUST MICROFINANCE BANK",
+      "monnifyBankCode": "090137",
+      "obiexBankCode": "090137",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090137"
+    },
+    {
+      "name": "PENNYWISE MICROFINANCE BANK ",
+      "monnifyBankCode": "090196",
+      "obiexBankCode": "090196",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090196"
+    },
+    {
+      "name": "PERSONAL TRUST MICROFINANCE BANK",
+      "monnifyBankCode": "090135",
+      "obiexBankCode": "090135",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090135"
+    },
+    {
+      "name": "PLATINUM MORTGAGE BANK",
+      "monnifyBankCode": "070013",
+      "obiexBankCode": "070013",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070013"
+    },
+    {
+      "name": "PLATINUM MORTGAGE BANK",
+      "monnifyBankCode": "090083",
+      "obiexBankCode": "070013",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070013"
+    },
+    {
+      "name": "Polaris Bank",
+      "monnifyBankCode": "076",
+      "obiexBankCode": "076",
+      "ussdTemplate": "*833*Amount*AccountNumber#",
+      "baseUssdCode": "*833#",
+      "transferUssdTemplate": "*833*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000008"
+    },
+    {
+      "name": "PRESTIGE MICROFINANCE BANK",
+      "monnifyBankCode": "090274",
+      "obiexBankCode": "090274",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090274"
+    },
+    {
+      "name": "Providus Bank",
+      "monnifyBankCode": "101",
+      "obiexBankCode": "101",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000023"
+    },
+    {
+      "name": "PRUDENT MICROFINANCE BANK",
+      "monnifyBankCode": "090690",
+      "obiexBankCode": "090146",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090690"
+    },
+    {
+      "name": "QUICKFUND MICROFINANCE BANK",
+      "monnifyBankCode": "090261",
+      "obiexBankCode": "090261",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090261"
+    },
+    {
+      "name": "RAND MERCHANT BANK",
+      "monnifyBankCode": "502",
+      "obiexBankCode": "502",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000024"
+    },
+    {
+      "name": "REFUGE MORTGAGE BANK",
+      "monnifyBankCode": "070011",
+      "obiexBankCode": "070011",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "070011"
+    },
+    {
+      "name": "REGENT MICROFINANCE BANK",
+      "monnifyBankCode": "955",
+      "obiexBankCode": "955",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090125"
+    },
+    {
+      "name": "RENMONEY MICROFINANCE BANK ",
+      "monnifyBankCode": "090198",
+      "obiexBankCode": "090198",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090198"
+    },
+    {
+      "name": "REPHIDIM MICROFINANCE BANK",
+      "monnifyBankCode": "090322",
+      "obiexBankCode": "090322",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090322"
+    },
+    {
+      "name": "REX Microfinance Bank",
+      "monnifyBankCode": "090449",
+      "obiexBankCode": "090142",
+      "ussdTemplate": "090449",
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": null
+    },
+    {
+      "name": "RICHWAY MICROFINANCE BANK",
+      "monnifyBankCode": "090132",
+      "obiexBankCode": "090132",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090132"
+    },
+    {
+      "name": "ROYAL EXCHANGE MICROFINANCE BANK",
+      "monnifyBankCode": "090138",
+      "obiexBankCode": "090138",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090138"
+    },
+    {
+      "name": "RSU MICROFINANCE BANK",
+      "monnifyBankCode": "090535",
+      "obiexBankCode": "090197",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090535"
+    },
+    {
+      "name": "Rubies Micro-finance Bank",
+      "monnifyBankCode": "125",
+      "obiexBankCode": "125",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090175"
+    },
+    {
+      "name": "SAFETRUST",
+      "monnifyBankCode": "909",
+      "obiexBankCode": "909",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090006"
+    },
+    {
+      "name": "SAGAMU MICROFINANCE BANK",
+      "monnifyBankCode": "966",
+      "obiexBankCode": "966",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090140"
+    },
+    {
+      "name": "SEAP Microfinance Bank",
+      "monnifyBankCode": "090513",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090513"
+    },
+    {
+      "name": "SEED CAPITAL MICROFINANCE BANK",
+      "monnifyBankCode": "609",
+      "obiexBankCode": "609",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090112"
+    },
+    {
+      "name": "Sparkle Microfinance Bank",
+      "monnifyBankCode": "51310",
+      "obiexBankCode": "090325",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090325"
+    },
+    {
+      "name": "STANBIC IBTC @Ease WALLET",
+      "monnifyBankCode": "921",
+      "obiexBankCode": "921",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100007"
+    },
+    {
+      "name": "Stanbic IBTC Bank Ltd.",
+      "monnifyBankCode": "221",
+      "obiexBankCode": "221",
+      "ussdTemplate": "*909*22*Amount*AccountNumber#",
+      "baseUssdCode": "*909#",
+      "transferUssdTemplate": "*909*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000012"
+    },
+    {
+      "name": "Standard Chartered Bank Nigeria Ltd.",
+      "monnifyBankCode": "068",
+      "obiexBankCode": "068",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000021"
+    },
+    {
+      "name": "STANFORD MICROFINANACE BANK",
+      "monnifyBankCode": "090162",
+      "obiexBankCode": "090162",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090162"
+    },
+    {
+      "name": "STELLAS MICROFINANCE BANK ",
+      "monnifyBankCode": "090262",
+      "obiexBankCode": "090262",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090262"
+    },
+    {
+      "name": "Sterling bank",
+      "monnifyBankCode": "232",
+      "obiexBankCode": "232",
+      "ussdTemplate": "*822*5*Amount*AccountNumber#",
+      "baseUssdCode": "*822#",
+      "transferUssdTemplate": "*822*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000001"
+    },
+    {
+      "name": "STERLING MOBILE",
+      "monnifyBankCode": "936",
+      "obiexBankCode": "936",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100022"
+    },
+    {
+      "name": "Suntrust Bank Nigeria Limited",
+      "monnifyBankCode": "100",
+      "obiexBankCode": "100",
+      "ussdTemplate": "",
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000022"
+    },
+    {
+      "name": "TAGPAY",
+      "monnifyBankCode": "937",
+      "obiexBankCode": "937",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100023"
+    },
+    {
+      "name": "Taj Bank",
+      "monnifyBankCode": "302",
+      "obiexBankCode": "302",
+      "ussdTemplate": null,
+      "baseUssdCode": "*898#",
+      "transferUssdTemplate": "*898*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000026"
+    },
+    {
+      "name": "Tatum Bank",
+      "monnifyBankCode": "109",
+      "obiexBankCode": "302",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000042"
+    },
+    {
+      "name": "TCF MFB",
+      "monnifyBankCode": "51211",
+      "obiexBankCode": "090290",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090115"
+    },
+    {
+      "name": "TEASY MOBILE",
+      "monnifyBankCode": "924",
+      "obiexBankCode": "924",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100010"
+    },
+    {
+      "name": "Titan Bank",
+      "monnifyBankCode": "102",
+      "obiexBankCode": "023",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "000025"
+    },
+    {
+      "name": "TRIDENT MICROFINANCE BANK",
+      "monnifyBankCode": "090146",
+      "obiexBankCode": "090146",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090146"
+    },
+    {
+      "name": "TRUST MICROFINANCE BANK",
+      "monnifyBankCode": "090327",
+      "obiexBankCode": "952",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090327"
+    },
+    {
+      "name": "TRUSTFUND MICROFINANCE BANK ",
+      "monnifyBankCode": "090276",
+      "obiexBankCode": "090276",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090276"
+    },
+    {
+      "name": "U & C MICROFINANCE BANK",
+      "monnifyBankCode": "090315",
+      "obiexBankCode": "090336",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090315"
+    },
+    {
+      "name": "UCEE MFB",
+      "monnifyBankCode": "090706",
+      "obiexBankCode": "090333",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090706"
+    },
+    {
+      "name": "UNAAB MICROFINANCE BANK",
+      "monnifyBankCode": "090331",
+      "obiexBankCode": "090270",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090331"
+    },
+    {
+      "name": "UNIBEN MICROFINANCE BANK",
+      "monnifyBankCode": "51271",
+      "obiexBankCode": "090266",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090266"
+    },
+    {
+      "name": "Unical Microfinance Bank",
+      "monnifyBankCode": "50871",
+      "obiexBankCode": "090193",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090193"
+    },
+    {
+      "name": "Unilag Microfinance Bank",
+      "monnifyBankCode": "51316",
+      "obiexBankCode": "090193",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090452"
+    },
+    {
+      "name": "Union bank",
+      "monnifyBankCode": "032",
+      "obiexBankCode": "032",
+      "ussdTemplate": "*826*2*Amount*AccountNumber#",
+      "baseUssdCode": "*826#",
+      "transferUssdTemplate": "*826*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000018"
+    },
+    {
+      "name": "United Bank For Africa Plc",
+      "monnifyBankCode": "033",
+      "obiexBankCode": "033",
+      "ussdTemplate": "*919*4*AccountNumber*Amount#",
+      "baseUssdCode": "*919#",
+      "transferUssdTemplate": "*919*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000004"
+    },
+    {
+      "name": "Unity Bank Plc",
+      "monnifyBankCode": "215",
+      "obiexBankCode": "215",
+      "ussdTemplate": "*7799*2*AccountNumber*Amount#",
+      "baseUssdCode": "*7799#",
+      "transferUssdTemplate": "*7799*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000011"
+    },
+    {
+      "name": "UNIUYO MICROFINANCE BANK",
+      "monnifyBankCode": "090338",
+      "obiexBankCode": "090266",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090338"
+    },
+    {
+      "name": "URE MICROFINANCE BANK",
+      "monnifyBankCode": "090619",
+      "obiexBankCode": "090149",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090619"
+    },
+    {
+      "name": "VFD microfinance bank",
+      "monnifyBankCode": "566",
+      "obiexBankCode": "566",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090110"
+    },
+    {
+      "name": "VIRTUE MICROFINANCE BANK",
+      "monnifyBankCode": "090150",
+      "obiexBankCode": "090150",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090150"
+    },
+    {
+      "name": "VISA MICROFINANCE BANK",
+      "monnifyBankCode": "090139",
+      "obiexBankCode": "090139",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090139"
+    },
+    {
+      "name": "VT NETWORKS",
+      "monnifyBankCode": "926",
+      "obiexBankCode": "926",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100012"
+    },
+    {
+      "name": "Wema bank",
+      "monnifyBankCode": "035",
+      "obiexBankCode": "035",
+      "ussdTemplate": "*945*AccountNumber*Amount#",
+      "baseUssdCode": "*945#",
+      "transferUssdTemplate": "*945*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000017"
+    },
+    {
+      "name": "WRA MFB",
+      "monnifyBankCode": "090631",
+      "obiexBankCode": "090290",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090631"
+    },
+    {
+      "name": "WUDIL MICROFINANCE BANK",
+      "monnifyBankCode": "090253",
+      "obiexBankCode": "50211",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090253"
+    },
+    {
+      "name": "XSLNCE MICROFINANCE BANK",
+      "monnifyBankCode": "090124",
+      "obiexBankCode": "090124",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090124"
+    },
+    {
+      "name": "YES MICROFINANCE BANK",
+      "monnifyBankCode": "090142",
+      "obiexBankCode": "090142",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "090142"
+    },
+    {
+      "name": "ZAIN MICROFINANCE BANK",
+      "monnifyBankCode": "090976",
+      "obiexBankCode": "090270",
+      "ussdTemplate": "***#",
+      "baseUssdCode": "*#**",
+      "transferUssdTemplate": "*#**AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "090976"
+    },
+    {
+      "name": "Zenith bank",
+      "monnifyBankCode": "057",
+      "obiexBankCode": "057",
+      "ussdTemplate": "*966*Amount*AccountNumber#",
+      "baseUssdCode": "*966#",
+      "transferUssdTemplate": "*966*AccountNumber#",
+      "bankId": null,
+      "nipBankCode": "000015"
+    },
+    {
+      "name": "ZENITH MOBILE",
+      "monnifyBankCode": "932",
+      "obiexBankCode": "322",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100018"
+    },
+    {
+      "name": "ZINTERNET - KONGAPAY",
+      "monnifyBankCode": "939",
+      "obiexBankCode": "939",
+      "ussdTemplate": null,
+      "baseUssdCode": null,
+      "transferUssdTemplate": null,
+      "bankId": null,
+      "nipBankCode": "100025"
+    }
+  ]
+}
