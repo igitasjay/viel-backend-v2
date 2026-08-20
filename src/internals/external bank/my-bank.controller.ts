@@ -44,7 +44,8 @@ const getCurrentUserBank = async (
         accountNumber: bankAccount.accountNumber,
         accountName: bankAccount.accountName,
         bankName: bankAccount.bankName,
-        bankCode: bankAccount.monnifyBankCode,
+        monnifyBankCode: bankAccount.monnifyBankCode,
+        obiexBankCode: bankAccount.obiexBankCode,
       },
     });
   } catch (error) {
