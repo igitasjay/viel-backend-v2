@@ -143,14 +143,14 @@ export class NotificationService {
     }
   }
 
-  static async processNotificationEvent(payload: NotificationEventPayload) {
+  static async processNotificationEvent(payload: NotificationEventPayload & { meta?: Record<string, any> }) {
     try {
+      const actualMetadata = payload.metadata || payload.meta || {};
       const {
         userId,
         notificationType,
         title,
         message,
-        metadata,
         deliveryChannels = ["in_app", "push"],
       } = payload;
 
@@ -160,7 +160,7 @@ export class NotificationService {
           title,
           message,
           type: notificationType,
-          metadata,
+          metadata: actualMetadata,
         });
       }
 
@@ -170,7 +170,7 @@ export class NotificationService {
           title,
           message,
           imageUrl: payload.imageUrl,
-          data: { type: notificationType, ...metadata },
+          data: { type: notificationType, ...actualMetadata },
         });
       }
 
@@ -190,7 +190,7 @@ export class NotificationService {
                 notificationType,
                 title,
                 message,
-                metadata,
+                metadata: actualMetadata,
               },
             },
           });
