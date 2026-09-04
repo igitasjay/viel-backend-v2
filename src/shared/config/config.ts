@@ -108,6 +108,9 @@ function createConfig() {
         admin: {
             superPass: getEnv("SUPER_ADMIN_PASS"),
         },
+        sentry: {
+            dsn: getEnvOptional("SENTRY_DSN"),
+        },
     } as const;
 }
 

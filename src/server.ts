@@ -39,6 +39,18 @@ import { cryptoWalletController } from "./internals/crypto/crypto.controller";
 import { profileController } from "./internals/profile/profile.controller";
 // import { webhookRoutes } from "./internals/webhooks";
 
+import * as Sentry from "@sentry/node";
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
+
+if (config.sentry.dsn) {
+  Sentry.init({
+    dsn: config.sentry.dsn,
+    integrations: [nodeProfilingIntegration()],
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+  });
+}
+
 // App Initialization
 const app = express();
 
@@ -244,6 +256,9 @@ app.use((req: Request, res: Response) => {
 });
 
 // 2. Global Error Handler
+if (config.sentry.dsn) {
+  Sentry.setupExpressErrorHandler(app);
+}
 app.use(errorHandler);
 
 export default app;
