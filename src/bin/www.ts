@@ -1,3 +1,4 @@
+import '../instrument';
 import http from 'http';
 import app from '../server';
 import { prisma } from '@/shared/db/prisma';
