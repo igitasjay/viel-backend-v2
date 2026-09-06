@@ -1,6 +1,7 @@
 allowBuilds:
   '@firebase/util': true
   '@prisma/engines': true
+  '@sentry/node-cpu-profiler': set this to true or false
   bcrypt: true
   bufferutil: true
   esbuild: true

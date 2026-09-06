@@ -19,7 +19,7 @@ const generateReferralCode = async (): Promise<string> => {
 
 const addBankAccount = async (req: Request, res: Response): Promise<void> => {
   const userId = (req.currentUser?.id || req.userId) as unknown as string;
-  const { accountNumber, accountName, bankName, bankCode } = req.body;
+  const { accountNumber, accountName, bankName, bankCode, obiexBankCode } = req.body;
 
   if (!accountNumber || !accountName || !bankName || !bankCode) {
     res.status(400).json({
@@ -63,16 +63,14 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const obiexBankCode = await resolveObiexBankCode(bankName, bankCode);
-
     const externalAccount = await prisma.externalAccount.create({
       data: {
         userId,
         accountNumber,
         accountName,
         bankName,
-        providerCode: bankCode,
-        obiexBankCode,
+        monnifyBankCode: bankCode,
+        obiexBankCode: obiexBankCode || null,
         isPrimary: true,
       },
     });
@@ -106,7 +104,7 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
 
 const updateBankAccount = async (req: Request, res: Response): Promise<void> => {
   const userId = (req.currentUser?.id || req.userId) as unknown as string;
-  const { accountNumber, accountName, bankName, bankCode } = req.body;
+  const { accountNumber, accountName, bankName, bankCode, obiexBankCode } = req.body;
 
   try {
     const externalAccount = await prisma.externalAccount.findFirst({
@@ -121,13 +119,8 @@ const updateBankAccount = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    let newObiexBankCode = externalAccount.obiexBankCode;
-    if (bankName || bankCode) {
-      newObiexBankCode = await resolveObiexBankCode(
-        bankName || externalAccount.bankName, 
-        bankCode || externalAccount.providerCode!
-      ) || newObiexBankCode;
-    }
+    let newObiexBankCode = obiexBankCode !== undefined ? obiexBankCode : externalAccount.obiexBankCode;
+    // We don't dynamically resolve anymore if they changed bankName, we expect the frontend to send the new obiexBankCode
 
     const updatedAccount = await prisma.externalAccount.update({
       where: { id: externalAccount.id },
@@ -135,7 +128,7 @@ const updateBankAccount = async (req: Request, res: Response): Promise<void> => 
         accountNumber: accountNumber || externalAccount.accountNumber,
         accountName: accountName || externalAccount.accountName,
         bankName: bankName || externalAccount.bankName,
-        providerCode: bankCode || externalAccount.providerCode,
+        monnifyBankCode: bankCode || externalAccount.monnifyBankCode,
         obiexBankCode: newObiexBankCode,
       },
     });

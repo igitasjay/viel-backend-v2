@@ -98,17 +98,17 @@ model CryptoWallet {
 }
 
 model ExternalAccount {
-  id            String   @id @default(ulid())
-  userId        String
-  bankName      String
-  accountNumber String
-  accountName   String
-  isPrimary     Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  providerCode  String?
-  obiexBankCode String?
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String   @id @default(ulid())
+  userId          String
+  bankName        String
+  accountNumber   String
+  accountName     String
+  isPrimary       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  monnifyBankCode String?
+  obiexBankCode   String?
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("external_accounts")
