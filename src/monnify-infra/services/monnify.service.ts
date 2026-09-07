@@ -32,7 +32,7 @@ export async function getMonnifyAccessToken(): Promise<string> {
 
   try {
     const response = await axios.post<MonnifyAuthResponse>(
-      `https://${MONNIFY_BASE_URL}/api/v1/auth/login`,
+      `https://${MONNIFY_BASE_URL}/api/v2/auth/login`,
       {},
       {
         headers: {
@@ -102,7 +102,7 @@ export async function initMonnifyBankTransfer(
 
   try {
     const response = await axios.post<MonnifyBankTransferResponse>(
-      `https://${MONNIFY_BASE_URL}/api/v1/merchant/bank-transfer/init-payment`,
+      `https://${MONNIFY_BASE_URL}/api/v2/merchant/bank-transfer/init-payment`,
       payload,
       {
         headers: {
@@ -161,7 +161,7 @@ export async function initMonnifyTransaction(
 
   try {
     const response = await axios.post<MonnifyInitTransactionResponse>(
-      `https://${MONNIFY_BASE_URL}/api/v1/merchant/transactions/init-transaction`,
+      `https://${MONNIFY_BASE_URL}/api/v2/merchant/transactions/init-transaction`,
       payload,
       {
         headers: {
@@ -245,7 +245,7 @@ export async function getMonnifyBanks(): Promise<any> {
 
   try {
     const response = await axios.get(
-      `https://${MONNIFY_BASE_URL}/api/v1/banks`,
+      `https://${MONNIFY_BASE_URL}/api/v2/banks`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
