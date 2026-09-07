@@ -272,7 +272,7 @@ export async function resolveMonnifyBankAccount(
 
   try {
     const response = await axios.get(
-      `https://${MONNIFY_BASE_URL}/api/v1/disbursements/account/validate`,
+      `https://${MONNIFY_BASE_URL}/api/v2/disbursements/account/validate`,
       {
         params: { accountNumber, bankCode },
         headers: {
