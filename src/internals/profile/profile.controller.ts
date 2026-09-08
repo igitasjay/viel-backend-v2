@@ -547,7 +547,7 @@ const createDiditSession = Asyncly(async (req: Request, res: Response) => {
       }
     });
   } catch (error: any) {
-    logger.error(`Failed to create Didit session for ${userId}: ${error.response?.data || error.message}`);
+    logger.error(`Failed to create Didit session for ${userId}: ${JSON.stringify(error.response?.data) || error.message}`);
     throw new InternalServerErrorException("Failed to initiate verification session.");
   }
 });

@@ -31,8 +31,8 @@ export async function getMonnifyAccessToken(): Promise<string> {
   const authString = Buffer.from(`${MONNIFY_API_KEY}:${MONNIFY_SECRET_KEY}`).toString('base64');
 
   try {
-    const response = await axios.post<MonnifyAuthResponse>(
-      `https://${MONNIFY_BASE_URL}/api/v2/auth/login`,
+      const response = await axios.post<MonnifyAuthResponse>(
+        `https://${MONNIFY_BASE_URL}/api/v1/auth/login`,
       {},
       {
         headers: {
@@ -54,6 +54,9 @@ export async function getMonnifyAccessToken(): Promise<string> {
       throw new Error(response.data.responseMessage || 'Failed to get Monnify access token');
     }
   } catch (error: any) {
+    // Clear cache so next call forces re-auth
+    accessTokenCache = null;
+
     // Log only the message to avoid circular JSON print
     console.error('Monnify Auth API error:', error.message);
 
