@@ -46,16 +46,22 @@ const prismaClientSingleton = () => {
                 async create({ args, query }) {
                     const result = await query(args);
                     if (result.status === 'SUCCESS' && result.userId) {
-                        const userWallets = await client.wallet.findMany({ where: { userId: result.userId } });
-                        if (userWallets.length > 0) {
-                            const walletToUpdate = result.walletId 
-                                ? userWallets.find((w: any) => w.id === result.walletId) || userWallets[0]
-                                : userWallets[0];
-                            await client.wallet.update({
-                                where: { id: walletToUpdate.id },
-                                data: { totalTransactionVolume: { increment: Number(result.amount) || 0 } }
-                            });
-                        }
+                        setImmediate(async () => {
+                            try {
+                                const userWallets = await client.wallet.findMany({ where: { userId: result.userId } });
+                                if (userWallets.length > 0) {
+                                    const walletToUpdate = result.walletId 
+                                        ? userWallets.find((w: any) => w.id === result.walletId) || userWallets[0]
+                                        : userWallets[0];
+                                    await client.wallet.update({
+                                        where: { id: walletToUpdate.id },
+                                        data: { totalTransactionVolume: { increment: Number(result.amount) || 0 } }
+                                    });
+                                }
+                            } catch (err) {
+                                console.error('Prisma middleware background wallet update failed:', err);
+                            }
+                        });
                     }
                     return result;
                 },
@@ -72,16 +78,22 @@ const prismaClientSingleton = () => {
                     
                     // If it transitioned to SUCCESS
                     if (result.status === 'SUCCESS' && oldStatus !== 'SUCCESS' && result.userId) {
-                        const userWallets = await client.wallet.findMany({ where: { userId: result.userId } });
-                        if (userWallets.length > 0) {
-                            const walletToUpdate = result.walletId 
-                                ? userWallets.find((w: any) => w.id === result.walletId) || userWallets[0]
-                                : userWallets[0];
-                            await client.wallet.update({
-                                where: { id: walletToUpdate.id },
-                                data: { totalTransactionVolume: { increment: Number(result.amount) || 0 } }
-                            });
-                        }
+                        setImmediate(async () => {
+                            try {
+                                const userWallets = await client.wallet.findMany({ where: { userId: result.userId } });
+                                if (userWallets.length > 0) {
+                                    const walletToUpdate = result.walletId 
+                                        ? userWallets.find((w: any) => w.id === result.walletId) || userWallets[0]
+                                        : userWallets[0];
+                                    await client.wallet.update({
+                                        where: { id: walletToUpdate.id },
+                                        data: { totalTransactionVolume: { increment: Number(result.amount) || 0 } }
+                                    });
+                                }
+                            } catch (err) {
+                                console.error('Prisma middleware background wallet update failed:', err);
+                            }
+                        });
                     }
                     return result;
                 }
