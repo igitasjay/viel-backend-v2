@@ -212,19 +212,6 @@ class GiftCardSellingService {
             AdminId,
         });
 
-        const wallet = await prisma.wallet.findUnique({
-            where: {
-                userId_currency: {
-                    userId: transaction.userId,
-                    currency: "NGN",
-                },
-            },
-        });
-
-        if (!wallet) {
-            throw new NotFoundException("User wallet not found");
-        }
-
         const bankAccount = await prisma.externalAccount.findFirst({
             where: { userId: transaction.userId },
             orderBy: { createdAt: "desc" },
@@ -239,19 +226,9 @@ class GiftCardSellingService {
         }
 
         const result = await prisma.$transaction(async (tx) => {
-            await tx.wallet.update({
-                where: { id: wallet.id },
-                data: {
-                    buyVolume: {
-                        increment: payoutAmount,
-                    },
-                },
-            });
-
             const updatedTransaction = await tx.transaction.update({
                 where: { id: saleId },
                 data: {
-                    walletId: wallet.id,
                     status: "SUCCESS",
                     narration: `Payout for gift card sale`,
                     reviewedBy: AdminId,
@@ -268,7 +245,6 @@ class GiftCardSellingService {
                 saleId,
                 userId: transaction.userId,
                 payoutAmount,
-                walletId: wallet.id,
             });
 
             return updatedTransaction;

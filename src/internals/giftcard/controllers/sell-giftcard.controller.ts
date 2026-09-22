@@ -181,11 +181,9 @@ const submitSale = Asyncly(async (req: Request, res: Response) => {
                     notificationType: "GIFTCARD",
                     // priority: "high",
                     title: "Gift Card Submitted for Review",
-                    message: `Your ${result.cardType} gift card (${result.quantity}x ${result.cardCurrency
-                        }${result.cardValue
-                        }) has been submitted for review. You'll receive ₦${Number(
-                            result.payoutAmount,
-                        ).toLocaleString()} once approved.`,
+                    message: `Your ${result.cardType} gift card (${result.quantity}x ${result.cardCurrency}${result.cardValue}) has been submitted for review. You'll receive ₦${Number(
+                        result.payoutAmount,
+                    ).toLocaleString()} once approved.`,
                     metadata: {
                         saleId: result.id,
                         cardType: result.cardType,
@@ -239,8 +237,32 @@ const submitSale = Asyncly(async (req: Request, res: Response) => {
 
                 logger.info(`Sale submission email queued for user ${userId}`);
             }
+
+            // Notify Admins
+            const admins = await prisma.admin.findMany({
+                select: { id: true },
+            });
+
+            for (const admin of admins) {
+                await publishToQueue({
+                    type: "NOTIFICATION_EVENT",
+                    payload: {
+                        userId: admin.id,
+                        notificationType: "GIFTCARD",
+                        title: "New Gift Card Sale Submitted",
+                        message: `A new ${result.cardType} gift card sale request has been submitted by ${user?.fullname || "a user"} and is pending review.`,
+                        metadata: {
+                            saleId: result.id,
+                            action: "admin_giftcard_sale_submitted",
+                        },
+                        deliveryChannels: ["push"], // Only push for admins
+                    },
+                });
+            }
+            logger.info(`Admin notifications queued for ${admins.length} admins`);
+            
         } catch (error) {
-            logger.error("Failed to queue sale submission email:", { error, userId });
+            logger.error("Failed to queue sale submission notifications:", { error, userId });
         }
     });
 });
