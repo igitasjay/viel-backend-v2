@@ -114,6 +114,7 @@ export interface GiftcardSaleMetadata {
     saleStatus?: string;
     reviewNotes?: string;
     rejectionReason?: string;
+    manualPaymentReference?: string;
 }
 
 export function getGiftcardSaleMeta(
@@ -146,6 +147,7 @@ export function createGiftcardSaleMeta(data: Partial<GiftcardSaleMetadata>): {
             saleStatus: data.saleStatus,
             reviewNotes: data.reviewNotes,
             rejectionReason: data.rejectionReason,
+            manualPaymentReference: data.manualPaymentReference,
         },
     };
 }

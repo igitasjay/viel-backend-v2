@@ -229,13 +229,13 @@ class GiftCardSellingService {
             const updatedTransaction = await tx.transaction.update({
                 where: { id: saleId },
                 data: {
-                    status: "SUCCESS",
-                    narration: `Payout for gift card sale`,
+                    status: "PROCESSING",
+                    narration: `Payout for gift card sale pending`,
                     reviewedBy: AdminId,
                     reviewedAt: new Date(),
                     reviewNotes: reviewNotes || null,
                     meta: updateGiftcardSaleMeta(transaction.meta, {
-                        saleStatus: "PAID",
+                        saleStatus: "PAYOUT_PENDING",
                         reviewNotes: reviewNotes,
                     }),
                 },
@@ -332,6 +332,105 @@ class GiftCardSellingService {
         });
 
         return new GiftCardSaleDetailDTO(result);
+    }
+
+    async manualPayout(
+        saleId: string,
+        adminId: string,
+        paymentReference: string,
+    ): Promise<GiftCardSaleDetailDTO> {
+        const transaction = await prisma.transaction.findUnique({
+            where: { id: saleId },
+        });
+
+        if (!transaction) {
+            throw new NotFoundException(RESPONSE_MESSAGES.ERRORS.SALE_NOT_FOUND);
+        }
+
+        if (transaction.status !== "FAILED" && transaction.status !== "PROCESSING") {
+            throw new BadRequestException(
+                `Cannot process manual payout for sale with status: ${transaction.status}`,
+            );
+        }
+
+        const result = await prisma.transaction.update({
+            where: { id: saleId },
+            data: {
+                status: "SUCCESS",
+                narration: `Manual payout for gift card sale`,
+                meta: updateGiftcardSaleMeta(transaction.meta, {
+                    saleStatus: "PAID",
+                    manualPaymentReference: paymentReference,
+                }),
+            },
+        });
+
+        logger.info("Manual sale payout completed:", {
+            saleId,
+            adminId,
+            paymentReference,
+        });
+
+        return new GiftCardSaleDetailDTO(result);
+    }
+
+    async retryMonnifyPayout(
+        saleId: string,
+        adminId: string,
+    ): Promise<void> {
+        const transaction = await prisma.transaction.findUnique({
+            where: { id: saleId },
+        });
+
+        if (!transaction) {
+            throw new NotFoundException(RESPONSE_MESSAGES.ERRORS.SALE_NOT_FOUND);
+        }
+
+        if (transaction.status !== "FAILED" && transaction.status !== "PROCESSING") {
+            throw new BadRequestException(
+                `Cannot retry payout for sale with status: ${transaction.status}`,
+            );
+        }
+
+        const bankAccount = await prisma.externalAccount.findFirst({
+            where: { userId: transaction.userId },
+            orderBy: { createdAt: "desc" },
+        });
+
+        if (!bankAccount || !bankAccount.monnifyBankCode || !bankAccount.accountNumber) {
+            throw new BadRequestException("User bank details are incomplete");
+        }
+
+        // Update status back to PROCESSING
+        await prisma.transaction.update({
+            where: { id: saleId },
+            data: {
+                status: "PROCESSING",
+                meta: updateGiftcardSaleMeta(transaction.meta, {
+                    saleStatus: "PAYOUT_PENDING",
+                }),
+            },
+        });
+
+        logger.info("Retrying Monnify payout for sale:", {
+            saleId,
+            adminId,
+        });
+
+        await publishToQueue({
+            type: "MONNIFY_DISBURSEMENT",
+            payload: {
+                amount: Number(transaction.amount),
+                reference: (transaction.reference || transaction.id).replace(/[^a-zA-Z0-9_-]/g, "_") + "_retry_" + Date.now(),
+                narration: `Payout for gift card sale retry`,
+                destinationBankCode: bankAccount.monnifyBankCode,
+                destinationAccountNumber: bankAccount.accountNumber,
+                destinationAccountName: bankAccount.accountName,
+                currency: "NGN",
+                userId: transaction.userId,
+                saleId,
+            },
+        });
     }
 }
 

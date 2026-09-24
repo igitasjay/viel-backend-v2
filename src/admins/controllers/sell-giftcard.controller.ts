@@ -285,15 +285,19 @@ const getSale = Asyncly(async (req: Request, res: Response) => {
             id: saleId,
             category: "GIFTCARDS",
         },
-        include: {
-            user: {
-                select: {
-                    id: true,
-                    fullname: true,
-                    email: true,
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        fullname: true,
+                        email: true,
+                        externalAccounts: {
+                            orderBy: { createdAt: "desc" },
+                            take: 1,
+                        },
+                    },
                 },
             },
-        },
     });
 
     if (!transaction) {
@@ -331,7 +335,7 @@ const getSale = Asyncly(async (req: Request, res: Response) => {
     res.status(httpStatus.OK).json({
         success: true,
         message: RESPONSE_MESSAGES.GIFTCARD.SALE_FETCHED,
-        data: new GiftCardSaleDetailDTO(transaction, decryptedCode, decryptedPin),
+        data: new GiftCardSaleDetailDTO(transaction, decryptedCode, decryptedPin, transaction.user?.externalAccounts?.[0]),
 
         // data: GiftCardSaleDetailDTO({
         //   id: transaction.id,
@@ -466,14 +470,14 @@ const processSalePayout = Asyncly(async (req: Request, res: Response) => {
                     priority: "high",
                     title: "Gift Card Approved",
                     message: `Your ${saleDetails.cardType
-                        } gift card sale has been approved! ₦${Number(
+                        } gift card sale has been approved! Payout of ₦${Number(
                             saleDetails.payoutAmount,
-                        ).toLocaleString()} will be credited to your wallet shortly.`,
+                        ).toLocaleString()} is being processed.`,
                     metadata: {
                         saleId: saleDetails.id,
                         cardType: saleDetails.cardType,
                         payoutAmount: saleDetails.payoutAmount,
-                        action: "giftcard_sale_approved",
+                        action: "giftcard_sale_approved_processing",
                         approvedAt: new Date().toISOString(),
                     },
                     deliveryChannels: ["in_app", "push"],
@@ -487,27 +491,7 @@ const processSalePayout = Asyncly(async (req: Request, res: Response) => {
                 },
             );
 
-            const user = await prisma.user.findUnique({
-                where: { id: saleDetails.userid },
-                select: { email: true, fullname: true },
-            });
-
-            if (user?.email) {
-                await sendGiftcardSaleApprovedandPayoutEmail(
-                    user.email,
-                    user.fullname,
-                    {
-                        saleId: saleDetails.id,
-                        cardType: saleDetails.cardType,
-                        cardValue: Number(saleDetails.cardValue),
-                        quantity: saleDetails.quantity,
-                        payoutAmount: Number(saleDetails.payoutAmount),
-                        transactionId: transaction.id,
-                        paidAt: new Date().toISOString(),
-                    },
-                );
-                logger.info(`Sale approval email sent to user ${saleDetails.userid}`);
-            }
+            // Remove the immediate "Paid" email here, as it will be sent by the worker upon success.
         } catch (error) {
             logger.error("Failed to send sale approval notification:", {
                 error,
@@ -597,6 +581,60 @@ const rejectSale = Asyncly(async (req: Request, res: Response) => {
     });
 });
 
+const manualPayout = Asyncly(async (req: Request, res: Response) => {
+    const validatedData = giftCardValidation.manualPayoutSchema.parse({
+        ...req.body,
+        saleId: req.params.saleId,
+    });
+    const adminId = req.currentAdmin!.id;
+
+    const saleDetails = await giftCardSellingService.manualPayout(
+        validatedData.saleId,
+        adminId,
+        validatedData.paymentReference,
+    );
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Manual payout processed successfully",
+        data: saleDetails,
+    });
+
+    // Notify user of successful payment
+    await publishToQueue({
+        type: "GIFTCARD_SALE_APPROVED",
+        payload: {
+            userId: saleDetails.userid,
+            payoutDetails: {
+                saleId: saleDetails.id,
+                cardType: saleDetails.cardType,
+                cardValue: Number(saleDetails.cardValue),
+                quantity: saleDetails.quantity,
+                payoutAmount: Number(saleDetails.payoutAmount),
+                transactionId: saleDetails.id,
+                paidAt: new Date().toISOString(),
+            },
+        },
+    });
+});
+
+const retryMonnifyPayout = Asyncly(async (req: Request, res: Response) => {
+    const validatedData = giftCardValidation.retryPayoutSchema.parse({
+        saleId: req.params.saleId,
+    });
+    const adminId = req.currentAdmin!.id;
+
+    await giftCardSellingService.retryMonnifyPayout(
+        validatedData.saleId,
+        adminId,
+    );
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Payout retry initiated successfully",
+    });
+});
+
 export const giftcardSellAdminController = {
     getAllAcceptedCards,
     getAcceptedCard,
@@ -609,4 +647,6 @@ export const giftcardSellAdminController = {
     reviewSale,
     processSalePayout,
     rejectSale,
+    manualPayout,
+    retryMonnifyPayout,
 };

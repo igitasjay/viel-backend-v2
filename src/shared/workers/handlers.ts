@@ -2,6 +2,10 @@ import { logger } from "@/lib/winston";
 import * as ex from "../../externals/index";
 import * as nf from "../../internals/notification";
 import { disburseFunds } from "@/monnify-infra/services/monnify.service";
+import { prisma } from "@/shared/db/prisma";
+import { updateGiftcardSaleMeta } from "@/internals/giftcard/types/giftcard.type";
+import { AdminNotificationService } from "@/admins/services/admin-notification.service";
+import { publishToQueue } from "./publisher";
 // import * as switchX from "../../internals/crypto";
 
 interface JobPayload {
@@ -156,16 +160,76 @@ export async function handleJob(job: JobPayload) {
                 logger.info(
                     `Worker received MONNIFY_DISBURSEMENT for ${payload.userId} (amount: ${payload.amount})`,
                 );
-                return await disburseFunds({
-                    amount: payload.amount,
-                    reference: payload.reference,
-                    narration: payload.narration,
-                    destinationBankCode: payload.destinationBankCode,
-                    destinationAccountNumber: payload.destinationAccountNumber,
-                    destinationAccountName: payload.destinationAccountName,
-                    sourceAccountNumber: payload.sourceAccountNumber,
-                    currency: payload.currency || "NGN",
-                });
+                try {
+                    const result = await disburseFunds({
+                        amount: payload.amount,
+                        reference: payload.reference,
+                        narration: payload.narration,
+                        destinationBankCode: payload.destinationBankCode,
+                        destinationAccountNumber: payload.destinationAccountNumber,
+                        destinationAccountName: payload.destinationAccountName,
+                        sourceAccountNumber: payload.sourceAccountNumber,
+                        currency: payload.currency || "NGN",
+                    });
+
+                    // On success, update transaction
+                    const existingTx = await prisma.transaction.findUnique({ where: { id: payload.saleId } });
+                    if (existingTx) {
+                        const updatedTransaction = await prisma.transaction.update({
+                            where: { id: payload.saleId },
+                            data: {
+                                status: "SUCCESS",
+                                meta: updateGiftcardSaleMeta(existingTx.meta, { saleStatus: "PAID" }),
+                            },
+                        });
+
+                        // Trigger the success notification
+                        await publishToQueue({
+                            type: "GIFTCARD_SALE_APPROVED",
+                            payload: {
+                                userId: payload.userId,
+                                payoutDetails: {
+                                    saleId: payload.saleId,
+                                    cardType: updatedTransaction.giftCardType,
+                                    cardValue: Number(updatedTransaction.giftCardValue),
+                                    quantity: updatedTransaction.giftCardQuantity,
+                                    payoutAmount: Number(updatedTransaction.amount),
+                                    transactionId: updatedTransaction.id,
+                                    paidAt: new Date().toISOString(),
+                                },
+                            },
+                        });
+                    }
+
+                    return result;
+                } catch (error: any) {
+                    logger.error(`Disbursement failed for sale ${payload.saleId}: ${error.message}`);
+                    
+                    const existingTx = await prisma.transaction.findUnique({ where: { id: payload.saleId } });
+                    if (existingTx) {
+                        await prisma.transaction.update({
+                            where: { id: payload.saleId },
+                            data: {
+                                status: "FAILED",
+                                meta: updateGiftcardSaleMeta(existingTx.meta, { saleStatus: "PAYOUT_FAILED" }),
+                            }
+                        });
+                        
+                        // Alert Admin
+                        await AdminNotificationService.createNotification({
+                            type: "GIFTCARD",
+                            title: "⚠️ Payout Failed: Action Required",
+                            message: `Monnify failed to disburse NGN ${payload.amount} to user. Tap to process manually.`,
+                            metadata: {
+                                saleId: payload.saleId,
+                                amount: payload.amount,
+                                reason: error.message,
+                                action: "payout_failed_manual_required"
+                            }
+                        });
+                    }
+                    throw error;
+                }
 
             default:
                 logger.warn(`Unknown job type: ${type}`);
