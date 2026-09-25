@@ -78,12 +78,23 @@ const RefundOrderSchema = z.object({
   reason: z.string().min(1),
 });
 
+const manualPayoutSchema = z.object({
+  saleId: z.string().min(1, "Sale ID is required"),
+  paymentReference: z.string().min(1, "Payment reference is required"),
+});
+
+const retryPayoutSchema = z.object({
+  saleId: z.string().min(1, "Sale ID is required"),
+});
+
 export type CreateAcceptedCardDto = z.infer<typeof createAcceptedCardSchema>;
 export type UpdateAcceptedCardDto = z.infer<typeof updateAcceptedCardSchema>;
 export type CalculateRateDto = z.infer<typeof calculateRateSchema>;
 export type SubmitSaleDto = z.infer<typeof submitSaleSchema>;
 export type ApproveSaleDto = z.infer<typeof processSalePayout>;
 export type RejectSaleDto = z.infer<typeof rejectSaleSchema>;
+export type ManualPayoutDto = z.infer<typeof manualPayoutSchema>;
+export type RetryPayoutDto = z.infer<typeof retryPayoutSchema>;
 
 export const giftCardValidation = {
   createAcceptedCardSchema,
@@ -92,4 +103,6 @@ export const giftCardValidation = {
   reviewSaleSchema,
   rejectSaleSchema,
   RefundOrderSchema,
+  manualPayoutSchema,
+  retryPayoutSchema,
 };

@@ -271,12 +271,17 @@ export class GiftCardSaleDetailDTO {
     decryptedCode: string | null;
     decryptedPin: string | null;
     status: string;
+    bankName: string | null;
+    accountNumber: string | null;
+    accountName: string | null;
+    manualPaymentReference: string | null;
     createdAt: string;
 
     constructor(
         sale: any,
         decryptedCode?: string | any,
         decryptedPin?: string | any,
+        bankAccount?: any,
     ) {
         this.id = sale.id;
         this.userid = sale.userId;
@@ -294,6 +299,10 @@ export class GiftCardSaleDetailDTO {
         this.decryptedCode = decryptedCode || null;
         this.decryptedPin = decryptedPin || null;
         this.status = sale.status;
+        this.bankName = bankAccount?.monnifyBankName || bankAccount?.bankName || null;
+        this.accountNumber = bankAccount?.accountNumber || null;
+        this.accountName = bankAccount?.accountName || null;
+        this.manualPaymentReference = (sale.meta as any)?.manualPaymentReference || null;
         this.createdAt = sale.createdAt.toISOString();
     }
 }

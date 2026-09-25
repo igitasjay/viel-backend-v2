@@ -144,4 +144,20 @@ giftcardRoutes.post(
     giftcardSellAdminController.rejectSale,
 );
 
+giftcardRoutes.post(
+    "/sales/:saleId/manual-payout",
+    requireAdminAuth,
+    requireAdmin,
+    validate(giftCardValidation.manualPayoutSchema),
+    giftcardSellAdminController.manualPayout,
+);
+
+giftcardRoutes.post(
+    "/sales/:saleId/retry-payout",
+    requireAdminAuth,
+    requireAdmin,
+    validate(giftCardValidation.retryPayoutSchema),
+    giftcardSellAdminController.retryMonnifyPayout,
+);
+
 export { giftcardRoutes };
