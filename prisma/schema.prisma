@@ -796,6 +796,7 @@ enum TransactionStatus {
   REVERSED
   PROCESSING
   SUBMITTED
+  MANUAL_PAYOUT
 }
 
 enum TransactionType {
