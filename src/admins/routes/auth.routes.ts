@@ -38,6 +38,13 @@ authRoutes.get(
     adminAuthController.getAdminProfile,
 );
 
+authRoutes.patch(
+    "/profile",
+    requireAdminAuth,
+    validate(adminAuthValidation.updateProfileSchema),
+    adminAuthController.updateAdminProfile,
+);
+
 authRoutes.get("/", requireAdminAuth, adminAuthController.getAllAdmin);
 
 authRoutes.post("/refresh-token", adminAuthController.refreshAdminToken);
