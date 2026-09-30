@@ -183,8 +183,10 @@ export class ReAuthResponseDTO {
   isActive: boolean;
   isVerified: boolean;
   isBiometricEnabled: boolean;
+  accessToken?: string;
+  refreshToken?: string;
 
-  constructor(user: any) {
+  constructor(user: any, accessToken?: string, refreshToken?: string) {
     this.id = user.id;
     this.fullname = user.fullname;
     this.email = user.email;
@@ -193,5 +195,7 @@ export class ReAuthResponseDTO {
     this.isActive = user.isActive;
     this.isVerified = user.isVerified;
     this.isBiometricEnabled = user.isBiometricEnabled;
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
   }
 }

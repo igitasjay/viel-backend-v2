@@ -9,6 +9,8 @@ import { httpStatus } from "@/shared/exceptions/statusCodes";
 import { redis } from "@/shared/common/redis";
 import { AuthTokens } from "@/shared/guards/hash";
 import { logger } from "@/lib/winston";
+import { TokenService } from "@/shared/guards/tokens";
+import { config } from "@/shared/config/config";
 
 const enableBiometric = Asyncly(async (req, res) => {
   const userId = req.currentUser?.id;
@@ -158,9 +160,27 @@ const reAuthenticateUser = Asyncly(async (req, res) => {
     `Re-authentication successful for user ${user.id} via ${authMethod}`,
   );
 
+  const tokenPayload = {
+    id: user.id,
+    email: user.email,
+    name: `${user.fullname}`,
+  };
+
+  await redis.del(`refresh:${user.id}`);
+
+  const accessToken = TokenService.generateUserToken(tokenPayload);
+  const refreshToken = TokenService.generateUserRefreshToken(tokenPayload);
+
+  await redis.set(
+    `refresh:${user.id}`,
+    refreshToken,
+    "EX",
+    config.jwt.refreshTokenExpires * 24 * 60 * 60,
+  );
+
   res.status(httpStatus.OK).json({
     message: "Re-authentication successful",
-    user: new ReAuthResponseDTO(user),
+    user: new ReAuthResponseDTO(user, accessToken, refreshToken),
   });
 });
 
