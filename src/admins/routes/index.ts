@@ -7,9 +7,12 @@ import { analyticsRoutesAdmin } from "./analytics.route.admin";
 import { usersRoutesAdmin } from "./users.route.admin";
 import { appSettingsRoutes as adminAppSettingsRoutes } from "./app-settings.route.admin";
 
+import { adminNotificationRoutes } from "./notification.route.admin";
+
 const adminRouter = express.Router();
 
 adminRouter.use("/auth", authRoutes);
+adminRouter.use("/notifications", adminNotificationRoutes);
 adminRouter.use('/giftcards', adminGiftcardRoutes)
 adminRouter.use('/exchange-rates', adminExchangeRateRoutes)
 adminRouter.use('/banners', bannerRoutesAdmin)
