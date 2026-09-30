@@ -199,6 +199,80 @@ const getAdminProfile = Asyncly(async (req, res) => {
     });
 });
 
+const updateAdminProfile = Asyncly(async (req, res) => {
+    const adminId = req.currentAdmin?.id;
+    const data = adminAuthValidation.updateProfileSchema.parse(req.body);
+
+    const admin = await prisma.admin.findUnique({
+        where: { id: adminId },
+    });
+
+    if (!admin) {
+        throw new NotFoundException("Admin not found");
+    }
+
+    if (data.email && data.email !== admin.email) {
+        const existingEmail = await prisma.admin.findUnique({
+            where: { email: data.email },
+        });
+
+        if (existingEmail) {
+            throw new BadRequestException("Email already in use");
+        }
+    }
+
+    const updatedAdmin = await prisma.admin.update({
+        where: { id: adminId },
+        data: {
+            ...(data.name && { name: data.name }),
+            ...(data.email && { email: data.email }),
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            profilePicture: true,
+            isAdmin: true,
+            isSuper: true,
+        },
+    });
+
+    const tokenPayload: AuthAdmin = {
+        id: updatedAdmin.id,
+        email: updatedAdmin.email,
+        name: `${updatedAdmin.name}`,
+    };
+
+    const accessToken = TokenService.generateAdminToken(tokenPayload);
+    const refreshToken = TokenService.generateAdminRefreshToken(tokenPayload);
+
+    const isProduction = config.env === "production";
+
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        path: "/",
+        maxAge: config.jwt.accessTokenExpires * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        path: "/",
+        maxAge: config.jwt.refreshTokenExpires * 24 * 60 * 60 * 1000,
+    });
+
+    logger.info("updateAdminProfile: Admin profile updated successfully");
+    res.status(httpStatus.OK).json({
+        message: "Profile updated successfully",
+        admin: updatedAdmin,
+        accessToken,
+        refreshToken,
+    });
+});
+
 const getAllAdmin = Asyncly(async (_req, res) => {
     const admins = await prisma.admin.findMany();
     res.status(httpStatus.OK).json({
@@ -372,4 +446,5 @@ export const adminAuthController = {
     deleteAdmin,
     resetAdminPassword,
     refreshAdminToken,
+    updateAdminProfile,
 };

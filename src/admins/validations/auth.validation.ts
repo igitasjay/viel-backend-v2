@@ -40,6 +40,11 @@ const suspendAdminSchema = z.object({
     isActive: z.boolean(),
 });
 
+const updateProfileSchema = z.object({
+    name: z.string().min(1, "Name is required").optional(),
+    email: emailValidation.optional(),
+});
+
 const superAdminResetPasswordSchema = z.object({
     newPassword: passwordValidation,
 });
@@ -50,4 +55,5 @@ export const adminAuthValidation = {
     passwordChangeSchema,
     suspendAdminSchema,
     superAdminResetPasswordSchema,
+    updateProfileSchema,
 };
