@@ -16,6 +16,8 @@ import { resolveObiexBankCode } from "@/services/obiex-bank-resolver.service";
 import { ReferralConstants } from "@shared/types/enums";
 import { ObiexEvent } from "./interface";
 import { ObiexService } from "../../externals";
+import { Decimal } from "decimal.js";
+import { disburseFunds } from "@/monnify-infra/services/monnify.service";
 // import { emitVirtualWalletUpdate } from "../wallets";
 // import { spinService } from "../spin";
 
@@ -72,36 +74,22 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
       return { success: true, message: "Already recorded as pending" };
     }
 
-    const cryptoRate = await prisma.cryptoAsset.findFirst({
-      where: {
-        code: normalizedAsset,
-        isActive: true,
-      },
-      orderBy: { updatedAt: "desc" },
+    const settings = await prisma.appSettings.findUnique({
+      where: { key: "CRYPTO_USD_TO_NGN_RATE" }
     });
 
-    if (!cryptoRate || !cryptoRate.buyRate) {
-      logger.warn(`No buy rate found for ${normalizedAsset}/NGN`);
-      return { success: false, message: "Rate not available" };
-    }
+    const adminRate = new Decimal(settings?.appValue?.[0] || "1400");
+    const coinBuyRate = adminRate.toNumber(); // For legacy variables
 
-    const coinBuyRate = Number(cryptoRate.buyRate);
-    logger.info(`📊 Rate for ${normalizedAsset}: ₦${coinBuyRate}/USD`);
+    logger.info(`📊 Admin Rate for ${normalizedAsset}: ₦${coinBuyRate}/USD`);
 
-    let usdValue = 0;
-    let ngnValue = 0;
+    let usdValueD = new Decimal(0);
+    const depositAmountD = new Decimal(depositAmount);
     const isStableCoin = ["USDT", "USDC", "BUSD"].includes(normalizedAsset);
 
     if (isStableCoin) {
-      // For stablecoins: 1 coin = 1 USD
-      usdValue = Math.round(depositAmount * 100) / 100; // Round to 2 decimals
-      ngnValue = Math.round(usdValue * coinBuyRate * 100) / 100; // Round NGN to 2 decimals
-
-      logger.info(
-        `💱 Stablecoin: ${depositAmount} ${normalizedAsset} = $${usdValue.toFixed(2)} → ₦${ngnValue.toFixed(2)} @ ₦${coinBuyRate}/USD`,
-      );
+      usdValueD = depositAmountD;
     } else {
-      // For other coins (BTC, ETH, etc.): Get USD value from Obiex quote
       logger.info(
         `Fetching USDT quote for ${depositAmount} ${normalizedAsset}...`,
       );
@@ -114,41 +102,26 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
           side: "SELL",
         });
 
-        logger.info(`Obiex quote:`, {
-          amount: quoteResponse.data?.amount,
-          amountReceived: quoteResponse.data?.amountReceived,
-          rate: quoteResponse.data?.rate,
-          sourceCode: quoteResponse.data?.sourceCode,
-          targetCode: quoteResponse.data?.targetCode,
-        });
-
-        // Get USDT amount
         const usdtAmount = Number(quoteResponse?.data?.amountReceived || 0);
-
         if (usdtAmount <= 0) {
           logger.error(`Invalid USDT amount from quote: ${usdtAmount}`);
           return { success: false, message: "Could not get USDT conversion" };
         }
-
-        // Round USDT amount to 2 decimals and keep as NUMBER for calculations
-        // USD value = USDT amount (since USDT ≈ 1 USD)
-        usdValue = Math.round(usdtAmount * 100) / 100; // 6.0041 → 6.00 (as number)
-
-        // NGN value = rounded USD × coin's buy rate
-        ngnValue = Math.round(usdValue * coinBuyRate * 100) / 100; // Also round NGN
-
-        logger.info(`💱 Conversion:`);
-        logger.info(
-          `   ${depositAmount} ${normalizedAsset} → ${usdValue.toFixed(2)} USDT (≈ $${usdValue.toFixed(2)})`,
-        );
-        logger.info(
-          `   $${usdValue.toFixed(2)} × ₦${coinBuyRate} = ₦${ngnValue.toFixed(2)}`,
-        );
+        usdValueD = new Decimal(usdtAmount);
       } catch (quoteError) {
         logger.error("Failed to fetch Obiex quote:");
         return { success: false, message: "Failed to fetch conversion rate" };
       }
     }
+
+    const ngnValueD = usdValueD.mul(adminRate).toDecimalPlaces(2);
+    
+    const usdValue = usdValueD.toDecimalPlaces(2).toNumber();
+    const ngnValue = ngnValueD.toNumber();
+
+    logger.info(
+      `💱 Conversion: ${depositAmount} ${normalizedAsset} = $${usdValue.toFixed(2)} → ₦${ngnValue.toFixed(2)} @ ₦${coinBuyRate}/USD`,
+    );
 
     const transactionTxRef = `CRP|${generateTransactionReference()}`;
     const sessionId = generateSessionId();
@@ -278,67 +251,21 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
     logger.info(`   NGN Value: ₦${ngnValue.toFixed(2)}`);
     logger.info(`   New Balance: ₦${updatedWallet.sellVolume}`);
 
-    // Attempt auto-payout via Obiex fiat off-ramping if bank account exists
+    // Attempt auto-payout via Monnify if bank account exists
     let payoutSuccessful = false;
     let payoutError = "";
+    const MONNIFY_FEE = new Decimal(50);
+    const minPayoutAmount = new Decimal(100); // Prevent dust payouts
 
-    if (bankAccount && bankAccount.obiexBankCode) {
+    if (bankAccount && bankAccount.monnifyBankCode) {
       try {
         const payoutRef = `PAYOUT|${transactionTxRef}`;
+        const finalPayoutAmountD = ngnValueD.minus(MONNIFY_FEE);
 
-        // Rate guard: fetch Obiex live NGN rate for this asset
-        let payoutAmount = ngnValue;
-        try {
-          const ngnQuote = await ObiexService.getTradeQuote({
-            sourceId: normalizedAsset,
-            targetId: "NGNX",
-            amount: depositAmount,
-            side: "SELL",
-          });
-
-          const obiexNgnAmount = Number(ngnQuote?.data?.amountReceived || 0);
-          if (obiexNgnAmount > 0 && payoutAmount > obiexNgnAmount) {
-            // Our custom rate exceeds Obiex's live rate — cap at 99% of Obiex rate to retain 1% margin
-            const cappedAmount = Math.round(obiexNgnAmount * 0.99 * 100) / 100;
-            logger.warn(
-              `⚠️ Rate guard triggered: Custom ₦${payoutAmount.toFixed(2)} > Obiex ₦${obiexNgnAmount.toFixed(2)}. Capping payout at ₦${cappedAmount.toFixed(2)} (1% margin)`
-            );
-            payoutAmount = cappedAmount;
-          } else {
-            logger.info(
-              `✅ Rate guard passed: Custom ₦${payoutAmount.toFixed(2)} <= Obiex ₦${obiexNgnAmount.toFixed(2)}`
-            );
-          }
-        } catch (quoteErr) {
-          logger.warn(`⚠️ Rate guard quote failed, proceeding with custom rate ₦${payoutAmount.toFixed(2)}`, {
-            error: quoteErr instanceof Error ? quoteErr.message : quoteErr,
-          });
-        }
-
-        logger.info(
-          `Attempting Obiex fiat withdrawal: ₦${payoutAmount.toFixed(2)} to ${bankAccount.accountNumber} (${bankAccount.bankName})`
-        );
-
-        const payoutResponse = await ObiexService.withdrawFiat({
-          amount: payoutAmount,
-          bankCode: bankAccount.obiexBankCode,
-          accountNumber: bankAccount.accountNumber,
-          accountName: bankAccount.accountName,
-          bankName: bankAccount.bankName,
-          narration: `Viel - ${normalizedAsset} Deposit`,
-        });
-
-        logger.info(`Obiex withdrawal response:`, {
-          message: payoutResponse.message,
-          payoutStatus: payoutResponse.data?.payout?.status,
-          payoutAmount: payoutResponse.data?.payout?.payoutAmount,
-          reference: payoutResponse.data?.reference,
-        });
-
-        if (payoutResponse.data?.payout?.status === "APPROVED") {
-          payoutSuccessful = true;
-
-          // Deduct from wallet and record payout transaction
+        if (finalPayoutAmountD.lessThan(minPayoutAmount)) {
+          logger.warn(`⚠️ Payout amount ₦${finalPayoutAmountD.toString()} is too low for Monnify disbursement.`);
+          payoutError = "Payout amount too low after fee.";
+          
           await prisma.$transaction([
             prisma.transaction.create({
               data: {
@@ -346,32 +273,97 @@ export async function handleSwitchWebhook(event: ObiexEvent) {
                 walletId: ngnWallet?.id,
                 category: TransactionCategory.CRYPTO,
                 type: TransactionType.DEBIT,
-                amount: payoutAmount,
+                amount: finalPayoutAmountD.toNumber(),
+                fee: MONNIFY_FEE.toNumber(),
                 reference: payoutRef,
-                externalRef: payoutResponse.data.reference,
                 currency: "NGN",
-                provider: "Obiex",
+                provider: "Monnify",
                 channel: "bank_transfer",
-                narration: `Auto-payout for ${normalizedAsset} deposit`,
-                status: TransactionStatus.SUCCESS,
+                narration: `Auto-payout failed (Amount too low) - ${normalizedAsset}`,
+                status: TransactionStatus.MANUAL_PAYOUT,
               },
             }),
             prisma.wallet.update({
               where: { id: updatedWallet.id },
-              data: { sellVolume: { decrement: payoutAmount } },
+              data: { sellVolume: { decrement: finalPayoutAmountD.toNumber() } },
+            })
+          ]);
+        } else {
+          logger.info(
+            `Attempting Monnify disbursement: ₦${finalPayoutAmountD.toString()} to ${bankAccount.accountNumber} (${bankAccount.bankName})`
+          );
+
+          const payoutResponse = await disburseFunds({
+            amount: finalPayoutAmountD.toNumber(),
+            reference: payoutRef,
+            narration: `Viel - ${normalizedAsset} Deposit`,
+            destinationBankCode: bankAccount.monnifyBankCode,
+            destinationAccountNumber: bankAccount.accountNumber,
+            destinationAccountName: bankAccount.accountName,
+            currency: "NGN",
+          });
+
+          logger.info(`Monnify disbursement response:`, payoutResponse);
+
+          // Note: disburseFunds throws an error if the request fails
+          payoutSuccessful = true; // Wait for webhook to mark as SUCCESS, for now it's PROCESSING
+
+          await prisma.$transaction([
+            prisma.transaction.create({
+              data: {
+                userId: cryptoWallet.userId,
+                walletId: ngnWallet?.id,
+                category: TransactionCategory.CRYPTO,
+                type: TransactionType.DEBIT,
+                amount: finalPayoutAmountD.toNumber(),
+                fee: MONNIFY_FEE.toNumber(),
+                reference: payoutRef,
+                externalRef: payoutRef, // Use internal ref since it's passed to Monnify
+                currency: "NGN",
+                provider: "Monnify",
+                channel: "bank_transfer",
+                narration: `Auto-payout for ${normalizedAsset} deposit`,
+                status: TransactionStatus.PROCESSING,
+              },
+            }),
+            prisma.wallet.update({
+              where: { id: updatedWallet.id },
+              data: { sellVolume: { decrement: finalPayoutAmountD.toNumber() } },
             }),
           ]);
-          logger.info(`✅ Obiex auto-payout successful for transaction ${transactionTxRef}`);
-        } else {
-          payoutError = `Obiex payout status: ${payoutResponse.data?.payout?.status || "unknown"}`;
-          logger.error(`❌ Obiex auto-payout not approved: ${payoutError}`);
+          logger.info(`✅ Monnify auto-payout initiated for transaction ${transactionTxRef}`);
         }
       } catch (error: any) {
-        payoutError = error.message || "Failed to process Obiex withdrawal";
-        logger.error(`❌ Obiex auto-payout failed:`, { error: error instanceof Error ? { message: error.message, stack: error.stack } : error });
+        payoutError = error.message || "Failed to process Monnify disbursement";
+        logger.error(`❌ Monnify auto-payout failed:`, { error: error instanceof Error ? { message: error.message, stack: error.stack } : error });
+        
+        // Log manual payout transaction
+        await prisma.$transaction([
+          prisma.transaction.create({
+            data: {
+              userId: cryptoWallet.userId,
+              walletId: ngnWallet?.id,
+              category: TransactionCategory.CRYPTO,
+              type: TransactionType.DEBIT,
+              amount: ngnValueD.minus(MONNIFY_FEE).toNumber(),
+              fee: MONNIFY_FEE.toNumber(),
+              reference: `PAYOUT|${transactionTxRef}`,
+              currency: "NGN",
+              provider: "Monnify",
+              channel: "bank_transfer",
+              narration: `Auto-payout failed - ${normalizedAsset}`,
+              status: TransactionStatus.MANUAL_PAYOUT,
+            },
+          }),
+          prisma.wallet.update({
+            where: { id: updatedWallet.id },
+            data: { sellVolume: { decrement: ngnValueD.minus(MONNIFY_FEE).toNumber() } },
+          }),
+        ]);
       }
     } else {
       logger.warn(`No valid bank account found for user ${cryptoWallet.userId}, skipping auto-payout`);
+      // Since no bank account exists, we could just leave the money in the wallet and not create a debit.
     }
 
     // Prepare success notification message based on payout status

@@ -20,8 +20,15 @@ const getExchangeRates = Asyncly(async (req: Request, res: Response) => {
 
 const createOrUpdateExchangeRate = Asyncly(async (req: Request, res: Response) => {
     const { currency, rate } = req.body;
+
+    if (!currency || !String(currency).trim() || !rate) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            success: false,
+            message: "Currency and rate are required",
+        });
+    }
     
-    const formattedCurrency = currency.toUpperCase();
+    const formattedCurrency = currency.toUpperCase().trim();
 
     logger.info(`Admin ${req.currentAdmin?.id} updating exchange rate for ${formattedCurrency} to ${rate}`);
 

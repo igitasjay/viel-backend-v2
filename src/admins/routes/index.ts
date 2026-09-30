@@ -5,6 +5,7 @@ import { exchangeRateRoutes as adminExchangeRateRoutes } from "./exchange-rate.r
 import { bannerRoutesAdmin } from "./banner.route.admin";
 import { analyticsRoutesAdmin } from "./analytics.route.admin";
 import { usersRoutesAdmin } from "./users.route.admin";
+import { appSettingsRoutes as adminAppSettingsRoutes } from "./app-settings.route.admin";
 
 const adminRouter = express.Router();
 
@@ -14,5 +15,6 @@ adminRouter.use('/exchange-rates', adminExchangeRateRoutes)
 adminRouter.use('/banners', bannerRoutesAdmin)
 adminRouter.use('/analytics', analyticsRoutesAdmin)
 adminRouter.use('/users', usersRoutesAdmin)
+adminRouter.use('/settings', adminAppSettingsRoutes)
 
 export default adminRouter;
