@@ -49,6 +49,17 @@ const superAdminResetPasswordSchema = z.object({
     newPassword: passwordValidation,
 });
 
+const enableBiometric = z.object({
+    publicKey: z.string().min(1, "Public key is required"),
+});
+
+const reAuthenticateSchema = z.object({
+    email: emailValidation,
+    authMethod: z.enum(["password", "biometric"]),
+    password: z.string().optional(),
+    publicKey: z.string().optional(),
+});
+
 export const adminAuthValidation = {
     createAdminUserSchema,
     loginSchema,
@@ -56,4 +67,6 @@ export const adminAuthValidation = {
     suspendAdminSchema,
     superAdminResetPasswordSchema,
     updateProfileSchema,
+    enableBiometric,
+    reAuthenticateSchema,
 };

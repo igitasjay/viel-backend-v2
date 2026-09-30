@@ -615,6 +615,8 @@ model Admin {
   isSuper              Boolean               @default(false)
   lastSeenAt           DateTime?
   isActive             Boolean               @default(true)
+  biometricPublicKey   String?
+  isBiometricEnabled   Boolean               @default(false)
   notifications        AdminNotification[]
   supportConversations SupportConversation[]
 

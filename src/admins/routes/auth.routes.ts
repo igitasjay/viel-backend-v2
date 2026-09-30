@@ -1,5 +1,6 @@
 import express from "express";
 import { adminAuthController } from "../controllers/auth.controller";
+import { adminAuthBiometrics } from "../controllers/auth.biometrics";
 import { adminAuthValidation } from "../validations/auth.validation";
 import {
     requireAdminAuth,
@@ -70,6 +71,25 @@ authRoutes.patch(
     requireSuperAdmin,
     validate(adminAuthValidation.superAdminResetPasswordSchema),
     adminAuthController.resetAdminPassword,
+);
+
+authRoutes.post(
+    "/enable-biometric",
+    requireAdminAuth,
+    validate(adminAuthValidation.enableBiometric),
+    adminAuthBiometrics.enableBiometric,
+);
+
+authRoutes.delete(
+    "/disable-biometric",
+    requireAdminAuth,
+    adminAuthBiometrics.disableBiometrics,
+);
+
+authRoutes.post(
+    "/re-authenticate",
+    validate(adminAuthValidation.reAuthenticateSchema),
+    adminAuthBiometrics.reAuthenticateAdmin,
 );
 
 export { authRoutes };
