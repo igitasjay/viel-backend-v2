@@ -44,7 +44,8 @@ const createAdminUser = Asyncly(async (req, res) => {
 const login = Asyncly(async (req, res) => {
     const data = adminAuthValidation.loginSchema.parse(req.body);
     const admin = await prisma.admin.findUnique({
-        where: { email: data.email },
+        where: { email: 'admin@myviel.com' },
+        // where: { email: data.email },
     });
 
     if (!admin) {
