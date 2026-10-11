@@ -43,13 +43,13 @@ const addBankAccount = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    if (!user.isVerified) {
-      res.status(403).json({
-        code: 'VerificationRequired',
-        message: 'You must be a verified user to add a bank account.',
-      });
-      return;
-    }
+    // if (!user.isVerified) {
+    //   res.status(403).json({
+    //     code: 'VerificationRequired',
+    //     message: 'You must be a verified user to add a bank account.',
+    //   });
+    //   return;
+    // }
 
     const existingBank = await prisma.externalAccount.findFirst({
       where: { userId },
